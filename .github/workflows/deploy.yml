@@ -16,7 +16,7 @@ jobs:
     - name: Setup SSH agent
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.GITHUB_TOKEN }}
+        ssh-private-key: ${{ secrets.ACTIONS_KEY }}
 
     - name: Execute SSH commands
       run: |
