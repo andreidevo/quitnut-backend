@@ -16,6 +16,8 @@ const cookieParser = require('cookie-parser');
 
 // fixes
 
+// adsasd 
+
 (async () => {
   try {
     await mongoose.connect(process.env.DB_URI);
