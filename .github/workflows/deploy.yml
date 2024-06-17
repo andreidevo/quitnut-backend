@@ -1,0 +1,23 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup SSH agent
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Execute SSH commands
+      run: |
+        ssh -o StrictHostKeyChecking=no root@138.68.71.251 'cd /srv/quitnut-backend && git pull'
