@@ -20,4 +20,4 @@ jobs:
 
     - name: Execute SSH commands
       run: |
-        ssh -o StrictHostKeyChecking=no root@138.68.71.251 'cd /srv/quitnut-backend && git config user.email “novatovvv@gmail.com” && git config user.name “Andrei” && git config pull.rebase true && git add . && git commit -m "[skip ci] Update configurations" && git pull && git push'
+        ssh -o StrictHostKeyChecking=no root@138.68.71.251 'cd /srv/quitnut-backend && git config user.email “novatovvv@gmail.com” && git config user.name “Andrei” && git config pull.rebase true && git add . && git commit -m "[skip ci] Update configurations" && git fetch --all && git reset --hard origin/main && git pull && git push'
