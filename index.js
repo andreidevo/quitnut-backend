@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv').config();
+const dotenv = require('dotenv');
 var express = require('express'),
 app = express(),
 port = process.env.PORT || 5000,
@@ -14,9 +14,12 @@ var https = require("https");
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-// fixes
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: '.env.production' });
+} else {
+  dotenv.config({ path: '.env.development' });
+}
 
-// adsasd asdasd
 
 (async () => {
   try {
@@ -38,17 +41,20 @@ app.use(helmet())
 app.disable('x-powered-by')
 
 
-const allowedOrigins = ['https://inspostories.com', 'https://www.inspostories.com'];
+function originIsAllowed(origin) {
+  return true;
+}
 
 app.use(cors({
+  credentials: true,
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Allow all origins or use a specific logic to validate the origin
+    if (!origin || originIsAllowed(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  },
-  credentials: true
+  }
 }));
 
 
