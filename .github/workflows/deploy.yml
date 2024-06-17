@@ -31,5 +31,5 @@ jobs:
         else
           git commit -m "[skip ci] Update configurations" &&
           git push;
-        fi' && git fetch --all && git reset --hard origin/main && git pull && git push
+        fi' && git fetch --all && git reset --hard origin/main && git pull
       
