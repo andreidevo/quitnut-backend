@@ -16,6 +16,8 @@ var paymentHandlers = require('../controllers/paymentController.js');
 // console.log(authHandlers.refresh)
 // console.log(authHandlers.googleFunction)
 
+// fix
+
 module.exports = function(app) {
   // ------- Auth
   app.route('/apii/auth/register').post(asyncHandler(authHandlers.register));
