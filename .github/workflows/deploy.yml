@@ -33,6 +33,5 @@ jobs:
           git push;
         fi
       ' &&
-      # End of SSH command, following commands will execute locally
       git fetch --all && git reset --hard origin/main && git pull && git push
       
