@@ -1,5 +1,6 @@
 'use strict';
 
+const start = require('./cluster/index.js')
 const dotenv = require('dotenv');
 var express = require('express'),
 app = express(),
@@ -26,28 +27,10 @@ if (process.env.NODE_ENV === 'production') {
   dotenv.config({ path: '.env.development' });
 }
 
-
-
-(async () => {
-  try {
-    await mongoose.connect(process.env.DB_URI);
-    console.log('MongoDB Connected');
-    
-    // Start the server inside the try block or after it to ensure DB is connected
-    app.listen(port, () => {
-      console.log(`API server started on: ${port}`);
-    });
-  } catch (err) {
-    console.error('Failed to connect to MongoDB', err);
-  }
-})();
-
 app.set('trust proxy', 2);
-
 // SECURITY
 app.use(helmet())
 app.disable('x-powered-by')
-
 
 function originIsAllowed(origin) {
   return true;
@@ -72,10 +55,8 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 var routes = require('./api/routes');
 routes(app);
 
@@ -91,6 +72,19 @@ app.use((err, req, res, next) => {
 
 console.log('API server started on: ' + port);
 console.log(process.env.NODE_ENV);
+
+const isMultiThreading = true; // При false - будет работать в однопоточном режиме. При true - в многопоточном
+
+start(isMultiThreading, () => {
+  app.listen(port, async () => {
+    try {
+      await mongoose.connect(process.env.DB_URI);
+      console.log('MongoDB Connected');
+    } catch (err) {
+      console.error('Failed to connect to MongoDB', err);
+    }
+  });
+  })
 
 module.exports = app;
 
