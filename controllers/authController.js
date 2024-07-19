@@ -426,7 +426,7 @@ exports.appleCallback = async function(req, res) {
       var sub = data["sub"];
       
 
-      const user = await User.findOne({ authProvider: sub });
+      const user = await User.findOne({ authId: sub });
 
 
       
