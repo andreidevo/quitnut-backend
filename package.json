@@ -16,6 +16,7 @@
     "googleapis": "^134.0.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "jwk-to-pem": "^2.0.5",
     "mongoose": "^8.2.3",
     "next-connect": "^1.0.0",
     "node-telegram-bot-api": "^0.63.0",
