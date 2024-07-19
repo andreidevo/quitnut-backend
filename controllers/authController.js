@@ -211,7 +211,8 @@ exports.set_username = async function(req, res) {
     if (valid){
       
       try {
-        await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
+        const result = await User.findByIdAndUpdate(user._id, { $set: { username: username } }, { new: true, runValidators: true });
+        console.lot(result);
         return res.status(200).json({
           message: "ok"
         });
