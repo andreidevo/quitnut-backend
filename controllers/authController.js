@@ -101,7 +101,7 @@ exports.refresh = async function(req, res) {
   // console.log(accessToken);
 
   try {
-    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
 
     // console.log("start search")
     const existingUser = await User.findOne({ _id: decoded._id });
@@ -112,7 +112,7 @@ exports.refresh = async function(req, res) {
       return res.status(403).json({ message: 'Invalid JWT' });
     }
 
-    const newAccessToken = jwt.sign({ _id: decoded._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const newAccessToken = jwt.sign({ _id: decoded._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '7d' });
     // const newRefreshToken = jwt.sign({ _id: decoded._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     // await updateRefreshTokenInDatabase(decoded._id, newRefreshToken);
