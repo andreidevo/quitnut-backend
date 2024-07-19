@@ -12,6 +12,7 @@ const appleSignin = require("apple-signin");
 const path = require("path");
 const NodeRSA = require('node-rsa');
 const request = require('request-promise-native');
+const jwkToPem = require('jwk-to-pem');
 
 exports.text = async function(req, res) {}
 
@@ -327,36 +328,69 @@ async function findUniqueUsername() {
 }
 
 
-const getApplePublicKey = async () => {
-  print("WHAT");
-  const url = new URL('https://appleid.apple.com');
-  url.pathname = '/auth/keys';
+// const getApplePublicKey = async () => {
+//   print("WHAT");
+//   const url = new URL('https://appleid.apple.com');
+//   url.pathname = '/auth/keys';
 
-  const data = await request({ url: url.toString(), method: 'GET' });
-  const key = JSON.parse(data).keys[0];
+//   const data = await request({ url: url.toString(), method: 'GET' });
+//   const key = JSON.parse(data).keys[0];
 
-  print("KEYS");
-  print(JSON.parse(data).keys);
+//   print("KEYS");
+//   print(JSON.parse(data).keys);
 
 
-  const pubKey = new NodeRSA();
-  pubKey.importKey({ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') }, 'components-public');
-  return pubKey.exportKey(['public']);
+//   const pubKey = new NodeRSA();
+//   pubKey.importKey({ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') }, 'components-public');
+//   return pubKey.exportKey(['public']);
+// };
+
+const getApplePublicKey = async (kid) => {
+  const url = 'https://appleid.apple.com/auth/keys';  // Simplified URL setup
+  const response = await request({ url: url, json: true });  // Using json: true to automatically parse JSON
+  const keys = response.keys;
+
+  const matchingKey = keys.find(key => key.kid === kid);  // Find the key with the matching kid
+  if (!matchingKey) {
+    throw new Error('No matching key found.');
+  }
+
+  return jwkToPem(matchingKey);  // Convert JWK to PEM using jwk-to-pem
 };
 
-const verifyIdToken = async (idToken, clientID) => {
-  const applePublicKey = await getApplePublicKey();
-  console.log("Public");
-  console.log(applePublicKey);
-  console.log(idToken);
-  const jwtClaims = jwt.verify(idToken, applePublicKey, { algorithms: 'RS256' });
-  
-  if (jwtClaims.iss !== 'https://appleid.apple.com') throw new Error('id token not issued by correct OpenID provider - expected: ' + 'https://appleid.apple.com' + ' | from: ' + jwtClaims.iss);
-  if (clientID !== undefined && jwtClaims.aud !== clientID) throw new Error('aud parameter does not include this client - is: ' + jwtClaims.aud + '| expected: ' + clientID);
-  if (jwtClaims.exp < (Date.now() / 1000)) throw new Error('id token has expired');
+const verifyIdToken = async (idToken) => {
+  const decodedToken = jwt.decode(idToken, { complete: true });
+  if (!decodedToken) {
+    throw new Error('Unable to decode token');
+  }
 
+  const kid = decodedToken.header.kid;
+  const applePublicKey = await getApplePublicKey(kid);
+
+  // Now verify the token with the correct public key
+  const jwtClaims = jwt.verify(idToken, applePublicKey, { algorithms: ['RS256'] });
+
+  // Additional checks as before
+  if (jwtClaims.iss !== 'https://appleid.apple.com') {
+    throw new Error('id token not issued by correct OpenID provider - expected: https://appleid.apple.com | from: ' + jwtClaims.iss);
+  }
+  // More validation checks can be done here
   return jwtClaims;
 };
+
+// const verifyIdToken = async (idToken, clientID) => {
+//   const applePublicKey = await getApplePublicKey();
+//   console.log("Public");
+//   console.log(applePublicKey);
+//   console.log(idToken);
+//   const jwtClaims = jwt.verify(idToken, applePublicKey, { algorithms: 'RS256' });
+  
+//   if (jwtClaims.iss !== 'https://appleid.apple.com') throw new Error('id token not issued by correct OpenID provider - expected: ' + 'https://appleid.apple.com' + ' | from: ' + jwtClaims.iss);
+//   if (clientID !== undefined && jwtClaims.aud !== clientID) throw new Error('aud parameter does not include this client - is: ' + jwtClaims.aud + '| expected: ' + clientID);
+//   if (jwtClaims.exp < (Date.now() / 1000)) throw new Error('id token has expired');
+
+//   return jwtClaims;
+// };
 
 exports.appleCallback = async function(req, res) {
   try {
