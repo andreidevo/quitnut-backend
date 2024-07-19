@@ -173,21 +173,15 @@ exports.username_check = async function(req, res) {
 
 
   if (user !== null){
-    console.log("user not null");
-
     var valid = validateUsername(username);
 
     if (valid){
       var find = await User.findOne({ username: username });
-      console.log("here:");
-      console.log(find);
       if (find == null){
-        console.log("username not found");
         return res.status(200).json({
           message: "ok"
         });
       } else {
-        console.log("username found");
         return res.status(500).json({
           message: "already exists"
         });
@@ -201,43 +195,6 @@ exports.username_check = async function(req, res) {
     return res.status(500).json({
       message: "no token found"
     });
-  }
-
-  try {
-    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
-
-    // console.log("start search")
-    const existingUser = await User.findOne({ _id: decoded._id });
-    // console.log("end search")
-
-
-    if (!existingUser) {
-      return res.status(403).json({ message: 'Invalid JWT' });
-    }
-
-    const newAccessToken = jwt.sign({ _id: decoded._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '7d' });
-    // const newRefreshToken = jwt.sign({ _id: decoded._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
-
-    // await updateRefreshTokenInDatabase(decoded._id, newRefreshToken);
-
-    const expiresIn = 30 * 24 * 60 * 60 * 1000;
-    // const expiresIn = 5 * 1000;
-
-    const accessTokenExpiry = Date.now() + expiresIn;
-
-    const sub_status = existingUser.subscription.status
-    var premium = (sub_status === "paid") ? true : false;
-    
-    // console.log(newAccessToken);
-    // console.log(accessTokenExpiry);
-
-    return res.status(200).json({
-      accessToken: newAccessToken,
-      accessTokenExpiry: accessTokenExpiry,
-      // premium: premium
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
