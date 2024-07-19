@@ -250,9 +250,7 @@ const getApplePublicKey = async () => {
   url.pathname = '/auth/keys';
 
   const data = await request({ url: url.toString(), method: 'GET' });
-  console.log(data);
   const key = JSON.parse(data).keys[0];
-  console.log(key);
 
 
   const pubKey = new NodeRSA();
@@ -263,7 +261,8 @@ const getApplePublicKey = async () => {
 const verifyIdToken = async (idToken, clientID) => {
   const applePublicKey = await getApplePublicKey();
   console.log("Public");
-  console.log(applePublicKey)
+  console.log(applePublicKey);
+  console.log(idToken);
   const jwtClaims = jwt.verify(idToken, applePublicKey, { algorithms: 'RS256' });
   
   if (jwtClaims.iss !== 'https://appleid.apple.com') throw new Error('id token not issued by correct OpenID provider - expected: ' + 'https://appleid.apple.com' + ' | from: ' + jwtClaims.iss);
