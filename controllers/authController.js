@@ -206,3 +206,33 @@ exports.googleFunction = async function(req, res) {
       return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+exports.appleCallback = async function(req, res) {
+  try {
+    console.log(req.body);
+
+    const { code, id_token } = req.body;
+
+    console.log(id_token);
+
+
+    try {
+      const applePublicKey = await axios.get(`https://appleid.apple.com/auth/keys`);
+      const decoded = jwt.verify(id_token, applePublicKey.data, { algorithms: ['RS256'] });
+  
+      // Code to handle user authentication and retrieval using the decoded information
+      console.log(decoded);
+
+
+      // res.redirect('/');
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Error:', error.message);
+      return res.status(500).json({ success: false});
+    }
+
+  } catch (error) {
+      console.error("Error verifying Google token: ", error);
+      return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
