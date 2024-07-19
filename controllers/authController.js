@@ -10,6 +10,8 @@ const { google } = require('googleapis');
 const axios = require('axios');
 const appleSignin = require("apple-signin");
 const path = require("path");
+const NodeRSA = require('node-rsa');
+const request = require('request-promise-native');
 
 exports.text = async function(req, res) {}
 
