@@ -250,11 +250,9 @@ exports.appleCallback = async function(req, res) {
     if (!req.query.code) return res.sendStatus(500);
     console.log(req.query.code);
 
-    console.log(process.env.clientID);
-    console.log(process.env.NODE_ENV);
 
     const clientSecret = appleSignin.getClientSecret({
-      clientID: process.env.clientID, 
+      clientID: process.env.cliendID, 
       teamId: process.env.teamId,
       keyIdentifier: process.env.keyIdentifier, 
       privateKeyPath: "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8"
@@ -262,7 +260,7 @@ exports.appleCallback = async function(req, res) {
     console.log(clientSecret);
   
     const tokens = await appleSignin.getAuthorizationToken(req.query.code, {
-      clientID: process.env.clientI,
+      clientID: process.env.cliendID,
       clientSecret: clientSecret,
       redirectUri: "https://quitnut.app/api/callback/apple"
     });
