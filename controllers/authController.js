@@ -213,9 +213,9 @@ exports.googleFunction = async function(req, res) {
 
 function generateUsername() {
   const adjectives = ["fighter", "soldier", "warrior", "ranger", "legend"];
-  const number = Math.floor(Math.random() * 100);
+  const number = Math.floor(Math.random() * 100000);
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-  return `@${adjective}${number}`;
+  return `${adjective}${number}`;
 }
 
 async function findUniqueUsername() {
