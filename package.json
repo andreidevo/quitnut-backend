@@ -18,7 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.3",
     "next-connect": "^1.0.0",
-    "node-telegram-bot-api": "^0.66.0",
+    "node-telegram-bot-api": "^0.63.0",
     "passport": "^0.7.0",
     "passport-google-oauth": "^2.0.0",
     "rate-limit-redis": "^4.2.0",
