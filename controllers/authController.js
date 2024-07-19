@@ -179,7 +179,9 @@ exports.username_check = async function(req, res) {
 
     if (valid){
       var find = User.findOne({ username: username });
-      if (find === null){
+      console.log("here:");
+      console.log(find);
+      if (find == null){
         console.log("username not found");
         return res.status(200).json({
           message: "ok"
