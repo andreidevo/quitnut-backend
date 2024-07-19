@@ -154,6 +154,7 @@ const client = new OAuth2Client(
 );
 
 
+
 function validateUsername(username) {
   // Regular expression to check valid characters (letters, numbers, underscores)
   const isValid = /^[a-zA-Z0-9_]+$/.test(username);
@@ -161,8 +162,20 @@ function validateUsername(username) {
   // Check the length of the username
   const isLengthValid = username.length <= 30;
 
-  return isValid && isLengthValid;
+  // List of prohibited words
+  const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
+
+  // Function to check for bad words
+  const containsBadWords = (username) => {
+    return badWords.some(badWord => username.toLowerCase().includes(badWord));
+  };
+
+  // Check if username contains any bad words
+  const isContentValid = !containsBadWords(username);
+
+  return isValid && isLengthValid && isContentValid;
 }
+
 
 exports.username_check = async function(req, res) {
   // console.log(req.body);
