@@ -18,6 +18,6 @@ module.exports = function(app) {
   app.route('/api/auth/refresh').post(asyncHandler(authHandlers.refresh));
 
   app.route('/api/auth/google').post(signUpLimiter, asyncHandler(authHandlers.googleFunction));
-  app.route('/api/callback/apple').post(signUpLimiter, asyncHandler(authHandlers.appleCallback));
+  app.route('/api/callback/apple').get(signUpLimiter, asyncHandler(authHandlers.appleCallback));
 
 };

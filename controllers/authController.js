@@ -210,30 +210,60 @@ exports.googleFunction = async function(req, res) {
 
 exports.appleCallback = async function(req, res) {
   try {
-    console.log(req.body);
-
-    const { code, id_token } = req.body;
-
-    console.log(id_token);
 
 
-    try {
-      const applePublicKey = await axios.get(`https://appleid.apple.com/auth/keys`);
-      const decoded = jwt.verify(id_token, applePublicKey.data, { algorithms: ['RS256'] });
+    if (!req.query.code) return res.sendStatus(500);
+
+    // console.log(req.body);
+
+    // const { code, id_token } = req.body;
+
+    console.log(req.query.code);
+    
+    const clientSecret = appleSignin.getClientSecret({
+      clientID: "com.alphalab.quitx.service",
+      teamId: "U63UN3D8HG",
+      keyIdentifier: "8AM64B5P6U", 
+      privateKeyPath: path.join(__dirname, "../AuthKey_8AM64B5P6U.p8")
+    });
+    console.log(clientSecret);
   
-      // Code to handle user authentication and retrieval using the decoded information
-      console.log(decoded);
+    const tokens = await appleSignin.getAuthorizationToken(req.query.code, {
+      clientID: "com.alphalab.quitx.service",
+      clientSecret: clientSecret,
+      redirectUri: "https://quitnut.app/api/callback/apple"
+    });
+
+    console.log(tokens);
+
+  
+    if (!tokens.id_token) return res.sendStatus(500);
+
+    console.log(tokens.id_token);
+    
+    const data = await appleSignin.verifyIdToken(tokens.id_token);
+
+    console.log(data);
+  
+    res.json({id: data.sub, accessToken: tokens.access_token, refreshToken: tokens.refresh_token});
+
+    // try {
+    //   const applePublicKey = await axios.get(`https://appleid.apple.com/auth/keys`);
+    //   const decoded = jwt.verify(id_token, applePublicKey.data, { algorithms: ['RS256'] });
+  
+    //   // Code to handle user authentication and retrieval using the decoded information
+    //   console.log(decoded);
 
 
-      // res.redirect('/');
-      return res.status(200).json({ success: true });
-    } catch (error) {
-      console.error('Error:', error.message);
-      return res.status(500).json({ success: false});
-    }
+    //   // res.redirect('/');
+    //   return res.status(200).json({ success: true });
+    // } catch (error) {
+    //   console.error('Error:', error.message);
+    //   return res.status(500).json({ success: false});
+    // }
 
   } catch (error) {
-      console.error("Error verifying Google token: ", error);
+      console.error("Error verifying Apple token: ", error);
       return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
