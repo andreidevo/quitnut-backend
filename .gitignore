@@ -3,3 +3,4 @@
 .env.production
 node_modules/
 AuthKey_8AM64B5P6U.p8
+/authKey/AuthKey_8AM64B5P6U.p8

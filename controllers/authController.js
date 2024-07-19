@@ -220,12 +220,14 @@ exports.appleCallback = async function(req, res) {
     // const { code, id_token } = req.body;
 
     console.log(req.query.code);
+
+    console.log(__dirname);
     
     const clientSecret = appleSignin.getClientSecret({
       clientID: "com.alphalab.quitx.service",
       teamId: "U63UN3D8HG",
       keyIdentifier: "8AM64B5P6U", 
-      privateKeyPath: path.join(__dirname, "../AuthKey_8AM64B5P6U.p8")
+      privateKeyPath: path.join(__dirname, "../authKey/AuthKey_8AM64B5P6U.p8")
     });
     console.log(clientSecret);
   
