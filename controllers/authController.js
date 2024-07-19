@@ -225,7 +225,7 @@ exports.appleCallback = async function(req, res) {
     // console.log(path.join("", "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8"));
     
     const clientSecret = appleSignin.getClientSecret({
-      clientID: "com.alphalab.quitx.service",
+      clientID: "com.alphalab.quitx", 
       teamId: "U63UN3D8HG",
       keyIdentifier: "8AM64B5P6U", 
       privateKeyPath: "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8"
@@ -233,7 +233,7 @@ exports.appleCallback = async function(req, res) {
     console.log(clientSecret);
   
     const tokens = await appleSignin.getAuthorizationToken(req.query.code, {
-      clientID: "com.alphalab.quitx.service",
+      clientID: "com.alphalab.quitx",
       clientSecret: clientSecret,
       redirectUri: "https://quitnut.app/api/callback/apple"
     });
