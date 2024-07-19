@@ -328,6 +328,7 @@ async function findUniqueUsername() {
 
 
 const getApplePublicKey = async () => {
+  print("WHAT");
   const url = new URL('https://appleid.apple.com');
   url.pathname = '/auth/keys';
 
