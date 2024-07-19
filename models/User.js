@@ -1,34 +1,36 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-  bcrypt = require('bcrypt'),
-  Schema = mongoose.Schema;
+bcrypt = require('bcrypt'),
+Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-  email: { type: String, unique: true, lowercase: true, trim: true, required: true },
+
+  // BASICS
+  email: { type: String, lowercase: true, trim: true},
   hash_password: { type: String },
   created: { type: Date, default: Date.now },
-  authProvider: { type: String, required: true },
-  accountId: { type: String},
+  authProvider: { type: String, required: true }, // types: Google, Apple, email 
+  authId: { type: String, required: true}, // getting id from Apple/Google
   refreshToken: { type: String },
-  name: { type: String },
-  newsletter: { type: String, default: "null"},
+  username: { type: String, unique: true, required: true, lowercase: true}, // <---- UNIQUE 
+  usernameChanged: { type: Boolean, default: false },
   subscription: {
-    status: { type: String, default: "not paid"}, // e.g., "paid"
-    type: { type: String }, // e.g., "lifetime"
-    amount: { type: String }, // e.g., "95$"
-    date: { type: Date, default: Date.now }, // Subscription date
-    email: { type: String } // Email associated with the subscription, if different from user email
+    status: { type: String, default: "null"}, // null, sub, lifetime
+    history: { type: String, default: ""}, // just adding json here like: "lifetime: Date, sub: Date"
   },
-  credits: { type: Number, default: 0 },
-  unlocked_articles: [String],
-  unlocked_ideas: [String],
-  credits_history: [
-    {
-      date: { type: Date, default: Date.now }, 
-      credits: { type: Number, default: 0 } 
-    }
-  ]
+  imageUrl: { type: String },
+
+  // TEAMS
+  communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
+
+  // STREAK
+  lastReset: { type: String, default: ""},
+  achievements: { type: String, default: ""},
+
+  // CONTESTS
+  challenges: [{ type: Schema.Types.ObjectId, ref: 'Challenge' }],
+
 });
 
 UserSchema.methods.comparePassword = function(password) {

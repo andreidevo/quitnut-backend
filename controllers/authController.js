@@ -209,31 +209,57 @@ exports.googleFunction = async function(req, res) {
   }
 };
 
+function generateUsername() {
+  const adjectives = ["fighter", "soldier", "warrior", "ranger", "legend"];
+  const number = Math.floor(Math.random() * 100);
+  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+  return `@${adjective}${number}`;
+}
+
+async function findUniqueUsername() {
+  let username = generateUsername();
+  let userExists = true;
+  let attempts = 0;
+  
+  while (userExists && attempts < 150) { 
+    console.log("attempt:" + attempts);
+
+    let user = await User.findOne({ username: username });
+    if (!user) {
+      userExists = false; 
+    } else {
+      username = generateUsername(); 
+      attempts++;
+    }
+  }
+
+  if (attempts >= 50) {
+    throw new Error('Failed to generate a unique username after multiple attempts.');
+  }
+
+  console.log(username);
+
+  return username; // Return the unique username
+}
+
+
+
 exports.appleCallback = async function(req, res) {
   try {
 
-
     if (!req.query.code) return res.sendStatus(500);
-
-    // console.log(req.body);
-
-    // const { code, id_token } = req.body;
-
     console.log(req.query.code);
 
-    // console.log(__dirname);
-    // console.log(path.join("", "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8"));
-    
     const clientSecret = appleSignin.getClientSecret({
-      clientID: "com.alphalab.quitnut", 
-      teamId: "U63UN3D8HG",
-      keyIdentifier: "8AM64B5P6U", 
+      clientID: process.env.clientID, 
+      teamId: process.env.teamId,
+      keyIdentifier: process.env.keyIdentifier, 
       privateKeyPath: "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8"
     });
     console.log(clientSecret);
   
     const tokens = await appleSignin.getAuthorizationToken(req.query.code, {
-      clientID: "com.alphalab.quitnut",
+      clientID: process.env.clientI,
       clientSecret: clientSecret,
       redirectUri: "https://quitnut.app/api/callback/apple"
     });
@@ -242,29 +268,93 @@ exports.appleCallback = async function(req, res) {
 
   
     if (!tokens.id_token) return res.sendStatus(500);
-
     console.log(tokens.id_token);
     
     const data = await appleSignin.verifyIdToken(tokens.id_token);
+    
+    if (data["sub"] != null){
+      // email + email_verified
+      var sub = data["sub"];
+      
 
-    console.log(data);
+      const user = await User.findOne({ authProvider: sub });
+
+
+      
+      if (!user){
+        // create new account 
+        var newUserName = await findUniqueUsername();
+        
+        var newUser = new User({
+          authProvider: "apple",
+          email: (data["email"] != null) ? data["email"] : null,
+          authId: sub,
+          username: newUserName,
+        });
+
+        const savedUser = await newUser.save();
+
+        const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+
+
+        try {
+          await User.findByIdAndUpdate(user._id, { refreshToken: refreshToken });
+        } catch (error) {
+          console.error('Error updating refreshToken:', error);
+        }
+    
+        return res.status(200).json({
+          changed: false,
+          username: newUserName,
+          accessToken: accessToken,
+          refreshToken: refreshToken
+        });
+
+      } else {
+
+        const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        
+        if (user.usernameChanged){
+          return res.status(200).json({
+            changed: true,
+            username: user.username,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          });
+        } else {
+          return res.status(200).json({
+            changed: false,
+            username: user.username,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          });
+        }
+      }
+
+      
+      if (data["email"] != null){
+        // email = data["email"];
+      }
+    
+    }
+  
+
+    // 1. get sub (USER ID)
+    // 2. check in DB?
+    // 3. if exits -> get 
+    // 4. return tokens
+
+    // 3. if not exists -> create
+    // 4. return tokens
+
+
+
+
   
     res.json({id: data.sub, accessToken: tokens.access_token, refreshToken: tokens.refresh_token});
-
-    // try {
-    //   const applePublicKey = await axios.get(`https://appleid.apple.com/auth/keys`);
-    //   const decoded = jwt.verify(id_token, applePublicKey.data, { algorithms: ['RS256'] });
-  
-    //   // Code to handle user authentication and retrieval using the decoded information
-    //   console.log(decoded);
-
-
-    //   // res.redirect('/');
-    //   return res.status(200).json({ success: true });
-    // } catch (error) {
-    //   console.error('Error:', error.message);
-    //   return res.status(500).json({ success: false});
-    // }
+    
 
   } catch (error) {
       console.error("Error verifying Apple token: ", error);
