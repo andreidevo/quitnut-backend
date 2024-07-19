@@ -243,6 +243,33 @@ async function findUniqueUsername() {
 }
 
 
+const getApplePublicKey = async () => {
+  const url = new URL('https://appleid.apple.com');
+  url.pathname = '/auth/keys';
+
+  const data = await request({ url: url.toString(), method: 'GET' });
+  console.log(data);
+  const key = JSON.parse(data).keys[0];
+  console.log(key);
+
+
+  const pubKey = new NodeRSA();
+  pubKey.importKey({ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') }, 'components-public');
+  return pubKey.exportKey(['public']);
+};
+
+const verifyIdToken = async (idToken, clientID) => {
+  const applePublicKey = await getApplePublicKey();
+  console.log("Public");
+  console.log(applePublicKey)
+  const jwtClaims = jwt.verify(idToken, applePublicKey, { algorithms: 'RS256' });
+  
+  if (jwtClaims.iss !== 'https://appleid.apple.com') throw new Error('id token not issued by correct OpenID provider - expected: ' + 'https://appleid.apple.com' + ' | from: ' + jwtClaims.iss);
+  if (clientID !== undefined && jwtClaims.aud !== clientID) throw new Error('aud parameter does not include this client - is: ' + jwtClaims.aud + '| expected: ' + clientID);
+  if (jwtClaims.exp < (Date.now() / 1000)) throw new Error('id token has expired');
+
+  return jwtClaims;
+};
 
 exports.appleCallback = async function(req, res) {
   try {
@@ -271,7 +298,7 @@ exports.appleCallback = async function(req, res) {
     if (!tokens.id_token) return res.sendStatus(500);
     console.log(tokens.id_token);
     
-    const data = await appleSignin.verifyIdToken(tokens.id_token);
+    const data = await verifyIdToken(tokens.id_token);
     
     if (data["sub"] != null){
       // email + email_verified
