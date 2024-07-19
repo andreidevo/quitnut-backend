@@ -222,12 +222,13 @@ exports.appleCallback = async function(req, res) {
     console.log(req.query.code);
 
     console.log(__dirname);
+    console.log(path.join("/srv/quitnut-backend", "../authKey/AuthKey_8AM64B5P6U.p8"));
     
     const clientSecret = appleSignin.getClientSecret({
       clientID: "com.alphalab.quitx.service",
       teamId: "U63UN3D8HG",
       keyIdentifier: "8AM64B5P6U", 
-      privateKeyPath: path.join("/srv/quitnut-backend", "../authKey/AuthKey_8AM64B5P6U.p8")
+      privateKeyPath: path.join("/srv/quitnut-backend/", "authKey/AuthKey_8AM64B5P6U.p8")
     });
     console.log(clientSecret);
   
