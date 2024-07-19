@@ -153,17 +153,53 @@ const client = new OAuth2Client(
 );
 
 
+function validateUsername(username) {
+  // Regular expression to check valid characters (letters, numbers, underscores)
+  const isValid = /^[a-zA-Z0-9_]+$/.test(username);
+
+  // Check the length of the username
+  const isLengthValid = username.length <= 30;
+
+  return isValid && isLengthValid;
+}
+
 exports.username_check = async function(req, res) {
   // console.log(req.body);
   const { username } = req.body;
-  var tokenUser = req.user;
+  var user = req.user;
 
-  console.log(req.user);
+  // console.log(req.user);
   console.log(username);
 
-  return res.status(200).json({
-    message: "ok"
-  });
+
+  if (user !== null){
+    console.log("user not null");
+
+    var valid = validateUsername(username);
+
+    if (valid){
+      var find = User.findOne({ username: username });
+      if (find === null){
+        console.log("username not found");
+        return res.status(200).json({
+          message: "ok"
+        });
+      } else {
+        console.log("username found");
+        return res.status(500).json({
+          message: "already exists"
+        });
+      }
+    } else {
+      return res.status(500).json({
+        message: "not valid"
+      });
+    }
+  } else {
+    return res.status(500).json({
+      message: "no token found"
+    });
+  }
 
   try {
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
