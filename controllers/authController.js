@@ -8,7 +8,7 @@ const { body, validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
 const axios = require('axios');
-
+const appleSignin = require("apple-signin");
 
 exports.text = async function(req, res) {}
 
