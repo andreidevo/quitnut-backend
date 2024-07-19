@@ -250,6 +250,9 @@ exports.appleCallback = async function(req, res) {
     if (!req.query.code) return res.sendStatus(500);
     console.log(req.query.code);
 
+    console.log(process.env.clientID);
+    console.log(process.env.NODE_ENV);
+
     const clientSecret = appleSignin.getClientSecret({
       clientID: process.env.clientID, 
       teamId: process.env.teamId,
