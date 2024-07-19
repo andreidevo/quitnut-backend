@@ -153,6 +153,56 @@ const client = new OAuth2Client(
 );
 
 
+exports.username_check = async function(req, res) {
+  // console.log(req.body);
+  const { username } = req.body;
+  var tokenUser = req.user;
+
+  console.log(req.user);
+  console.log(username);
+
+  return res.status(200).json({
+    message: "ok"
+  });
+
+  try {
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
+
+    // console.log("start search")
+    const existingUser = await User.findOne({ _id: decoded._id });
+    // console.log("end search")
+
+
+    if (!existingUser) {
+      return res.status(403).json({ message: 'Invalid JWT' });
+    }
+
+    const newAccessToken = jwt.sign({ _id: decoded._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '7d' });
+    // const newRefreshToken = jwt.sign({ _id: decoded._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+
+    // await updateRefreshTokenInDatabase(decoded._id, newRefreshToken);
+
+    const expiresIn = 30 * 24 * 60 * 60 * 1000;
+    // const expiresIn = 5 * 1000;
+
+    const accessTokenExpiry = Date.now() + expiresIn;
+
+    const sub_status = existingUser.subscription.status
+    var premium = (sub_status === "paid") ? true : false;
+    
+    // console.log(newAccessToken);
+    // console.log(accessTokenExpiry);
+
+    return res.status(200).json({
+      accessToken: newAccessToken,
+      accessTokenExpiry: accessTokenExpiry,
+      // premium: premium
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 exports.googleFunction = async function(req, res) {
   try {
       const token = req.body.access_token;
@@ -215,7 +265,7 @@ function generateUsername() {
   const adjectives = ["fighter", "soldier", "warrior", "ranger", "legend"];
   const number = Math.floor(Math.random() * 100000);
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-  return `${adjective}${number}`;
+  return `${adjective}_${number}`;
 }
 
 async function findUniqueUsername() {
