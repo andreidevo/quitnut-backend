@@ -178,7 +178,7 @@ exports.username_check = async function(req, res) {
     var valid = validateUsername(username);
 
     if (valid){
-      var find = User.findOne({ username: username });
+      var find = await User.findOne({ username: username });
       console.log("here:");
       console.log(find);
       if (find == null){
