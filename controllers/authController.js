@@ -328,7 +328,7 @@ exports.appleCallback = async function(req, res) {
 
 
         try {
-          await User.findByIdAndUpdate(user._id, { refreshToken: refreshToken });
+          await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
         } catch (error) {
           console.error('Error updating refreshToken:', error);
         }
