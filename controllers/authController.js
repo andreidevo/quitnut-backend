@@ -198,6 +198,42 @@ exports.username_check = async function(req, res) {
   }
 };
 
+exports.set_username = async function(req, res) {
+  const { username } = req.body;
+  var user = req.user;
+
+  console.log(username);
+
+
+  if (user !== null){
+    var valid = validateUsername(username);
+
+    if (valid){
+      
+      try {
+        await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
+        return res.status(200).json({
+          message: "ok"
+        });
+      } catch (error) {
+        console.error('Error updating refreshToken:', error);
+        return res.status(500).json({
+          message: "already exists"
+        });
+      }
+     
+    } else {
+      return res.status(500).json({
+        message: "not valid username"
+      });
+    }
+  } else {
+    return res.status(500).json({
+      message: "no token found"
+    });
+  }
+};
+
 exports.googleFunction = async function(req, res) {
   try {
       const token = req.body.access_token;

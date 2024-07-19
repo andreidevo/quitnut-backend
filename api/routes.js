@@ -17,6 +17,7 @@ module.exports = function(app) {
   app.route('/api/auth/login').post(asyncHandler(authHandlers.signIn));
   app.route('/api/auth/refresh').post(verifyJWT, asyncHandler(authHandlers.refresh));
   app.route('/api/auth/username').post(verifyJWT, asyncHandler(authHandlers.username_check));
+  app.route('/api/auth/set_username').post(verifyJWT, asyncHandler(authHandlers.set_username));
 
   app.route('/api/auth/google').post(signUpLimiter, asyncHandler(authHandlers.googleFunction));
   app.route('/api/callback/apple').get(signUpLimiter, asyncHandler(authHandlers.appleCallback));
