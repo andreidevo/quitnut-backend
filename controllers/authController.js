@@ -211,7 +211,7 @@ exports.set_username = async function(req, res) {
     if (valid){
       
       try {
-        const result = await User.findByIdAndUpdate(user._id, { $set: { username: username } }, { new: true, runValidators: true });
+        const result = await User.findByIdAndUpdate(user._id, { $set: { username: username, usernameChanged: true } }, { new: true, runValidators: true });
         console.lot(result);
         return res.status(200).json({
           message: "ok"
@@ -424,8 +424,8 @@ exports.appleCallback = async function(req, res) {
 
       } else {
 
-        const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
         
         if (user.usernameChanged){
           return res.status(200).json({
