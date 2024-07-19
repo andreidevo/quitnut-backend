@@ -213,7 +213,7 @@ exports.set_username = async function(req, res) {
       
       try {
         const result = await User.findByIdAndUpdate(user._id, { $set: { username: username, usernameChanged: true } }, { new: true, runValidators: true });
-        console.lot(result);
+        console.log(result);
         return res.status(200).json({
           message: "ok"
         });
@@ -327,24 +327,6 @@ async function findUniqueUsername() {
   return username; // Return the unique username
 }
 
-
-// const getApplePublicKey = async () => {
-//   print("WHAT");
-//   const url = new URL('https://appleid.apple.com');
-//   url.pathname = '/auth/keys';
-
-//   const data = await request({ url: url.toString(), method: 'GET' });
-//   const key = JSON.parse(data).keys[0];
-
-//   print("KEYS");
-//   print(JSON.parse(data).keys);
-
-
-//   const pubKey = new NodeRSA();
-//   pubKey.importKey({ n: Buffer.from(key.n, 'base64'), e: Buffer.from(key.e, 'base64') }, 'components-public');
-//   return pubKey.exportKey(['public']);
-// };
-
 const getApplePublicKey = async (kid) => {
   const url = 'https://appleid.apple.com/auth/keys';  // Simplified URL setup
   const response = await request({ url: url, json: true });  // Using json: true to automatically parse JSON
@@ -378,20 +360,6 @@ const verifyIdToken = async (idToken) => {
   return jwtClaims;
 };
 
-// const verifyIdToken = async (idToken, clientID) => {
-//   const applePublicKey = await getApplePublicKey();
-//   console.log("Public");
-//   console.log(applePublicKey);
-//   console.log(idToken);
-//   const jwtClaims = jwt.verify(idToken, applePublicKey, { algorithms: 'RS256' });
-  
-//   if (jwtClaims.iss !== 'https://appleid.apple.com') throw new Error('id token not issued by correct OpenID provider - expected: ' + 'https://appleid.apple.com' + ' | from: ' + jwtClaims.iss);
-//   if (clientID !== undefined && jwtClaims.aud !== clientID) throw new Error('aud parameter does not include this client - is: ' + jwtClaims.aud + '| expected: ' + clientID);
-//   if (jwtClaims.exp < (Date.now() / 1000)) throw new Error('id token has expired');
-
-//   return jwtClaims;
-// };
-
 exports.appleCallback = async function(req, res) {
   try {
 
@@ -424,11 +392,8 @@ exports.appleCallback = async function(req, res) {
     if (data["sub"] != null){
       // email + email_verified
       var sub = data["sub"];
-      
 
       const user = await User.findOne({ authId: sub });
-
-
       
       if (!user){
         // create new account 
@@ -445,7 +410,6 @@ exports.appleCallback = async function(req, res) {
 
         const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
         const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
-
 
         try {
           await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
