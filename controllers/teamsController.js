@@ -4,10 +4,9 @@
 
 var mongoose = require('mongoose'),
 User = mongoose.model('User'),
+jwt = require('jsonwebtoken'),
+bcrypt = require('bcrypt'),
 Team = mongoose.model('Team');
-
-jwt = require('jsonwebtoken');
-bcrypt = require('bcrypt');
 
 
 function validateTeamname(username) {
