@@ -94,8 +94,6 @@ exports.create = async function(req, res) {
 
       var idT = await newTeam.save();
 
-      console.log(idT);
-
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
         { $push: { communities: idT._id } },
@@ -118,6 +116,40 @@ exports.create = async function(req, res) {
     });
   }
 };
+
+exports.getAllTeams = async function(req, res) {
+  const user = req.user; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated"
+    });
+  }
+
+  try {
+    const teams = await Team.aggregate([
+      { $match: { 'members': user._id } }, // Match teams where user is a member
+      { $addFields: { 'membersCount': { $size: '$members' } } }, // Add count of members
+      { $project: { // Define which fields to include
+        _id: 1, // Community _id
+        title: '$metadata.title',
+        priority: 1,
+        membersCount: 1
+      }}
+    ]);
+
+    return res.status(200).json({
+      message: "ok",
+      teams: teams
+    });
+  } catch (error) {
+    console.error('Error retrieving teams:', error);
+    return res.status(500).json({
+      message: "Failed to retrieve teams"
+    });
+  }
+};
+
 
 exports.generateName = async function(req, res) {
   var user = req.user;

@@ -31,6 +31,7 @@ module.exports = function(app) {
   app.route('/api/teams/publicname_check').post(verifyJWT, asyncHandler(communityHandlers.publicname_check));
   app.route('/api/teams/generate_name').get(verifyJWT, asyncHandler(communityHandlers.generateName));
   app.route('/api/teams/create').post(verifyJWT, asyncHandler(communityHandlers.create));
+  app.route('/api/teams/getMyTeams').get(verifyJWT, asyncHandler(communityHandlers.getAllTeams));
 
 
 };
