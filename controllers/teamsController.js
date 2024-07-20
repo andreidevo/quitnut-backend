@@ -92,7 +92,15 @@ exports.create = async function(req, res) {
         members: [user._id]
       });
 
-      await newTeam.save();
+      var idT = await newTeam.save();
+
+      console.log(idT);
+
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { $push: { communities: communityId } },
+        { new: true }
+      );
 
       return res.status(200).json({
         message: "ok"
