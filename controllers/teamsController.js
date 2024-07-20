@@ -72,15 +72,18 @@ exports.create = async function(req, res) {
   var user = req.user;
 
   if (user !== null){
+
+    var find = await User.findOne({ _id: user._id });
+
     var valid = validateTeamname(publicname);
 
-    if (valid){
+    if (valid && find){
       
       console.log("IDDD");
-      console.log(user.username);
+      console.log(find.username);
       
       let newTeam = new Team({
-        ownerID: user.username,
+        ownerID: find.username,
         publicname: (type == "public") ? publicname : generateTeamName(),
         typeTeam: type,
         metadata: {
