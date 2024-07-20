@@ -46,7 +46,7 @@ exports.send_report = async function(req, res) {
     feeling: "How do you feel after filling this form?"
   };
 
-  let messageText = '<b>NEW REPORT:</b>\n';
+  let messageText = '<b>🔥NEW REPORT:</b>\n';
   messageText +=  `<b>uuid: </b>${uuid}\n\n`;
 
   for (const key in reportData) {

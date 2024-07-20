@@ -214,6 +214,39 @@ exports.getPublicTeams = async function(req, res) {
   }
 };
 
+exports.getCommunityInfo = async function(req, res) {
+  const { id } = req.body;
+
+  const user = req.user; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata').exec();
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+
+    return res.status(200).json({
+      message: "ok",
+      info: community
+    });
+  } catch (error) {
+    console.error('Error retrieving teams:', error);
+    return res.status(500).json({
+      message: "Failed to retrieve teams",
+      info: {}
+    });
+  }
+};
+
+
 
 exports.generateName = async function(req, res) {
   var user = req.user;
