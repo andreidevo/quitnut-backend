@@ -98,7 +98,7 @@ exports.create = async function(req, res) {
 
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
-        { $push: { communities: communityId } },
+        { $push: { communities: idT._id } },
         { new: true }
       );
 
