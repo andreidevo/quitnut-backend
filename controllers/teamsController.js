@@ -79,9 +79,6 @@ exports.create = async function(req, res) {
 
     if (valid && find){
       
-      console.log("IDDD");
-      console.log(find.username);
-      
       let newTeam = new Team({
         ownerID: find.username,
         publicname: (type == "public") ? publicname : generateTeamName(),
@@ -92,6 +89,7 @@ exports.create = async function(req, res) {
           description: "",
           title: title,
         },
+        members: [user._id]
       });
 
       await newTeam.save();
