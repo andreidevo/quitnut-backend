@@ -34,9 +34,6 @@ exports.publicname_check = async function(req, res) {
   const { publicname } = req.body;
   var user = req.user;
 
-  console.log(date);
-
-
   if (user !== null){
     var valid = validateTeamname(publicname);
 
