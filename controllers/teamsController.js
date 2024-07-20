@@ -81,7 +81,7 @@ exports.create = async function(req, res) {
       
       let newTeam = new Team({
         ownerID: find.username,
-        publicname: (type == "public") ? publicname : generateTeamName(),
+        publicname: (type == "Public") ? publicname : generateTeamName(),
         typeTeam: type,
         metadata: {
           officialUrl: "",
