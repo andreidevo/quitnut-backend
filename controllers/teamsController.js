@@ -76,6 +76,9 @@ exports.create = async function(req, res) {
 
     if (valid){
       
+      print("IDDD");
+      console.log(user.username);
+      
       let newTeam = new Team({
         ownerID: user.username,
         publicname: (type == "public") ? publicname : generateTeamName(),
