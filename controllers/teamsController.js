@@ -127,9 +127,20 @@ exports.getAllTeams = async function(req, res) {
   }
 
   try {
+
+    const userId = mongoose.Types.ObjectId(user._id);
+
     const teams = await Team.aggregate([
-      { $match: { 'members': user._id } }, // Match teams where user is a member
-      { $addFields: { 'membersCount': { $size: '$members' } } }, // Add count of members
+      { $match: { 'members': userId } }, // Match teams where user is a member
+      {
+        $lookup: {
+          from: 'users', // Assuming 'users' is the collection name for User model
+          localField: 'members',
+          foreignField: '_id',
+          as: 'memberDetails'
+        }
+      },
+      { $addFields: { 'membersCount': { $size: '$memberDetails' } } }, // Add count of detailed members
       { $project: { // Define which fields to include
         _id: 1, // Community _id
         title: '$metadata.title',
