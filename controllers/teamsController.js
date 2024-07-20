@@ -122,7 +122,8 @@ exports.getAllTeams = async function(req, res) {
 
   if (!user) {
     return res.status(401).json({
-      message: "No token found or user is not authenticated"
+      message: "No token found or user is not authenticated",
+      teams: []
     });
   }
 
@@ -156,7 +157,59 @@ exports.getAllTeams = async function(req, res) {
   } catch (error) {
     console.error('Error retrieving teams:', error);
     return res.status(500).json({
-      message: "Failed to retrieve teams"
+      message: "Failed to retrieve teams",
+      taams: []
+    });
+  }
+};
+
+exports.getPublicTeams = async function(req, res) {
+  const user = req.user; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      teams: []
+    });
+  }
+
+  try {
+
+    const userId = new mongoose.Types.ObjectId(user._id);
+
+    const teams = await Team.aggregate([
+      { $match: { 
+        members: { $nin: [userId] }, 
+        typeTeam: 'Public', 
+        dontaccept: false 
+      }},
+      {
+        $lookup: {
+          from: 'users', // This should match the actual name of the collection in MongoDB
+          localField: 'members',
+          foreignField: '_id',
+          as: 'memberDetails'
+        }
+      },
+      { $addFields: { 'membersCount': { $size: '$memberDetails' } } },
+      // Project only necessary fields
+      { $project: { 
+        _id: 1,
+        publicname: 1,
+        priority: 1,
+        membersCount: 1,
+      }}
+    ]);
+
+    return res.status(200).json({
+      message: "ok",
+      teams: teams
+    });
+  } catch (error) {
+    console.error('Error retrieving teams:', error);
+    return res.status(500).json({
+      message: "Failed to retrieve teams",
+      taams: []
     });
   }
 };
