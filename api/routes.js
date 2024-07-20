@@ -7,6 +7,7 @@ const { verifyJWT } = require ("../middleware/authenticateToken.js")
 
 var authHandlers = require('../controllers/authController.js');
 var contentHandlers = require('../controllers/contentController.js');
+var communityHandlers = require('../controllers/teamsController.js');
 
 module.exports = function(app) {
   // ------- Auth
@@ -24,4 +25,12 @@ module.exports = function(app) {
   app.route('/api/auth/set_startdate').post(verifyJWT, asyncHandler(authHandlers.set_startDate));
 
   app.route('/api/urs').post(signUpLimiter, asyncHandler(contentHandlers.send_report));
+
+
+  // ------- Teams
+  app.route('/api/teams/publicname_check').post(verifyJWT, asyncHandler(communityHandlers.publicname_check));
+  app.route('/api/teams/generate_name').get(verifyJWT, asyncHandler(communityHandlers.generateName));
+  app.route('/api/teams/create').post(verifyJWT, asyncHandler(communityHandlers.create));
+
+
 };
