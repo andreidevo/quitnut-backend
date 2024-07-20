@@ -128,7 +128,7 @@ exports.getAllTeams = async function(req, res) {
 
   try {
 
-    const userId = mongoose.Types.ObjectId(user._id);
+    const userId = new mongoose.Types.ObjectId(user._id);
 
     const teams = await Team.aggregate([
       { $match: { 'members': userId } }, // Match teams where user is a member
