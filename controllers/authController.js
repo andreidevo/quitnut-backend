@@ -249,6 +249,73 @@ exports.set_username = async function(req, res) {
   }
 };
 
+exports.set_lastStreak = async function(req, res) {
+  const { date } = req.body;
+  var user = req.user;
+
+  console.log(date);
+
+
+  if (user !== null){
+    const lastStreakDate = new Date(date);
+
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { 'streak.lastReset': lastStreakDate }, 
+        { new: true } 
+      );
+
+      return res.status(200).json({
+        message: "ok"
+      });
+    } catch (e){
+      console.error('Error updating:', error);
+      return res.status(500);
+    }
+
+    
+  } else {
+    return res.status(500).json({
+      message: "no token found"
+    });
+  }
+};
+
+exports.set_startDate = async function(req, res) {
+  const { date } = req.body;
+  var user = req.user;
+
+  console.log(date);
+
+
+  if (user !== null){
+    const startDate = new Date(date);
+
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { 'streak.dateStart': startDate }, 
+        { new: true } 
+      );
+
+      return res.status(200).json({
+        message: "ok"
+      });
+    } catch (e){
+      console.error('Error updating:', error);
+      return res.status(500);
+    }
+
+    
+  } else {
+    return res.status(500).json({
+      message: "no token found"
+    });
+  }
+};
+
+
 exports.googleFunction = async function(req, res) {
   try {
       const token = req.body.access_token;

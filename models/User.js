@@ -25,7 +25,11 @@ var UserSchema = new Schema({
   communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
 
   // STREAK
-  lastReset: { type: String, default: ""},
+  streak: {
+    lastReset: { type: String, default: ""},
+    dateStart: { type: String, default: ""},
+  },
+
   achievements: { type: String, default: ""},
 
   // CONTESTS
