@@ -3,10 +3,12 @@
 
 
 var mongoose = require('mongoose'),
-jwt = require('jsonwebtoken'),
-bcrypt = require('bcrypt');
-User = mongoose.model('User');
+User = mongoose.model('User'),
 Team = mongoose.model('Team');
+
+jwt = require('jsonwebtoken');
+bcrypt = require('bcrypt');
+
 
 function validateTeamname(username) {
   // Regular expression to check valid characters (letters, numbers, underscores)
