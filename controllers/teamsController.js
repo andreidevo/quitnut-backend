@@ -226,8 +226,11 @@ exports.getCommunityInfo = async function(req, res) {
     });
   }
 
+  console.log("ok");
+
   try {
     const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata').exec();
+    console.log("found?");
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
