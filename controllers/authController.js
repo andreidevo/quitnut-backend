@@ -573,10 +573,10 @@ exports.googleRegistration = async function(req, res) {
     console.log(token);
 
 
-    const user = await verifyGoogle(token);
-    if (user) {
+    const data = await verifyGoogle(token);
+    if (data) {
 
-      if (user["sub"] != null){
+      if (data["sub"] != null){
         var sub = data["sub"];
 
         const user = await User.findOne({ authId: sub });
