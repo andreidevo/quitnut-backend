@@ -176,6 +176,11 @@ function validateUsername(username) {
   // Check if username contains any bad words
   const isContentValid = !containsBadWords(username);
 
+  console.log("Checl");
+  console.log(isValid);
+  console.log(isLengthValid);
+  console.log(isContentValid);
+
   return isValid && isLengthValid && isContentValid;
 }
 
@@ -225,6 +230,7 @@ exports.set_username = async function(req, res) {
 
   if (user !== null){
     var valid = validateUsername(username);
+    console.log(valid);
 
     if (valid){
       console.log("Valid");
