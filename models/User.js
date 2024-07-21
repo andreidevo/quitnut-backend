@@ -8,7 +8,9 @@ var UserSchema = new Schema({
 
   // BASICS
   email: { type: String, lowercase: true, trim: true},
+  email_verified: { type: Boolean, default: false },
   hash_password: { type: String },
+  name: { type: String },
   created: { type: Date, default: Date.now },
   authProvider: { type: String, required: true }, // types: Google, Apple, email 
   authId: { type: String, required: true}, // getting id from Apple/Google

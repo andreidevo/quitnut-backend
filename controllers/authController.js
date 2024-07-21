@@ -574,80 +574,82 @@ exports.googleRegistration = async function(req, res) {
 
 
     const user = await verifyGoogle(token);
-    console.log(user);
     if (user) {
-      console.log(user);
 
-      res.json({ status: 'success', user: user });
+      if (user["sub"] != null){
+        var sub = data["sub"];
+
+        const user = await User.findOne({ authId: sub });
+        
+        if (!user){
+          // create new account 
+          var newUserName = await findUniqueUsername();
+          
+          var newUser = new User({
+            authProvider: "google",
+            email: (data["email"] != null) ? data["email"] : null,
+            email_verified: (data["email_verified"] != null) ? data["email_verified"] : false,
+            authId: sub,
+            name: (data["name"] != null) ? data["name"] : null,
+            username: newUserName,
+          });
+
+          const savedUser = await newUser.save();
+
+          const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+          const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+
+          try {
+            await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
+          } catch (error) {
+            console.error('Error updating refreshToken:', error);
+          }
+      
+          return res.status(200).json({
+            changed: false,
+            username: newUserName,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          });
+
+        } else {
+
+          const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+          const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+          
+          if (user.usernameChanged){
+            return res.status(200).json({
+              changed: true,
+              username: user.username,
+              accessToken: accessToken,
+              refreshToken: refreshToken
+            });
+          } else {
+            return res.status(200).json({
+              changed: false,
+              username: user.username,
+              accessToken: accessToken,
+              refreshToken: refreshToken
+            });
+          }
+        }
+
+
+        return res.json({
+          id: data.sub, 
+          accessToken: tokens.access_token, 
+          refreshToken: tokens.refresh_token
+      });
+        
+      } else {
+        return res.status(500).json({ status: 'error', message: 'no id' });
+      }
+
+      return res.json({ status: 'success', user: user });
     } else {
-      res.status(401).json({ status: 'error', message: 'Unauthorized' });
+      return res.status(500).json({ status: 'error', message: 'Unauthorized' });
     }
 
-    // if (!tokens.id_token) return res.sendStatus(500);
-    // console.log(tokens.id_token);
-    
-    // const data = await verifyIdToken(tokens.id_token);
-    
-    // if (data["sub"] != null){
-    //   // email + email_verified
-    //   var sub = data["sub"];
-
-    //   const user = await User.findOne({ authId: sub });
-      
-    //   if (!user){
-    //     // create new account 
-    //     var newUserName = await findUniqueUsername();
-        
-    //     var newUser = new User({
-    //       authProvider: "google",
-    //       email: (data["email"] != null) ? data["email"] : null,
-    //       authId: sub,
-    //       username: newUserName,
-    //     });
-
-    //     const savedUser = await newUser.save();
-
-    //     const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-    //     const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
-
-    //     try {
-    //       await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
-    //     } catch (error) {
-    //       console.error('Error updating refreshToken:', error);
-    //     }
-    
-    //     return res.status(200).json({
-    //       changed: false,
-    //       username: newUserName,
-    //       accessToken: accessToken,
-    //       refreshToken: refreshToken
-    //     });
-
-    //   } else {
-
-    //     const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-    //     const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
-        
-    //     if (user.usernameChanged){
-    //       return res.status(200).json({
-    //         changed: true,
-    //         username: user.username,
-    //         accessToken: accessToken,
-    //         refreshToken: refreshToken
-    //       });
-    //     } else {
-    //       return res.status(200).json({
-    //         changed: false,
-    //         username: user.username,
-    //         accessToken: accessToken,
-    //         refreshToken: refreshToken
-    //       });
-    //     }
-    //   }
-
-    // }
-
-    // res.json({id: data.sub, accessToken: tokens.access_token, refreshToken: tokens.refresh_token});
     
 
   } catch (error) {
