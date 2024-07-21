@@ -122,7 +122,7 @@ exports.create = async function(req, res) {
 
       var idT = await newTeam.save();
 
-      const updateField = team.type === 'Public' ? 'publicTeams' : 'privateTeams';
+      const updateField = type === 'Public' ? 'publicTeams' : 'privateTeams';
 
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
