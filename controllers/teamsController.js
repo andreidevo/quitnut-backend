@@ -87,6 +87,9 @@ exports.create = async function(req, res) {
       if (type === "Public"){
         // check public count 
         var count = find.publicTeams;
+        console.log(count);
+        console.log(sub);
+        
         if (sub === "null"){
           if (count > 0){
             return res.status(500).json({
@@ -97,6 +100,10 @@ exports.create = async function(req, res) {
       } else {
         // check private count 
         var count = find.privateTeams;
+
+        console.log(count);
+        console.log(sub);
+
         if (sub === "null"){
           if (count > 1){
             return res.status(500).json({
