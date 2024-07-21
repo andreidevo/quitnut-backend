@@ -290,7 +290,7 @@ exports.removeTeam = async function(req, res) {
         { communities: id },
         {
           $pull: { communities: id },
-          $inc: { publicCount: -1 }  // Decrement publicCount
+          $inc: { publicTeams: -1 }  // Decrement publicCount
         }
       );
     } else if (team.type === 'Private') {
@@ -298,7 +298,7 @@ exports.removeTeam = async function(req, res) {
         { communities: id },
         {
           $pull: { communities: id },
-          $inc: { privateCount: -1 }  // Decrement privateCount
+          $inc: { privateTeams: -1 }  // Decrement privateCount
         }
       );
     }
