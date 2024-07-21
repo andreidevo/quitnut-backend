@@ -98,7 +98,7 @@ exports.create = async function(req, res) {
         // check private count 
         var count = find.privateTeams;
         if (sub === "null"){
-          if (count > 0){
+          if (count > 1){
             return res.status(500).json({
               message: "private limit"
             });
