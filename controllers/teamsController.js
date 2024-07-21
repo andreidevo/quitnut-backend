@@ -450,19 +450,29 @@ exports.exitTeam = async function(req, res) {
   }
 
   try {
-    // Remove user from team members
-    const teamUpdate = await Team.findByIdAndUpdate(
-      id,
-      { $pull: { members: user._id } },  // $pull removes the user from the members array
-      { new: true }  // Returns the updated document
-    );
-
-    if (!teamUpdate) {
+    // First, retrieve the team to check if the current user is the owner
+    const team = await Team.findById(id);
+    if (!team) {
       return res.status(404).json({
         message: "Team not found",
         info: {}
       });
     }
+
+    // Check if the current user is not the owner of the team
+    if (team.ownerID !== user.username) {
+      return res.status(403).json({
+        message: "Unauthorized: Only the team owner can exit the team",
+        info: {}
+      });
+    }
+
+    // Remove user from team members if they are the owner
+    const teamUpdate = await Team.findByIdAndUpdate(
+      id,
+      { $pull: { members: user._id } },  // $pull removes the user from the members array
+      { new: true }  // Returns the updated document
+    );
 
     // Remove team from user's communities
     const userUpdate = await User.findByIdAndUpdate(
@@ -491,7 +501,6 @@ exports.exitTeam = async function(req, res) {
     });
   }
 };
-
 
 
 
