@@ -566,7 +566,8 @@ async function verifyGoogle(idToken) {
 }
 
 exports.googleRegistration = async function(req, res) {
-
+  console.log("start");
+  
   try {
     const { token } = req.body;
     console.log(token);
