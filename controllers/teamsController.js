@@ -97,6 +97,12 @@ exports.create = async function(req, res) {
               message: "public limit"
             });
           }
+        } else {
+          if (count > 19){
+            return res.status(500).json({
+              message: "20 limit"
+            });
+          }
         }
       } else {
         // check private count 
@@ -111,6 +117,12 @@ exports.create = async function(req, res) {
 
             return res.status(500).json({
               message: "private limit"
+            });
+          }
+        } else {
+          if (count > 19){
+            return res.status(500).json({
+              message: "20 limit"
             });
           }
         }
