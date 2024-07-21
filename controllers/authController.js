@@ -569,7 +569,11 @@ exports.googleRegistration = async function(req, res) {
 
   try {
     const { token } = req.body;
+    console.log(token);
+
+
     const user = await verifyGoogle(token);
+    consoel.log(user);
     if (user) {
       console.log(user);
 
