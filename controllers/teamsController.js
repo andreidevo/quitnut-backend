@@ -182,7 +182,7 @@ exports.create = async function(req, res) {
 
 
 exports.editTeam = async function(req, res) {
-  const { id, type, publicname, title } = req.body;
+  const { id, title, description, publicname, url } = req.body;
   
   var user = req.user;
 
@@ -219,8 +219,8 @@ exports.editTeam = async function(req, res) {
       if (description && team.metadata.description !== description) {
         updates['metadata.description'] = description;
       }
-      if (officialUrl && team.metadata.officialUrl !== officialUrl) {
-        updates['metadata.officialUrl'] = officialUrl;
+      if (url && team.metadata.officialUrl !== url) {
+        updates['metadata.officialUrl'] = url;
       }
 
       // Perform the update if there are any changes
