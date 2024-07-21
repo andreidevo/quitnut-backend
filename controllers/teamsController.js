@@ -282,7 +282,7 @@ exports.removeTeam = async function(req, res) {
     }
 
     // Proceed to delete the team
-    await Team.findByIdAndRemove(id);
+    await Team.findByIdAndDelete(id);
 
     // Optional: Remove the team from all users' communities list
     await User.updateMany(
