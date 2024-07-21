@@ -326,10 +326,10 @@ exports.set_startDate = async function(req, res) {
 };
 
 exports.set_premium = async function(req, res) {
-  const { premium } = req.body;
+  const { ss } = req.body;
   var user = req.user;
 
-  console.log(premium);
+  console.log(ss);
 
 
   if (user !== null){
@@ -337,7 +337,7 @@ exports.set_premium = async function(req, res) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
-        { 'subscription.status': (premium) ? "paid" : "null" }, 
+        { 'subscription.status': (ss) ? "paid" : "null" }, 
         { new: true } 
       );
 
