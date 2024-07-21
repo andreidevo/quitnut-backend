@@ -28,6 +28,8 @@ var TeamSchema = new Schema({
     { type: Schema.Types.ObjectId, ref: 'Challenge', required: true },
   ],
 
+  reportCounts: { type: Number, default: 0}
+
 });
 
 
