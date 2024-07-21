@@ -567,14 +567,14 @@ async function verifyGoogle(idToken) {
 
 exports.googleRegistration = async function(req, res) {
   console.log("start");
-  
+
   try {
     const { token } = req.body;
     console.log(token);
 
 
     const user = await verifyGoogle(token);
-    consoel.log(user);
+    console.log(user);
     if (user) {
       console.log(user);
 
