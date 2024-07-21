@@ -220,13 +220,14 @@ exports.set_username = async function(req, res) {
   var user = req.user;
 
   console.log(username);
+  console.log(user);
 
 
   if (user !== null){
     var valid = validateUsername(username);
 
     if (valid){
-      
+      console.log("Valid");
       try {
         const result = await User.findByIdAndUpdate(user._id, { $set: { username: username, usernameChanged: true } }, { new: true, runValidators: true });
         console.log(result);
