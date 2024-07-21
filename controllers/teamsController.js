@@ -78,7 +78,8 @@ exports.create = async function(req, res) {
     var valid = validateTeamname(publicname);
 
     if (valid && find){
-      
+      console.log("TYPE");
+      console.log(type);
       let newTeam = new Team({
         ownerID: find.username,
         publicname: (type == "Public") ? publicname : generateTeamName(),

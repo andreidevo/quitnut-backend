@@ -8,7 +8,7 @@ var TeamSchema = new Schema({
 
   ownerID: { type: String, required: true},
   publicname: { type: String, unique: true, required: true, lowercase: true},
-  typeTeam: { type: String, lowercase: true, required: true}, // private / public
+  typeTeam: { type: String, required: true}, // private / public
   created: { type: Date, default: Date.now },
   priority: { type: Number},
   dontaccept: { type: Boolean, default: false },
