@@ -264,9 +264,11 @@ exports.joinToTeam = async function(req, res) {
   console.log("ok join");
 
   try {
+    const userId = new mongoose.Types.ObjectId(user._id);
+
     const teamUpdate = await Team.findByIdAndUpdate(
       id,
-      { $addToSet: { members: user._id } },  // $addToSet prevents duplicate entries
+      { $addToSet: { members: userId } },  // $addToSet prevents duplicate entries
       { new: true }  // Returns the updated document
     );
 
@@ -277,10 +279,11 @@ exports.joinToTeam = async function(req, res) {
       });
     }
 
-    
+    const teamId = new mongoose.Types.ObjectId(id);    
+
     const userUpdate = await User.findByIdAndUpdate(
       user._id,
-      { $addToSet: { communities: id } }, 
+      { $addToSet: { communities: teamId } }, 
       { new: true } 
     );
 
