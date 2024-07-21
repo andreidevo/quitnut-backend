@@ -248,6 +248,62 @@ exports.getCommunityInfo = async function(req, res) {
   }
 };
 
+exports.joinToTeam = async function(req, res) {
+  const { id } = req.body;
+
+  const user = req.user; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  console.log("ok join");
+
+  try {
+    const teamUpdate = await Team.findByIdAndUpdate(
+      id,
+      { $addToSet: { members: user._id } },  // $addToSet prevents duplicate entries
+      { new: true }  // Returns the updated document
+    );
+
+    if (!teamUpdate) {
+      return res.status(404).json({
+        message: "Team not found",
+        info: {}
+      });
+    }
+
+    
+    const userUpdate = await User.findByIdAndUpdate(
+      user._id,
+      { $addToSet: { communities: id } }, 
+      { new: true } 
+    );
+
+    if (!userUpdate) {
+      return res.status(404).json({
+        message: "User not found",
+        info: {}
+      });
+    }
+
+    return res.status(200).json({
+      message: "ok"
+    });
+
+  } catch (error) {
+    console.error('Error retrieving teams:', error);
+    return res.status(500).json({
+      message: "Failed to retrieve teams",
+      info: {}
+    });
+  }
+};
+
+
 
 
 exports.generateName = async function(req, res) {
