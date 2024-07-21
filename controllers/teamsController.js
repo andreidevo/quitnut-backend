@@ -262,6 +262,8 @@ exports.removeTeam = async function(req, res) {
   try {
     // First, retrieve the team to check if the current user is the owner
     const team = await Team.findById(id);
+    const uu = await User.findById(user._id);
+
     if (!team) {
       return res.status(404).json({
         message: "Team not found",
@@ -269,8 +271,10 @@ exports.removeTeam = async function(req, res) {
       });
     }
 
+    console.log(team.ownerID);
+
     // Check if the current user is the owner of the team
-    if (team.ownerID !== user.username) {
+    if (team.ownerID !== uu.username) {
       return res.status(403).json({
         message: "Unauthorized: Only the team owner can remove the team",
         info: {}
