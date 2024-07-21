@@ -25,7 +25,8 @@ var UserSchema = new Schema({
 
   // TEAMS
   communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
-
+  publicTeams: { type: Number, default: 0},
+  privateTeams: { type: Number, default: 0},
   // STREAK
   streak: {
     lastReset: { type: String, default: ""},

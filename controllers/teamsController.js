@@ -39,7 +39,7 @@ exports.publicname_check = async function(req, res) {
 
     if (valid){
       var find = await Team.findOne({ publicname: publicname });
-      if (find == null){
+      if (find === null){
         return res.status(200).json({
           message: "ok"
         });
@@ -80,9 +80,36 @@ exports.create = async function(req, res) {
     if (valid && find){
       console.log("TYPE");
       console.log(type);
+
+      var sub = find.subscription.status;
+      
+      // checking free premium limits
+      if (type === "Public"){
+        // check public count 
+        var count = find.publicTeams;
+        if (sub === "null"){
+          if (count > 1){
+            return res.status(500).json({
+              message: "public limit"
+            });
+          }
+        }
+      } else {
+        // check private count 
+        var count = find.privateTeams;
+        if (sub === "null"){
+          if (count > 1){
+            return res.status(500).json({
+              message: "private limit"
+            });
+          }
+        }
+      }
+
+
       let newTeam = new Team({
         ownerID: find.username,
-        publicname: (type == "Public") ? publicname : generateTeamName(),
+        publicname: (type === "Public") ? publicname : generateTeamName(),
         typeTeam: type,
         metadata: {
           officialUrl: "",
@@ -95,11 +122,24 @@ exports.create = async function(req, res) {
 
       var idT = await newTeam.save();
 
+      const updateField = team.type === 'Public' ? 'publicTeams' : 'privateTeams';
+
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
-        { $push: { communities: idT._id } },
+        { 
+          $push: { communities: idT._id },
+          $inc: { [updateField]: 1 }
+        },
+        
         { new: true }
       );
+
+      if (!updatedUser) {
+        return res.status(500).json({
+          message: "User not found",
+          info: {}
+        });
+      }
 
       return res.status(200).json({
         message: "ok"

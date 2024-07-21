@@ -199,7 +199,7 @@ exports.username_check = async function(req, res) {
 
     if (valid){
       var find = await User.findOne({ username: username });
-      if (find == null){
+      if (find === null){
         return res.status(200).json({
           message: "ok"
         });
@@ -375,7 +375,7 @@ exports.googleFunction = async function(req, res) {
 
       const payload = ticket.getPayload();
       
-      if (payload["email"] == email){
+      if (payload["email"] === email){
         var existingUser = await User.findOne({ email: email });
         
         if (!existingUser) {
