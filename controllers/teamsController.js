@@ -316,6 +316,56 @@ exports.removeTeam = async function(req, res) {
   }
 };
 
+exports.accept_change = async function(req, res) {
+  const { id } = req.body; // Assuming this is the Team ID
+
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+    // First, retrieve the team to check if the current user is the owner
+    const team = await Team.findById(id);
+    const uu = await User.findById(user._id);
+
+    if (!team) {
+      return res.status(404).json({
+        message: "Team not found",
+        info: {}
+      });
+    }
+
+    if (team.ownerID !== uu.username) {
+      return res.status(403).json({
+        message: "Unauthorized: Only the team owner can remove the team",
+        info: {}
+      });
+    }
+
+    const updatedTeam = await Team.findByIdAndUpdate(
+      id,
+      { $set: { dontaccept: !team.dontaccept } },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Successfully changed acceptance setting",
+      team: updatedTeam
+    });
+
+  } catch (error) {
+    console.error('Error removing team:', error);
+    return res.status(500).json({
+      message: "Failed to remove team",
+      info: error
+    });
+  }
+};
+
 exports.getAllTeams = async function(req, res) {
   const user = req.user; 
 

@@ -38,6 +38,7 @@ module.exports = function(app) {
   app.route('/api/teams/exit').post(verifyJWT, asyncHandler(communityHandlers.exitTeam));
   app.route('/api/teams/edit').post(verifyJWT, asyncHandler(communityHandlers.editTeam));
   app.route('/api/teams/remove').post(verifyJWT, asyncHandler(communityHandlers.removeTeam));
+  app.route('/api/teams/accept_change').post(verifyJWT, asyncHandler(communityHandlers.accept_change));
 
   
 };
