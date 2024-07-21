@@ -284,11 +284,24 @@ exports.removeTeam = async function(req, res) {
     // Proceed to delete the team
     await Team.findByIdAndDelete(id);
 
-    // Optional: Remove the team from all users' communities list
-    await User.updateMany(
-      { communities: id },
-      { $pull: { communities: id } }
-    );
+    // Remove the team from all users' communities list and update counters
+    if (team.type === 'Public') {
+      await User.updateMany(
+        { communities: id },
+        {
+          $pull: { communities: id },
+          $inc: { publicCount: -1 }  // Decrement publicCount
+        }
+      );
+    } else if (team.type === 'Private') {
+      await User.updateMany(
+        { communities: id },
+        {
+          $pull: { communities: id },
+          $inc: { privateCount: -1 }  // Decrement privateCount
+        }
+      );
+    }
 
     return res.status(200).json({
       message: "Successfully removed the team"
