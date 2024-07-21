@@ -192,10 +192,9 @@ exports.getPublicTeams = async function(req, res) {
         }
       },
       { $addFields: { 'membersCount': { $size: '$memberDetails' } } },
-      // Project only necessary fields
       { $project: { 
         _id: 1,
-        publicname: 1,
+        title: '$metadata.title',
         priority: 1,
         membersCount: 1,
       }}
