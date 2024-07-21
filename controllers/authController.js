@@ -325,6 +325,39 @@ exports.set_startDate = async function(req, res) {
   }
 };
 
+exports.set_premium = async function(req, res) {
+  const { premium } = req.body;
+  var user = req.user;
+
+  console.log(premium);
+
+
+  if (user !== null){
+
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { 'subscription.status': (premium) ? "paid" : "null" }, 
+        { new: true } 
+      );
+
+      return res.status(200).json({
+        message: "ok"
+      });
+    } catch (e){
+      console.error('Error updating:', error);
+      return res.status(500);
+    }
+
+    
+  } else {
+    return res.status(500).json({
+      message: "no token found"
+    });
+  }
+};
+
+
 
 exports.googleFunction = async function(req, res) {
   try {
