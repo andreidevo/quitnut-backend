@@ -180,6 +180,74 @@ exports.create = async function(req, res) {
   }
 };
 
+
+exports.editTeam = async function(req, res) {
+  const { id, type, publicname, title } = req.body;
+  
+  var user = req.user;
+
+  if (user !== null){
+
+    var find = await User.findOne({ _id: user._id });
+
+    // var valid = validateTeamname(publicname);
+
+    if (find){
+      const team = await Team.findById(id);
+
+      if (team.ownerID !== find.username){
+        return res.status(500).json({ message: "No permissions" });
+      }
+
+      if (!team) {
+        return res.status(500).json({ message: "Team not found" });
+      }
+
+      // If publicname is provided and different from the current one, validate it
+      if (publicname && team.publicname !== publicname && !validateTeamname(publicname)) {
+        return res.status(500).json({ message: "Invalid team name" });
+      }
+
+      // Prepare the update object based on provided values
+      const updates = {};
+      if (publicname && team.publicname !== publicname) {
+        updates.publicname = publicname;
+      }
+      if (title && team.metadata.title !== title) {
+        updates['metadata.title'] = title;
+      }
+      if (description && team.metadata.description !== description) {
+        updates['metadata.description'] = description;
+      }
+      if (officialUrl && team.metadata.officialUrl !== officialUrl) {
+        updates['metadata.officialUrl'] = officialUrl;
+      }
+
+      // Perform the update if there are any changes
+      if (Object.keys(updates).length > 0) {
+        const updatedTeam = await Team.findByIdAndUpdate(id, { $set: updates }, { new: true });
+        return res.status(200).json({
+          message: "Team updated successfully",
+          team: updatedTeam
+        });
+      } else {
+        return res.status(200).json({
+          message: "No changes detected, nothing updated"
+        });
+      }
+      
+    } else {
+      return res.status(500).json({
+        message: "no user found"
+      });
+    }
+  } else {
+    return res.status(500).json({
+      message: "no token found"
+    });
+  }
+};
+
 exports.getAllTeams = async function(req, res) {
   const user = req.user; 
 
