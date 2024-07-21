@@ -285,7 +285,7 @@ exports.removeTeam = async function(req, res) {
     await Team.findByIdAndDelete(id);
 
     // Remove the team from all users' communities list and update counters
-    if (team.type === 'Public') {
+    if (team.typeTeam === 'Public') {
       await User.updateMany(
         { communities: id },
         {
@@ -293,7 +293,7 @@ exports.removeTeam = async function(req, res) {
           $inc: { publicTeams: -1 }  // Decrement publicCount
         }
       );
-    } else if (team.type === 'Private') {
+    } else if (team.typeTeam === 'Private') {
       await User.updateMany(
         { communities: id },
         {
