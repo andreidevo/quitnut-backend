@@ -24,7 +24,6 @@ module.exports = function(app) {
   app.route('/api/auth/set_username').post(verifyJWT, asyncHandler(authHandlers.set_username));
   app.route('/api/auth/set_laststreak').post(verifyJWT, asyncHandler(authHandlers.set_lastStreak));
   app.route('/api/auth/set_startdate').post(verifyJWT, asyncHandler(authHandlers.set_startDate));
-
   app.route('/api/urs').post(signUpLimiter, asyncHandler(contentHandlers.send_report));
 
 
@@ -36,6 +35,7 @@ module.exports = function(app) {
   app.route('/api/teams/getPublicTeams').get(verifyJWT, asyncHandler(communityHandlers.getPublicTeams));
   app.route('/api/teams/getinfo').post(verifyJWT, asyncHandler(communityHandlers.getCommunityInfo));
   app.route('/api/teams/join').post(verifyJWT, asyncHandler(communityHandlers.joinToTeam));
+  app.route('/api/teams/exit').post(verifyJWT, asyncHandler(communityHandlers.exitTeam));
   app.route('/api/teams/edit').post(verifyJWT, asyncHandler(communityHandlers.editTeam));
 
   

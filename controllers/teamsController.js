@@ -438,6 +438,60 @@ exports.joinToTeam = async function(req, res) {
   }
 };
 
+exports.exitTeam = async function(req, res) {
+  const { id } = req.body; // Assuming this is the Team ID
+
+  const user = req.user; 
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+    // Remove user from team members
+    const teamUpdate = await Team.findByIdAndUpdate(
+      id,
+      { $pull: { members: user._id } },  // $pull removes the user from the members array
+      { new: true }  // Returns the updated document
+    );
+
+    if (!teamUpdate) {
+      return res.status(404).json({
+        message: "Team not found",
+        info: {}
+      });
+    }
+
+    // Remove team from user's communities
+    const userUpdate = await User.findByIdAndUpdate(
+      user._id,
+      { $pull: { communities: id } },  // $pull removes the team from the communities array
+      { new: true }
+    );
+
+    if (!userUpdate) {
+      return res.status(404).json({
+        message: "User not found",
+        info: {}
+      });
+    }
+
+    // Both updates were successful
+    return res.status(200).json({
+      message: "Successfully exited the team"
+    });
+
+  } catch (error) {
+    console.error('Error exiting team:', error);
+    return res.status(500).json({
+      message: "Failed to exit team",
+      info: {}
+    });
+  }
+};
+
 
 
 
