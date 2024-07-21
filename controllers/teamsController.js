@@ -209,7 +209,8 @@ exports.getAllTeams = async function(req, res) {
         _id: 1, // Community _id
         title: '$metadata.title',
         priority: 1,
-        membersCount: 1
+        membersCount: 1,
+        typeTeam: 1
       }}
     ]);
 
