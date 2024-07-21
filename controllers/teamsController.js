@@ -478,7 +478,7 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata').exec();
+    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept').exec();
     console.log("found?");
 
     if (!community) {
