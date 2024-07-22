@@ -882,11 +882,12 @@ exports.appleCallbackPost = async function(req, res) {
 };
 
 
-async function verifyGoogle(idToken) {
+async function verifyGoogle(idToken, platform) {
   console.log(googleClient)
+
   const ticket = await googleClient.verifyIdToken({
       idToken: idToken,
-      audience: process.env.GoogleID,  // Specify the CLIENT_ID of the app that accesses the backend
+      audience: (platform === "android") ? process.env.GoogleID : process.env.IosID, 
   });
   const payload = ticket.getPayload();
   const userid = payload['sub'];
@@ -897,11 +898,15 @@ exports.googleRegistration = async function(req, res) {
   console.log("start");
 
   try {
-    const { token } = req.body;
+    const { token, platform } = req.body;
     console.log(token);
 
+    if (platform == null){
+      platform = "android";
+    }
 
-    const data = await verifyGoogle(token);
+
+    const data = await verifyGoogle(token, platform);
     if (data) {
 
       if (data["sub"] != null){
