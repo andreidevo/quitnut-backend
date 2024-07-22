@@ -554,7 +554,7 @@ exports.getCommunityInfo = async function(req, res) {
       return res.status(404).json({ message: "Community not found" });
     }
     const userId = new mongoose.Types.ObjectId(user._id);
-    const isAdmin = community.ownerID._id === userId;
+    const isAdmin = community.ownerID === userId;
 
     return res.status(200).json({
       message: "ok",
