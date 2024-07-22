@@ -548,7 +548,7 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findById(id).select('publicname typeTeam dontaccept metadata dontaccept').exec();
+    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept').exec();
     console.log("found?");
 
     if (!community) {
@@ -560,6 +560,8 @@ exports.getCommunityInfo = async function(req, res) {
     console.log(community.ownerID);
 
     const isAdmin = community.ownerID === userId;
+
+    delete communityData.ownerID;
 
     return res.status(200).json({
       message: "ok",
