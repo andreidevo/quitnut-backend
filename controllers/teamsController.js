@@ -561,12 +561,13 @@ exports.getCommunityInfo = async function(req, res) {
 
     const isAdmin = community.ownerID === userId;
 
+    let communityData = community.toObject();
     delete communityData.ownerID;
 
     return res.status(200).json({
       message: "ok",
       info: {
-        ...community.toObject(),
+        ...communityData,
         isAdmin: isAdmin        
       }
     });
