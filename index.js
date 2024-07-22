@@ -37,6 +37,11 @@ function originIsAllowed(origin) {
   return true;
 }
 
+function detailedLogRequests(req, res, next) {
+  console.log(`${req.method} ${req.originalUrl} - Query: ${JSON.stringify(req.query)} - Body: ${JSON.stringify(req.body)} - IP: ${req.ip}`);
+  next();
+}
+
 app.use(cors({
   credentials: true,
   origin: (origin, callback) => {
@@ -58,6 +63,9 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(detailedLogRequests);
+
 var routes = require('./api/routes');
 routes(app);
 
