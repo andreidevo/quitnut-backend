@@ -27,13 +27,17 @@ var UserSchema = new Schema({
   communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
   publicTeams: { type: Number, default: 0},
   privateTeams: { type: Number, default: 0},
+  
   // STREAK
   streak: {
     lastReset: { type: String, default: ""},
     dateStart: { type: String, default: ""},
   },
 
-  rank: { type: Number, default: 0},
+  reportCounts: [{
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    reason: { type: String, required: true }
+  }],
 
   achievements: { type: String, default: ""},
 
