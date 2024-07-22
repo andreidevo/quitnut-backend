@@ -389,6 +389,17 @@ exports.report_team = async function(req, res) {
     }
 
     const userId = new mongoose.Types.ObjectId(user._id);
+
+
+    // Check if the user has already reported this team
+    const alreadyReported = team.reportCounts.some(report => report.userId.equals(userId));
+
+    if (alreadyReported) {
+      return res.status(500).json({
+          message: "User has already reported this team",
+          info: {}
+      });
+    }
     
     team.reportCounts.push({
       userId: userId,
