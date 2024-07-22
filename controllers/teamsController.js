@@ -625,6 +625,9 @@ exports.exitTeam = async function(req, res) {
     });
   }
 
+    console.log("USER OK");
+
+
   try {
     // First, retrieve the team to check if the current user is the owner
     const team = await Team.findById(id);
@@ -635,6 +638,8 @@ exports.exitTeam = async function(req, res) {
       });
     }
 
+    console.log("NOT OWNER");
+
     // Check if the current user is not the owner of the team
     if (team.ownerID !== user.username) {
       return res.status(403).json({
@@ -642,6 +647,9 @@ exports.exitTeam = async function(req, res) {
         info: {}
       });
     }
+
+    console.log("teamUpdate");
+
 
     // Remove user from team members if they are the owner
     const teamUpdate = await Team.findByIdAndUpdate(
