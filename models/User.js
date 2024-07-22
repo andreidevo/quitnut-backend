@@ -33,6 +33,8 @@ var UserSchema = new Schema({
     dateStart: { type: String, default: ""},
   },
 
+  rank: { type: Number, default: 0},
+
   achievements: { type: String, default: ""},
 
   // CONTESTS

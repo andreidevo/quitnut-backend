@@ -4,6 +4,11 @@ var mongoose = require('mongoose'),
 bcrypt = require('bcrypt'),
 Schema = mongoose.Schema;
 
+const teamMemberSchema = new Schema({
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  rank: { type: Number, required: true }
+});
+
 var TeamSchema = new Schema({
 
   ownerID: { type: String, required: true},
@@ -20,9 +25,7 @@ var TeamSchema = new Schema({
     title: { type: String},
   },
 
-  members: [
-    { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  ],
+  members: [teamMemberSchema],
 
   challenges: [
     { type: Schema.Types.ObjectId, ref: 'Challenge', required: true },

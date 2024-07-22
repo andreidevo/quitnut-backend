@@ -131,7 +131,7 @@ exports.create = async function(req, res) {
 
       let newTeam = new Team({
         ownerID: find.username,
-        publicname: (type === "Public") ? publicname : generateTeamName(),
+        publicname: (type === "Public") ? publicname : generateTeamName(),  // Determine public name based on type
         typeTeam: type,
         metadata: {
           officialUrl: "",
@@ -139,8 +139,8 @@ exports.create = async function(req, res) {
           description: "",
           title: title,
         },
-        members: [user._id]
-      });
+        members: [{ user: user._id, rank: 1 }] // DONE
+    });
 
       var idT = await newTeam.save();
 
@@ -436,23 +436,33 @@ exports.getAllTeams = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
 
     const teams = await Team.aggregate([
-      { $match: { 'members': userId } }, // Match teams where user is a member
+      {
+        $match: {
+          'members.user': userId // DONE
+        }
+      },
       {
         $lookup: {
-          from: 'users', // Assuming 'users' is the collection name for User model
-          localField: 'members',
+          from: 'users', 
+          localField: 'members.user',
           foreignField: '_id',
           as: 'memberDetails'
         }
       },
-      { $addFields: { 'membersCount': { $size: '$memberDetails' } } }, // Add count of detailed members
-      { $project: { // Define which fields to include
-        _id: 1, // Community _id
-        title: '$metadata.title',
-        priority: 1,
-        membersCount: 1,
-        typeTeam: 1
-      }}
+      { 
+        $addFields: { 
+          'membersCount': { $size: '$memberDetails' } // Add count of detailed members
+        } 
+      },
+      { 
+        $project: { // Define which fields to include
+          _id: 1, // Team _id
+          title: '$metadata.title',
+          priority: 1,
+          membersCount: 1,
+          typeTeam: 1
+        }
+      }
     ]);
 
     return res.status(200).json({
@@ -484,14 +494,14 @@ exports.getPublicTeams = async function(req, res) {
 
     const teams = await Team.aggregate([
       { $match: { 
-        members: { $nin: [userId] }, 
+        "members.user": { $ne: userId }, // DONE
         typeTeam: 'Public', 
         dontaccept: false 
       }},
       {
         $lookup: {
           from: 'users', // This should match the actual name of the collection in MongoDB
-          localField: 'members',
+          localField: 'members.user',
           foreignField: '_id',
           as: 'memberDetails'
         }
@@ -556,6 +566,44 @@ exports.getCommunityInfo = async function(req, res) {
   }
 };
 
+async function reRankTeamMembers(teamId) {
+  console.log("RERANK");
+
+  try {
+    // Fetch team with all members' details
+    const team = await Team.findById(teamId).populate('members.user');
+
+    if (!team) {
+        console.log("Team not found");
+        return;
+    }
+
+    // Calculate the streak for each member and create a map of userId to streak
+    const now = new Date();
+    const memberStreaks = team.members.map(member => ({
+        userId: member.user._id,
+        streak: (now - new Date(member.user.streak.lastReset)) / (1000 * 60) // Minutes since last reset
+    }));
+
+    // Sort by streak in descending order
+    memberStreaks.sort((a, b) => b.streak - a.streak);
+
+    // Update ranks based on sorted order
+    for (let i = 0; i < memberStreaks.length; i++) {
+        const memberIndex = team.members.findIndex(member => member.user._id.equals(memberStreaks[i].userId));
+        if (memberIndex !== -1) {
+            team.members[memberIndex].rank = i + 1; // Update rank
+        }
+    }
+
+    // Save the updated team
+    await team.save();
+    console.log("Team members re-ranked successfully.");
+  } catch (error) {
+      console.error('Error re-ranking team members:', error);
+  }
+}
+
 exports.joinToTeam = async function(req, res) {
   const { id } = req.body;
 
@@ -575,8 +623,8 @@ exports.joinToTeam = async function(req, res) {
 
     const teamUpdate = await Team.findByIdAndUpdate(
       id,
-      { $addToSet: { members: userId } },  // $addToSet prevents duplicate entries
-      { new: true }  // Returns the updated document
+      { $addToSet: { members: { user: userId, rank: 10000 } } }, // DONE
+      { new: true }
     );
 
     if (!teamUpdate) {
@@ -600,6 +648,8 @@ exports.joinToTeam = async function(req, res) {
         info: {}
       });
     }
+
+    await reRankTeamMembers(teamId);
 
     return res.status(200).json({
       message: "ok"
@@ -651,10 +701,9 @@ exports.exitTeam = async function(req, res) {
     console.log("teamUpdate");
 
 
-    // Remove user from team members if they are the owner
     const teamUpdate = await Team.findByIdAndUpdate(
       id,
-      { $pull: { members: user._id } },  // $pull removes the user from the members array
+      { $pull: { members: { user: user._id } } }, // DONE
       { new: true }  // Returns the updated document
     );
 
@@ -671,6 +720,8 @@ exports.exitTeam = async function(req, res) {
         info: {}
       });
     }
+
+    await reRankTeamMembers(id);
 
     // Both updates were successful
     return res.status(200).json({

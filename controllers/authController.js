@@ -3,7 +3,9 @@
 var mongoose = require('mongoose'),
 jwt = require('jsonwebtoken'),
 bcrypt = require('bcrypt'),
-User = mongoose.model('User');
+User = mongoose.model('User'),
+Team = mongoose.model('Team');
+
 const dotenv = require('dotenv');
 const { body, validationResult } = require('express-validator');
 const { OAuth2Client } = require('google-auth-library');
@@ -260,6 +262,45 @@ exports.set_username = async function(req, res) {
   }
 };
 
+async function reRankTeamMembers(teamId) {
+  console.log("RERANK");
+
+  try {
+    // Fetch team with all members' details
+    const team = await Team.findById(teamId).populate('members.user');
+
+    if (!team) {
+        console.log("Team not found");
+        return;
+    }
+
+    // Calculate the streak for each member and create a map of userId to streak
+    const now = new Date();
+    const memberStreaks = team.members.map(member => ({
+        userId: member.user._id,
+        streak: (now - new Date(member.user.streak.lastReset)) / (1000 * 60) // Minutes since last reset
+    }));
+
+    // Sort by streak in descending order
+    memberStreaks.sort((a, b) => b.streak - a.streak);
+
+    // Update ranks based on sorted order
+    for (let i = 0; i < memberStreaks.length; i++) {
+        const memberIndex = team.members.findIndex(member => member.user._id.equals(memberStreaks[i].userId));
+        if (memberIndex !== -1) {
+            team.members[memberIndex].rank = i + 1; // Update rank
+        }
+    }
+
+    // Save the updated team
+    await team.save();
+    console.log("Team members re-ranked successfully.");
+  } catch (error) {
+      console.error('Error re-ranking team members:', error);
+  }
+}
+
+
 exports.set_lastStreak = async function(req, res) {
   const { date } = req.body;
   var user = req.user;
@@ -276,6 +317,12 @@ exports.set_lastStreak = async function(req, res) {
         { 'streak.lastReset': lastStreakDate }, 
         { new: true } 
       );
+
+      if (updatedUser){
+        for (const teamId of updatedUser.communities) {
+            await reRankTeamMembers(teamId);
+        }
+      }
 
       return res.status(200).json({
         message: "ok"
