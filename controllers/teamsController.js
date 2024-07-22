@@ -554,7 +554,7 @@ exports.getCommunityInfo = async function(req, res) {
       return res.status(404).json({ message: "Community not found" });
     }
 
-    const isAdmin = community.ownerID === user._id;
+    const isAdmin = community.ownerID._id === user._id;
 
     return res.status(200).json({
       message: "ok",
