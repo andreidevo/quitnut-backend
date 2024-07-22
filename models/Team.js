@@ -28,7 +28,10 @@ var TeamSchema = new Schema({
     { type: Schema.Types.ObjectId, ref: 'Challenge', required: true },
   ],
 
-  reportCounts: { type: Number, default: 0}
+  reportCounts: [{
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    reason: { type: String, required: true }
+  }]
 
 });
 

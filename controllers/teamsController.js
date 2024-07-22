@@ -366,6 +366,50 @@ exports.accept_change = async function(req, res) {
   }
 };
 
+exports.report_team = async function(req, res) {
+  const { id } = req.body; // Assuming this is the Team ID
+
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+    // First, retrieve the team to check if the current user is the owner
+    const team = await Team.findById(id);
+
+    if (!team) {
+      return res.status(404).json({
+        message: "Team not found",
+        info: {}
+      });
+    }
+
+    const userId = new mongoose.Types.ObjectId(user._id);
+    
+    team.reportCounts.push({
+      userId: userId,
+      reason: "Generic reason"
+    });
+
+    return res.status(200).json({
+      message: "Successfully changed acceptance setting",
+      team: updatedTeam
+    });
+
+  } catch (error) {
+    console.error('Error removing team:', error);
+    return res.status(500).json({
+      message: "Failed to remove team",
+      info: error
+    });
+  }
+};
+
+
 exports.getAllTeams = async function(req, res) {
   const user = req.user; 
 
