@@ -128,9 +128,11 @@ exports.create = async function(req, res) {
         }
       }
 
+      const userId = new mongoose.Types.ObjectId(find._id);
+
 
       let newTeam = new Team({
-        ownerID: find._id,
+        ownerID: userId,
         publicname: (type === "Public") ? publicname : generateTeamName(),  // Determine public name based on type
         typeTeam: type,
         metadata: {
