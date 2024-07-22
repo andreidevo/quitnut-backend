@@ -546,7 +546,6 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
-    const userFound =  await User.findById(user._id);
     const community = await Team.findById(id).select('publicname typeTeam dontaccept metadata dontaccept').exec();
     console.log("found?");
 
@@ -554,6 +553,10 @@ exports.getCommunityInfo = async function(req, res) {
       return res.status(404).json({ message: "Community not found" });
     }
     const userId = new mongoose.Types.ObjectId(user._id);
+
+    console.log(userId);
+    console.log(community.ownerID);
+
     const isAdmin = community.ownerID === userId;
 
     return res.status(200).json({
