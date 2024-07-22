@@ -9,6 +9,9 @@ const teamMemberSchema = new Schema({
   rank: { type: Number, required: true }
 });
 
+
+teamMemberSchema.index({ rank: 1 });
+
 var TeamSchema = new Schema({
 
   ownerID: { type: String, required: true},

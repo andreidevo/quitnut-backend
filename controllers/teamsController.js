@@ -737,6 +737,58 @@ exports.exitTeam = async function(req, res) {
   }
 };
 
+exports.getMembers = async function(req, res) {
+  const { id, page = 1, pageSize = 50 } = req.body; // Team ID and pagination options
+
+  if (!req.user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+    });
+  }
+
+  try {
+  
+    const team = await Team.findById(id).populate({
+      path: 'members.user',
+      select: 'username streak.lastReset'
+    });
+
+    if (!team) {
+      return res.status(404).json({
+        message: "Team not found",
+      });
+    }
+
+    // Sorting the members array by rank and slicing for pagination
+    const sortedMembers = team.members
+      .sort((a, b) => a.rank - b.rank)  // Ensure sorting uses the index if possible
+      .slice((page - 1) * pageSize, page * pageSize);
+
+    // Map sorted members to include required data
+    const now = new Date();
+    const result = sortedMembers.map(member => ({
+      username: member.user.username,
+      differenceInMinutes: (now - new Date(member.user.streak.lastReset)) / (1000 * 60), // Convert difference to minutes
+      rank: member.rank
+    }));
+
+    // Return paginated sorted members
+    return res.status(200).json({
+      message: "Members retrieved successfully",
+      members: result,
+      currentPage: page,
+      totalPages: Math.ceil(team.members.length / pageSize)
+    });
+
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    return res.status(500).json({
+      message: "Failed to retrieve team members",
+      info: error
+    });
+  }
+};
+
 
 
 exports.generateName = async function(req, res) {
