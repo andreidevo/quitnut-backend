@@ -586,6 +586,108 @@ exports.appleCallbackGet = async function(req, res) {
   }
 };
 
+exports.appleCallbackGetAndroid = async function(req, res) {
+
+  const { token, code, clientType } = req.query;
+
+  console.log(token);
+  console.log(code);
+  console.log(clientType);
+
+  try {
+
+    if (!code) return res.sendStatus(500);
+
+    const clientSecret = appleSignin.getClientSecret({
+      clientID: process.env.cliendIDAndroid, 
+      teamId: process.env.teamId,
+      keyIdentifier: process.env.keyIdentifier, 
+      privateKeyPath: "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8"
+    });
+    console.log(clientSecret);
+  
+    const tokens = await appleSignin.getAuthorizationToken(code, {
+      clientID: process.env.cliendIDAndroid,
+      clientSecret: clientSecret,
+      redirectUri: "https://quitnut.app/api/callback/apple"
+    });
+
+    console.log(tokens);
+
+  
+    if (!tokens.id_token) return res.sendStatus(500);
+    console.log(tokens.id_token);
+    
+    const data = await verifyIdToken(tokens.id_token);
+    
+    if (data["sub"] != null){
+      // email + email_verified
+      var sub = data["sub"];
+
+      const user = await User.findOne({ authId: sub });
+      
+      if (!user){
+        // create new account 
+        var newUserName = await findUniqueUsername();
+        
+        var newUser = new User({
+          authProvider: "apple",
+          email: (data["email"] != null) ? data["email"] : null,
+          authId: sub,
+          username: newUserName,
+        });
+
+        const savedUser = await newUser.save();
+
+        const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+
+        try {
+          await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
+        } catch (error) {
+          console.error('Error updating refreshToken:', error);
+        }
+    
+        return res.status(200).json({
+          changed: false,
+          username: newUserName,
+          accessToken: accessToken,
+          refreshToken: refreshToken
+        });
+
+      } else {
+
+        const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        
+        if (user.usernameChanged){
+          return res.status(200).json({
+            changed: true,
+            username: user.username,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          });
+        } else {
+          return res.status(200).json({
+            changed: false,
+            username: user.username,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          });
+        }
+      }
+
+    }
+
+    return res.json({id: data.sub, accessToken: tokens.access_token, refreshToken: tokens.refresh_token});
+    
+
+  } catch (error) {
+      console.error("Error verifying Apple token: ", error);
+      return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 exports.appleCallbackPost = async function(req, res) {
 
   const code = req.body.code
