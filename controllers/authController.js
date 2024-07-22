@@ -591,6 +591,13 @@ exports.appleCallbackPost = async function(req, res) {
   const code = req.body.code
   const id_token = req.body.id_token
 
+  const queryString = querystring.stringify(req.body);
+
+  const deepLink = `intent://callback?${queryString}#Intent;package=com.stopporn.quitaddiction;scheme=signinwithapple;end`;
+
+  return res.redirect(deepLink);
+
+
   console.log(code);
   console.log(id_token);
 
