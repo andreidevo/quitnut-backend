@@ -496,14 +496,14 @@ exports.appleCallbackGet = async function(req, res) {
     if (useBundleId === null){
       useBundleId = "true";
     }
-    
+
     if (!code) return res.sendStatus(500);
 
     const clientSecret = appleSignin.getClientSecret({
       clientID: (useBundleId === "false") ? process.env.cliendIDAndroid : process.env.cliendID, 
       teamId: process.env.teamId,
-      keyIdentifier: (useBundleId === "false") ? process.env.keyIdentifierAndroid : process.env.keyIdentifier, 
-      privateKeyPath: (useBundleId === "false") ? "/srv/quitnut-backend/authKey/AuthKey_72P7L5Q627.p8" : "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8",
+      keyIdentifier: (useBundleId === "false") ? process.env.keyIdentifier : process.env.keyIdentifier, 
+      privateKeyPath: (useBundleId === "false") ? "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8" : "/srv/quitnut-backend/authKey/AuthKey_8AM64B5P6U.p8",
       
     });
     console.log(clientSecret);
