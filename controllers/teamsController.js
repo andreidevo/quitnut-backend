@@ -641,9 +641,9 @@ exports.exitTeam = async function(req, res) {
     console.log("NOT OWNER");
 
     // Check if the current user is not the owner of the team
-    if (team.ownerID !== user.username) {
+    if (team.ownerID === user.username) {
       return res.status(403).json({
-        message: "Unauthorized: Only the team owner can exit the team",
+        message: "Unauthorized: Owner can't exit the team",
         info: {}
       });
     }
