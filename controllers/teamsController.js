@@ -759,10 +759,14 @@ exports.getMembers = async function(req, res) {
       });
     }
 
+    console.log(team);
+
     // Sorting the members array by rank and slicing for pagination
     const sortedMembers = team.members
       .sort((a, b) => a.rank - b.rank)  // Ensure sorting uses the index if possible
       .slice((page - 1) * pageSize, page * pageSize);
+
+    console.log(sortedMembers);
 
     // Map sorted members to include required data
     const now = new Date();
@@ -771,6 +775,8 @@ exports.getMembers = async function(req, res) {
       differenceInMinutes: (now - new Date(member.user.streak.lastReset)) / (1000 * 60), // Convert difference to minutes
       rank: member.rank
     }));
+
+    console.log(result);
 
     // Return paginated sorted members
     return res.status(200).json({
