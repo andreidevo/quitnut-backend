@@ -559,7 +559,7 @@ exports.getCommunityInfo = async function(req, res) {
     console.log(userId);
     console.log(community.ownerID);
 
-    const isAdmin = community.ownerID === userId;
+    const isAdmin = community.ownerID.equals(userId);
 
     let communityData = community.toObject();
     delete communityData.ownerID;
