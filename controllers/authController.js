@@ -305,6 +305,7 @@ exports.set_lastStreak = async function(req, res) {
   const { date } = req.body;
   var user = req.user;
 
+  console.log("NEW STREAK SET");
   console.log(date);
 
 
