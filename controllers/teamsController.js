@@ -450,6 +450,9 @@ exports.getPublicTeams = async function(req, res) {
       }}
     ]);
 
+    console.log(teams);
+
+
     return res.status(200).json({
       message: "ok",
       teams: teams
