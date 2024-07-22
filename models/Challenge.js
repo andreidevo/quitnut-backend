@@ -6,7 +6,7 @@ Schema = mongoose.Schema;
 
 var ChallengeSchema = new Schema({
 
-  ownerID: { type: String, required: true},
+  ownerID: { type: Schema.Types.ObjectId, ref: 'User' },
   created: { type: Date, default: Date.now },
   priority: { type: Number, lowercase: true},
 

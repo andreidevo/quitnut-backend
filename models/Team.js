@@ -14,7 +14,7 @@ teamMemberSchema.index({ rank: 1 });
 
 var TeamSchema = new Schema({
 
-  ownerID: { type: String, required: true},
+  ownerID: { type: Schema.Types.ObjectId, ref: 'User' },
   publicname: { type: String, unique: true, required: true, lowercase: true},
   typeTeam: { type: String, required: true}, // private / public
   created: { type: Date, default: Date.now },

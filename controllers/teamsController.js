@@ -130,7 +130,7 @@ exports.create = async function(req, res) {
 
 
       let newTeam = new Team({
-        ownerID: find.username,
+        ownerID: find._id,
         publicname: (type === "Public") ? publicname : generateTeamName(),  // Determine public name based on type
         typeTeam: type,
         metadata: {
@@ -195,7 +195,7 @@ exports.editTeam = async function(req, res) {
     if (find){
       const team = await Team.findById(id);
 
-      if (team.ownerID !== find.username){
+      if (team.ownerID !== find._id){
         return res.status(500).json({ message: "No permissions" });
       }
 
@@ -274,7 +274,7 @@ exports.removeTeam = async function(req, res) {
     console.log(team.ownerID);
 
     // Check if the current user is the owner of the team
-    if (team.ownerID !== uu.username) {
+    if (team.ownerID !== uu._id) {
       return res.status(403).json({
         message: "Unauthorized: Only the team owner can remove the team",
         info: {}
@@ -339,7 +339,7 @@ exports.accept_change = async function(req, res) {
       });
     }
 
-    if (team.ownerID !== uu.username) {
+    if (team.ownerID !== uu._id) {
       return res.status(403).json({
         message: "Unauthorized: Only the team owner can remove the team",
         info: {}
@@ -546,16 +546,22 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept').exec();
+    const userFound =  await User.findById(user._id);
+    const community = await Team.findById(id).select('publicname typeTeam dontaccept metadata dontaccept').exec();
     console.log("found?");
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
 
+    const isAdmin = community.ownerID === user._id;
+
     return res.status(200).json({
       message: "ok",
-      info: community
+      info: {
+        ...community.toObject(),
+        isAdmin: isAdmin        
+      }
     });
   } catch (error) {
     console.error('Error retrieving teams:', error);
@@ -691,7 +697,7 @@ exports.exitTeam = async function(req, res) {
     console.log("NOT OWNER");
 
     // Check if the current user is not the owner of the team
-    if (team.ownerID === user.username) {
+    if (team.ownerID === user._id) {
       return res.status(403).json({
         message: "Unauthorized: Owner can't exit the team",
         info: {}
