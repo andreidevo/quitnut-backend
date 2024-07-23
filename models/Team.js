@@ -9,6 +9,11 @@ const teamMemberSchema = new Schema({
   rank: { type: Number, required: true }
 });
 
+const statusThresholdSchema = new Schema({
+  statusName: { type: String, required: true },  // e.g., "Golden", "Diamond"
+  minStreakDays: { type: Number, required: true },  // Minimum streak days to achieve the status
+  maxRecipients: { type: Number, required: true }  // Maximum number of users who can hold this status
+});
 
 teamMemberSchema.index({ rank: 1 });
 
@@ -30,6 +35,17 @@ var TeamSchema = new Schema({
 
   members: [teamMemberSchema],
 
+  statuses: {
+    type: [statusThresholdSchema],
+    default: [
+      { statusName: 'Bronze', minStreakDays: 1, maxRecipients: -1 },
+      { statusName: 'Silver', minStreakDays: 3, maxRecipients: -1 },
+      { statusName: 'Golden', minStreakDays: 7, maxRecipients: 20 },
+      { statusName: 'Diamond', minStreakDays: 14, maxRecipients: 10 },
+      { statusName: 'Gem', minStreakDays: 30, maxRecipients: 5 }
+    ]
+  },
+
   challenges: [
     { type: Schema.Types.ObjectId, ref: 'Challenge', required: true },
   ],
@@ -37,7 +53,9 @@ var TeamSchema = new Schema({
   reportCounts: [{
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
     reason: { type: String, required: true }
-  }]
+  }],
+
+
 
 });
 
