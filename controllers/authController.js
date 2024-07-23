@@ -171,6 +171,7 @@ function validateUsername(username) {
 
   let valid = containsFilteredWords(username);
 
+  console.log("Rejex");
   console.log(valid);
 
   // List of prohibited words
