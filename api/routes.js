@@ -34,7 +34,7 @@ module.exports = function(app) {
   app.route('/api/teams/generate_name').get(verifyJWT, asyncHandler(communityHandlers.generateName));
   app.route('/api/teams/create').post(verifyJWT, asyncHandler(communityHandlers.create));
   app.route('/api/teams/getMyTeams').get(verifyJWT, asyncHandler(communityHandlers.getAllTeams));
-  app.route('/api/teams/getPublicTeams').get(verifyJWT, asyncHandler(communityHandlers.getPublicTeams));
+  app.route('/api/teams/getPublicTeams').post(verifyJWT, asyncHandler(communityHandlers.getPublicTeams));
   app.route('/api/teams/getinfo').post(verifyJWT, asyncHandler(communityHandlers.getCommunityInfo));
   app.route('/api/teams/join').post(verifyJWT, asyncHandler(communityHandlers.joinToTeam));
   app.route('/api/teams/exit').post(verifyJWT, asyncHandler(communityHandlers.exitTeam));
