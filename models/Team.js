@@ -42,7 +42,7 @@ var TeamSchema = new Schema({
       { statusName: 'Silver', minStreakDays: 3, maxRecipients: 30 },
       { statusName: 'Golden', minStreakDays: 7, maxRecipients: 20 },
       { statusName: 'Diamond', minStreakDays: 14, maxRecipients: 10 },
-      { statusName: 'Gem', minStreakDays: 30, maxRecipients: 2 }
+      { statusName: 'Legend', minStreakDays: 30, maxRecipients: 2 }
     ]
   },
 
