@@ -760,6 +760,8 @@ exports.changeStatuses = async function(req, res) {
 
   console.log(req.body);
   console.log(req.params);
+  console.log(req.params.teamId);
+  console.log(teamId);
   
   const user = req.user; 
   if (!user) {
