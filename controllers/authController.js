@@ -169,21 +169,20 @@ function validateUsername(username) {
   // Check the length of the username
   const isLengthValid = username.length <= 30;
 
-  let valid = containsFilteredWords(username);
-
-  console.log("Rejex");
-  console.log(valid);
-
   // List of prohibited words
-  const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
+  // const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
 
-  // Function to check for bad words
-  const containsBadWords = (username) => {
-    return badWords.some(badWord => username.toLowerCase().includes(badWord));
-  };
+  // // Function to check for bad words
+  // const containsBadWords = (username) => {
+  //   return badWords.some(badWord => username.toLowerCase().includes(badWord));
+  // };
 
   // Check if username contains any bad words
-  const isContentValid = !containsBadWords(username);
+  // const isContentValid = !containsBadWords(username);
+  const isContentValid = !containsFilteredWords(username);
+
+  console.log("is valid??");
+  console.log(isContentValid);
 
   console.log("Checl");
   console.log(isValid);
