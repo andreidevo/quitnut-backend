@@ -17,7 +17,7 @@ const NodeRSA = require('node-rsa');
 const request = require('request-promise-native');
 const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
-const containsFilteredWords = require('../rejexBadwords');
+const containsFilteredWords = require('../utils/censorship/rejexBadwords');
 
 const googleClient = new OAuth2Client(process.env.GoogleID);
 
