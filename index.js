@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
 console.log('API server started on: ' + port);
 console.log(process.env.NODE_ENV);
 
-const isMultiThreading = true; // При false - будет работать в однопоточном режиме. При true - в многопоточном
+const isMultiThreading = false; // При false - будет работать в однопоточном режиме. При true - в многопоточном
 
 start(isMultiThreading, () => {
   app.listen(port, async () => {

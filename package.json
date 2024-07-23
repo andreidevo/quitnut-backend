@@ -24,6 +24,7 @@
     "passport-google-oauth": "^2.0.0",
     "querystring": "^0.2.1",
     "rate-limit-redis": "^4.2.0",
-    "stripe": "^14.23.0"
+    "stripe": "^14.23.0",
+    "zod": "^3.23.8"
   }
 }
