@@ -793,11 +793,6 @@ exports.changeStatuses = async function(req, res) {
 
   console.log("USER OK");
 
-  if (!updates || !Array.isArray(updates)) {
-    return res.status(400).json({ message: "Invalid input format. Expected an array." });
-  }
-
-
   try {
     const team = await Team.findById(teamId);
 
