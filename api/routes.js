@@ -43,7 +43,7 @@ module.exports = function(app) {
   app.route('/api/teams/accept_change').post(verifyJWT, asyncHandler(communityHandlers.accept_change));
   app.route('/api/teams/report_team').post(verifyJWT, asyncHandler(communityHandlers.report_team));
   app.route('/api/teams/getMembers').post(verifyJWT, asyncHandler(communityHandlers.getMembers));
-
+  app.route('/api/teams/setStatuses').post(verifyJWT, asyncHandler(communityHandlers.changeStatuses));
 
   
   

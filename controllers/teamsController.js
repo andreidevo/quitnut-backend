@@ -197,7 +197,9 @@ exports.editTeam = async function(req, res) {
     if (find){
       const team = await Team.findById(id);
 
-      if (team.ownerID !== find._id){
+      const userId = new mongoose.Types.ObjectId(find._id);
+
+      if (!team.ownerID.equals(userId)){
         return res.status(500).json({ message: "No permissions" });
       }
 
@@ -273,10 +275,10 @@ exports.removeTeam = async function(req, res) {
       });
     }
 
-    console.log(team.ownerID);
+    const userId = new mongoose.Types.ObjectId(uu._id);
 
     // Check if the current user is the owner of the team
-    if (team.ownerID !== uu._id) {
+    if (!team.ownerID.equals(userId)) {
       return res.status(403).json({
         message: "Unauthorized: Only the team owner can remove the team",
         info: {}
@@ -341,7 +343,9 @@ exports.accept_change = async function(req, res) {
       });
     }
 
-    if (team.ownerID !== uu._id) {
+    const userId = new mongoose.Types.ObjectId(uu._id);
+
+    if (!team.ownerID.equals(userId)) {
       return res.status(403).json({
         message: "Unauthorized: Only the team owner can remove the team",
         info: {}
@@ -555,10 +559,6 @@ exports.getCommunityInfo = async function(req, res) {
       return res.status(404).json({ message: "Community not found" });
     }
     const userId = new mongoose.Types.ObjectId(user._id);
-
-    console.log(userId);
-    console.log(community.ownerID);
-
     const isAdmin = community.ownerID.equals(userId);
 
     let communityData = community.toObject();
@@ -678,6 +678,8 @@ exports.joinToTeam = async function(req, res) {
   }
 };
 
+
+
 exports.exitTeam = async function(req, res) {
   const { id } = req.body; // Assuming this is the Team ID
 
@@ -703,9 +705,10 @@ exports.exitTeam = async function(req, res) {
     }
 
     console.log("NOT OWNER");
+    const userId = new mongoose.Types.ObjectId(user._id);
 
     // Check if the current user is not the owner of the team
-    if (team.ownerID === user._id) {
+    if (!team.ownerID.equals(userId)) {
       return res.status(403).json({
         message: "Unauthorized: Owner can't exit the team",
         info: {}
@@ -749,6 +752,70 @@ exports.exitTeam = async function(req, res) {
       info: {}
     });
   }
+};
+
+exports.changeStatuses = async function(req, res) {
+  const { teamId } = req.params;
+  const { updates } = req.body; 
+  
+  const user = req.user; 
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  console.log("USER OK");
+
+  if (!updates || !Array.isArray(updates)) {
+    return res.status(400).json({ message: "Invalid input format. Expected an array." });
+  }
+
+
+  try {
+    const team = await Team.findById(teamId);
+
+    if (!team) {
+        return res.status(404).json({ message: "Team not found" });
+    }
+
+    const userId = new mongoose.Types.ObjectId(user._id);
+
+    if (!team.ownerID.equals(userId)) {
+      return res.status(403).json({
+        message: "Unauthorized: Owner can't exit the team",
+        info: {}
+      });
+    }
+
+
+    // Update each status based on the input
+    updates.forEach(update => {
+        const { Type, streakDays, maxPeople } = update;
+        const statusIndex = team.statuses.findIndex(status => status.statusName === Type);
+        if (statusIndex !== -1) {
+            team.statuses[statusIndex].minStreakDays = streakDays;
+            team.statuses[statusIndex].maxRecipients = maxPeople;
+        }
+    });
+
+    // Save the updated team
+    await team.save();
+
+    return res.status(200).json({
+        message: "Status thresholds updated successfully",
+        statuses: team.statuses
+    });
+
+  } catch (error) {
+      console.error('Error updating statuses:', error);
+      return res.status(500).json({
+          message: "Failed to update statuses",
+          info: error
+      });
+  }
+
 };
 
 exports.getMembers = async function(req, res) {
