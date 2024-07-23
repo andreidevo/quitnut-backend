@@ -64,11 +64,15 @@ exports.send_report = async function(req, res) {
         const hours = Math.floor((reportData[key] % (24 * 3600)) / 3600);
         const minutes = Math.floor((reportData[key] % 3600) / 60);
 
-        const resultString = `${months}M ${days}D ${hours}H ${minutes}M`;
+        let resultString = `${months}M ${days}D ${hours}H ${minutes}M`;
+
+        if (hours === 0 && minutes === 0 && days === 0 && months === 0){
+          resultString = `${reportData[key]} Seconds`;
+        }
 
         messageText += `⌛️ Previous streak: ${resultString}\n\n`;
 
-        messageText +=  `<b>uuid: </b>${uuid}\n\n`;
+        messageText +=  `<b>🪪 uuid: </b>${uuid}\n\n`;
 
       } else if (key === "language"){
         messageText += `<b>User's Language: </b>${reportData[key]}\n\n`;
