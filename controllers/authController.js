@@ -406,8 +406,6 @@ exports.set_premium = async function(req, res) {
   }
 };
 
-
-
 exports.googleFunction = async function(req, res) {
   try {
       const token = req.body.access_token;

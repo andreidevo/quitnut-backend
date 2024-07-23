@@ -490,6 +490,10 @@ exports.getPublicTeams = async function(req, res) {
   
   const { page = 1, pageSize = 10 } = req.body;
 
+  console.log("request");
+  // console.log(page);
+  console.log(req.body);
+
   if (!user) {
     return res.status(401).json({
       message: "No token found or user is not authenticated",
@@ -515,7 +519,7 @@ exports.getPublicTeams = async function(req, res) {
         }
       },
       { $addFields: { 'membersCount': { $size: '$memberDetails' } } },
-      { $sort: { 'membersCount': -1 } }, 
+      { $sort: { 'membersCount': -1, '_id': 1  } }, 
       { $skip: (page - 1) * pageSize },  
       { $limit: pageSize },             
       { $project: { 
@@ -718,7 +722,7 @@ exports.exitTeam = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
 
     // Check if the current user is not the owner of the team
-    if (!team.ownerID.equals(userId)) {
+    if (team.ownerID.equals(userId)) {
       return res.status(403).json({
         message: "Unauthorized: Owner can't exit the team",
         info: {}
