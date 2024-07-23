@@ -34,6 +34,7 @@ var TeamSchema = new Schema({
   },
 
   members: [teamMemberSchema],
+  membersCount: { type: Number,  default: 0},
 
   statuses: {
     type: [statusThresholdSchema],
@@ -59,6 +60,7 @@ var TeamSchema = new Schema({
 
 });
 
+TeamSchema.index({ membersCount: 1 });
 
 const Team = mongoose.model('Team', TeamSchema, "teams");
 

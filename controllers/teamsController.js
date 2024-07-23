@@ -141,7 +141,8 @@ exports.create = async function(req, res) {
           description: "",
           title: title,
         },
-        members: [{ user: user._id, rank: 1 }] // DONE
+        members: [{ user: user._id, rank: 1 }], // DONE,
+        membersCount: 1
     });
 
       var idT = await newTeam.save();
@@ -485,7 +486,9 @@ exports.getAllTeams = async function(req, res) {
 };
 
 exports.getPublicTeams = async function(req, res) {
-  const user = req.user; 
+  const user = req.user;
+  
+  const { page = 1, pageSize = 10 } = req.body;
 
   if (!user) {
     return res.status(401).json({
@@ -495,24 +498,26 @@ exports.getPublicTeams = async function(req, res) {
   }
 
   try {
-
     const userId = new mongoose.Types.ObjectId(user._id);
 
     const teams = await Team.aggregate([
       { $match: { 
-        "members.user": { $ne: userId }, // DONE
+        "members.user": { $ne: userId },
         typeTeam: 'Public', 
         dontaccept: false 
       }},
       {
         $lookup: {
-          from: 'users', // This should match the actual name of the collection in MongoDB
+          from: 'users', // Assuming 'users' is the collection name for User model
           localField: 'members.user',
           foreignField: '_id',
           as: 'memberDetails'
         }
       },
       { $addFields: { 'membersCount': { $size: '$memberDetails' } } },
+      { $sort: { 'membersCount': -1 } }, 
+      { $skip: (page - 1) * pageSize },  
+      { $limit: pageSize },             
       { $project: { 
         _id: 1,
         title: '$metadata.title',
@@ -521,18 +526,17 @@ exports.getPublicTeams = async function(req, res) {
       }}
     ]);
 
-    console.log(teams);
-
-
     return res.status(200).json({
       message: "ok",
-      teams: teams
+      teams: teams,
+      currentPage: page,
+      pageSize: pageSize
     });
   } catch (error) {
     console.error('Error retrieving teams:', error);
     return res.status(500).json({
       message: "Failed to retrieve teams",
-      taams: []
+      teams: []
     });
   }
 };
@@ -648,6 +652,12 @@ exports.joinToTeam = async function(req, res) {
       });
     }
 
+    const updatedTeam = await Team.findByIdAndUpdate(
+      id,
+      { $set: { membersCount: teamUpdate.members.length + 1 } },
+      { new: true }
+    );
+
     const teamId = new mongoose.Types.ObjectId(id);    
 
     const userUpdate = await User.findByIdAndUpdate(
@@ -722,6 +732,12 @@ exports.exitTeam = async function(req, res) {
       id,
       { $pull: { members: { user: user._id } } }, // DONE
       { new: true }  // Returns the updated document
+    );
+
+    const updatedTeam = await Team.findByIdAndUpdate(
+      id,
+      { $set: { membersCount: teamUpdate.members.length - 1 } },
+      { new: true }
     );
 
     // Remove team from user's communities
