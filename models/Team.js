@@ -38,11 +38,11 @@ var TeamSchema = new Schema({
   statuses: {
     type: [statusThresholdSchema],
     default: [
-      { statusName: 'Bronze', minStreakDays: 1, maxRecipients: -1 },
-      { statusName: 'Silver', minStreakDays: 3, maxRecipients: -1 },
+      { statusName: 'Bronze', minStreakDays: 1, maxRecipients: 50 },
+      { statusName: 'Silver', minStreakDays: 3, maxRecipients: 30 },
       { statusName: 'Golden', minStreakDays: 7, maxRecipients: 20 },
       { statusName: 'Diamond', minStreakDays: 14, maxRecipients: 10 },
-      { statusName: 'Gem', minStreakDays: 30, maxRecipients: 5 }
+      { statusName: 'Gem', minStreakDays: 30, maxRecipients: 2 }
     ]
   },
 
