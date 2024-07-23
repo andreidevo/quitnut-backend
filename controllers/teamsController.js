@@ -491,7 +491,8 @@ exports.getPublicTeams = async function(req, res) {
   const { page = 1, pageSize = 10 } = req.body;
 
   console.log("request");
-  console.log(page);
+  // console.log(page);
+  console.log(req.body);
 
   if (!user) {
     return res.status(401).json({
