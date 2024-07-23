@@ -50,10 +50,10 @@ exports.send_report = async function(req, res) {
 
   for (const key in reportData) {
     if (reportData.hasOwnProperty(key) && keyMap[key]) {
-      if (key == "time"){
+      if (key === "time"){
         messageText += `<b>🕐 Time: </b>${reportData[key]}\n`;
 
-      } else if (key == "streak"){
+      } else if (key === "streak"){
 
         const averageMonthSeconds = 28 * 24 * 3600;
         const months = Math.floor(totalSeconds / averageMonthSeconds);
@@ -67,11 +67,11 @@ exports.send_report = async function(req, res) {
 
         messageText +=  `<b>uuid: </b>${uuid}\n\n`;
 
-      } else if (key == "language"){
+      } else if (key === "language"){
         messageText += `<b>User's Language: </b>${reportData[key]}\n`;
-      } else if (key == "feeling"){
-        messageText += `<b>User's Language: </b>${reportData[key]}\n`;
-      } else if (key == "more_questions"){
+      } else if (key === "feeling"){
+        messageText += `<b>Feedback: </b>${reportData[key]}\n`;
+      } else if (key === "more_questions"){
 
         const resultString = (reportData[key] == false) ? "❌" : "✅";
 
