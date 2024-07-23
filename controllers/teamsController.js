@@ -755,7 +755,7 @@ exports.exitTeam = async function(req, res) {
 };
 
 exports.changeStatuses = async function(req, res) {
-  const { teamId } = req.params.teamId;
+  const teamId  = req.params.teamId;
   const { updates } = req.body; 
 
   console.log(req.body);
