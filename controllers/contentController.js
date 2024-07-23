@@ -43,15 +43,18 @@ exports.send_report = async function(req, res) {
     sacrifices: "What are you willing to sacrifice in order to overcome this addiction?",
     language: "User's Language",
     reason: "What were the main triggers?",
-    feeling: "How do you feel after filling this form?"
+    feeling: "How do you feel after filling this form?",
+    streak: "⌛️Previous streak",
+    time: "🕐 Time"
   };
 
   let messageText = '<b>🔥NEW REPORT:</b>\n\n';
 
   for (const key in reportData) {
+    console.log(key);
     if (reportData.hasOwnProperty(key) && keyMap[key]) {
       if (key === "time"){
-        messageText += `<b>🕐 Time: </b>${reportData[key]}\n`;
+        messageText += `🕐 Time: ${reportData[key]}\n`;
 
       } else if (key === "streak"){
 
@@ -63,12 +66,12 @@ exports.send_report = async function(req, res) {
 
         const resultString = `${months}M ${days}D ${hours}H ${minutes}M`;
 
-        messageText += `<b>⌛️ Previous streak: </b>${resultString}\n\n`;
+        messageText += `⌛️ Previous streak: ${resultString}\n\n`;
 
         messageText +=  `<b>uuid: </b>${uuid}\n\n`;
 
       } else if (key === "language"){
-        messageText += `<b>User's Language: </b>${reportData[key]}\n`;
+        messageText += `<b>User's Language: </b>${reportData[key]}\n\n`;
       } else if (key === "feeling"){
         messageText += `<b>Feedback: </b>${reportData[key]}\n`;
       } else if (key === "more_questions"){
