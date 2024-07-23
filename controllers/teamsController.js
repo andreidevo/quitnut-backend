@@ -490,6 +490,9 @@ exports.getPublicTeams = async function(req, res) {
   
   const { page = 1, pageSize = 10 } = req.body;
 
+  console.log("request");
+  console.log(page);
+
   if (!user) {
     return res.status(401).json({
       message: "No token found or user is not authenticated",
