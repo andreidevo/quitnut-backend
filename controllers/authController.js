@@ -17,6 +17,7 @@ const NodeRSA = require('node-rsa');
 const request = require('request-promise-native');
 const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
+const containsFilteredWords = require('../rejexBadwords');
 
 const googleClient = new OAuth2Client(process.env.GoogleID);
 
@@ -167,6 +168,10 @@ function validateUsername(username) {
 
   // Check the length of the username
   const isLengthValid = username.length <= 30;
+
+  let valid = containsFilteredWords(username);
+
+  console.log(valid);
 
   // List of prohibited words
   const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
