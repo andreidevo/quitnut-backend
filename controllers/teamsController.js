@@ -757,6 +757,9 @@ exports.exitTeam = async function(req, res) {
 exports.changeStatuses = async function(req, res) {
   const { teamId } = req.params;
   const { updates } = req.body; 
+
+  console.log(req.body);
+  console.log(req.params);
   
   const user = req.user; 
   if (!user) {
