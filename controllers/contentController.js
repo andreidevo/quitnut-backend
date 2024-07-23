@@ -46,12 +46,40 @@ exports.send_report = async function(req, res) {
     feeling: "How do you feel after filling this form?"
   };
 
-  let messageText = '<b>🔥NEW REPORT:</b>\n';
-  messageText +=  `<b>uuid: </b>${uuid}\n\n`;
+  let messageText = '<b>🔥NEW REPORT:</b>\n\n';
 
   for (const key in reportData) {
     if (reportData.hasOwnProperty(key) && keyMap[key]) {
-      messageText += `<b>${keyMap[key]}: </b>\n${reportData[key]}\n\n`;
+      if (key == "time"){
+        messageText += `<b>🕐 Time: </b>${reportData[key]}\n`;
+
+      } else if (key == "streak"){
+
+        const averageMonthSeconds = 28 * 24 * 3600;
+        const months = Math.floor(totalSeconds / averageMonthSeconds);
+        const days = Math.floor(reportData[key] / (24 * 3600));
+        const hours = Math.floor((reportData[key] % (24 * 3600)) / 3600);
+        const minutes = Math.floor((reportData[key] % 3600) / 60);
+
+        const resultString = `${months}M ${days}D ${hours}H ${minutes}M`;
+
+        messageText += `<b>⌛️ Previous streak: </b>${resultString}\n\n`;
+
+        messageText +=  `<b>uuid: </b>${uuid}\n\n`;
+
+      } else if (key == "language"){
+        messageText += `<b>User's Language: </b>${reportData[key]}\n`;
+      } else if (key == "feeling"){
+        messageText += `<b>User's Language: </b>${reportData[key]}\n`;
+      } else if (key == "more_questions"){
+
+        const resultString = (reportData[key] == false) ? "❌" : "✅";
+
+        messageText += `<b>More questions: </b>${resultString}\n`;
+      } else {
+        messageText += `<b>${keyMap[key]}: </b>\n${reportData[key]}\n\n`;
+      }
+      
     } else {
       messageText += `<b>${key}: </b>\n${reportData[key]}\n\n`;
     }
