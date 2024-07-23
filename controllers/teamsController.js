@@ -519,7 +519,7 @@ exports.getPublicTeams = async function(req, res) {
         }
       },
       { $addFields: { 'membersCount': { $size: '$memberDetails' } } },
-      { $sort: { 'membersCount': -1 } }, 
+      { $sort: { 'membersCount': -1, '_id': 1  } }, 
       { $skip: (page - 1) * pageSize },  
       { $limit: pageSize },             
       { $project: { 
