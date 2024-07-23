@@ -91,7 +91,7 @@ exports.create = async function(req, res) {
         console.log(sub);
 
         if (sub === "null"){
-          if (count > 10){
+          if (count > 0){
             console.log("LIMIT");
             return res.status(500).json({
               message: "public limit"
