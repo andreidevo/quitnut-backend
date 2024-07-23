@@ -790,7 +790,6 @@ exports.changeStatuses = async function(req, res) {
     if (!team.ownerID.equals(userId)) {
       return res.status(403).json({
         message: "Unauthorized: Owner can't exit the team",
-        info: {}
       });
     }
 
@@ -810,14 +809,12 @@ exports.changeStatuses = async function(req, res) {
 
     return res.status(200).json({
         message: "Status thresholds updated successfully",
-        statuses: team.statuses
     });
 
   } catch (error) {
       console.error('Error updating statuses:', error);
       return res.status(500).json({
           message: "Failed to update statuses",
-          info: error
       });
   }
 
