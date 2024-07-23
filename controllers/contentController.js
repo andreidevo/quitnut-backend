@@ -59,7 +59,7 @@ exports.send_report = async function(req, res) {
       } else if (key === "streak"){
 
         const averageMonthSeconds = 28 * 24 * 3600;
-        const months = Math.floor(totalSeconds / averageMonthSeconds);
+        const months = Math.floor(reportData[key] / averageMonthSeconds);
         const days = Math.floor(reportData[key] / (24 * 3600));
         const hours = Math.floor((reportData[key] % (24 * 3600)) / 3600);
         const minutes = Math.floor((reportData[key] % 3600) / 60);
