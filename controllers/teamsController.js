@@ -560,7 +560,7 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses').exec();
+    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members').exec();
     console.log("found?");
 
     if (!community) {
@@ -568,15 +568,18 @@ exports.getCommunityInfo = async function(req, res) {
     }
     const userId = new mongoose.Types.ObjectId(user._id);
     const isAdmin = community.ownerID.equals(userId);
+    const isMember = community.members.some(member => member._id.equals(userId));
 
     let communityData = community.toObject();
     delete communityData.ownerID;
+    delete communityData.members;
 
     return res.status(200).json({
       message: "ok",
       info: {
         ...communityData,
-        isAdmin: isAdmin        
+        isAdmin: isAdmin,
+        isMember: isMember
       }
     });
   } catch (error) {
@@ -603,23 +606,27 @@ exports.getCommunityInfoTeamName = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findOne({publicname: id}).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses').exec();
+    const community = await Team.findOne({publicname: id}).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members').exec();
     console.log("found?");
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
     }
     const userId = new mongoose.Types.ObjectId(user._id);
+
     const isAdmin = community.ownerID.equals(userId);
+    const isMember = community.members.some(member => member._id.equals(userId));
 
     let communityData = community.toObject();
     delete communityData.ownerID;
+    delete communityData.members;
 
     return res.status(200).json({
       message: "ok",
       info: {
         ...communityData,
-        isAdmin: isAdmin        
+        isAdmin: isAdmin,
+        isMember: isMember
       }
     });
   } catch (error) {
