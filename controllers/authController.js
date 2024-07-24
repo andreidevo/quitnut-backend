@@ -173,7 +173,7 @@ function validateUsername(username) {
   // Check the length of the username
   const isLengthValid = username.length <= 30;
 
-  const badwords = new BadWordsNext({ data: en })
+  const filter = new Filter();
 
   // List of prohibited words
   // const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
@@ -185,7 +185,7 @@ function validateUsername(username) {
 
   // Check if username contains any bad words
   // const isContentValid = !containsBadWords(username);
-  const isContentValid = !badwords.check(username);
+  const isContentValid = !filter.isProfane(username);
 
   console.log("is valid??");
   console.log(isContentValid);
