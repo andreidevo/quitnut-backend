@@ -23,6 +23,7 @@ const validateExit = require('../dto/team/exit.dto.js');
 const validateJoin = require('../dto/team/join.dto.js');
 const validateEdit = require('../dto/team/edit.dto.js');
 const validateRemove = require('../dto/team/remove.dto.js');
+const validateRemoveMember = require('../dto/team/removeMember.dto.js');
 const validateAcceptChange = require('../dto/team/acceptChange.dto.js');
 const validateReport = require('../dto/team/reportTeam.dto.js');
 const validateGetMembers = require('../dto/team/getMembers.dto.js');
@@ -68,7 +69,10 @@ module.exports = function(app) {
   app.route('/api/teams/report_team').post(validateReport, verifyJWT, asyncHandler(communityHandlers.report_team));
   app.route('/api/teams/getMembers').post(validateGetMembers, verifyJWT, asyncHandler(communityHandlers.getMembers));
   app.route('/api/teams/setStatuses/:teamId').post(validateChangeStatuses, verifyJWT, asyncHandler(communityHandlers.changeStatuses));
+  app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, asyncHandler(communityHandlers.removeMember));
 
+
+  
   
   
 };
