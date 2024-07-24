@@ -820,7 +820,7 @@ exports.removeMember = async function(req, res) {
 
     const teamUpdate = await Team.findByIdAndUpdate(
       id,
-      { $pull: { members: { user: user._id } } }, // DONE
+      { $pull: { members: { user: userToRemove._id } } }, // DONE
       { new: true }  // Returns the updated document
     );
 
@@ -832,7 +832,7 @@ exports.removeMember = async function(req, res) {
 
     // Remove team from user's communities
     const userUpdate = await User.findByIdAndUpdate(
-      user._id,
+      userToRemove._id,
       { $pull: { communities: id } },  // $pull removes the team from the communities array
       { new: true }
     );
