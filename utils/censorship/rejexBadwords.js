@@ -492,18 +492,11 @@ const pattern = "2g1c|acrotomophilia|ahole|amcik|anal|andskota|anilingus|arschlo
 
 module.exports = function filter(string) {
 
-
   string = string || '';
   string = string.toLowerCase();
   // var regexp = new RegExp(dictionary.join('|'), 'gi');
-
   var regexp = new RegExp(pattern, "gi");
-
-  
-
   // var regexp = new RegExp(dictionary.map(escapeRegex).join('|'), 'gi');
-  // console.log(regexp);
-
   // console.log("PROFOUNT");
   // console.log(regexp.test(string));
   // console.log(regexp.test(string));
@@ -511,8 +504,6 @@ module.exports = function filter(string) {
   const res = regexp.test(string);
   // console.log("RES");
   // console.log(res);
-
-
   return res;
   
 };

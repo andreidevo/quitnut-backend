@@ -171,8 +171,8 @@ function validateUsername(username) {
   const isValid = /^[a-zA-Z0-9_]+$/.test(username);
 
   // Check the length of the username
-  const isLengthValid = username.length <= 30;
-
+  let isLengthValid = username.length <= 30;
+  isLengthValid = username.length > 4;
 
   // List of prohibited words
   // const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
