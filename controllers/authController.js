@@ -49,7 +49,7 @@ exports.register = async function(req, res) {
     const user = await newUser.save();
 
     const accessToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-    const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+    const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
     
     try {
       await User.findByIdAndUpdate(user._id, { refreshToken: refreshToken });
@@ -72,7 +72,7 @@ exports.register = async function(req, res) {
 async function performLogin(user, req, res) {
 
   const accessToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
-  const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' }); // Expires in 7 days
+  const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' }); // Expires in 7 days
 
   try {
     await User.findByIdAndUpdate(user._id, { refreshToken: refreshToken });
@@ -230,6 +230,68 @@ exports.username_check = async function(req, res) {
     return res.status(500).json({
       message: "no token found"
     });
+  }
+};
+
+exports.refreshToken = async function(req, res) {
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      message: "User not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+
+      const savedUser = await User.findById(user._id);
+
+      if (!savedUser) {
+        return res.status(404).json({
+          message: "User not found",
+          info: {}
+        });
+      }
+
+      // Optional: Verify the existing refreshToken if it is provided in the request and is still valid
+      const currentRefreshToken = savedUser.refreshToken; // Assuming refreshToken is stored in the User model
+      jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', (err, decoded) => {
+        if (err) {
+          return res.status(403).json({
+            message: "Invalid or expired refresh token",
+            info: {}
+          });
+        }
+
+        // Generate new accessToken and refreshToken
+        const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
+        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
+
+        // Update the refreshToken in the database
+        savedUser.refreshToken = refreshToken;
+        savedUser.save((err, updatedUser) => {
+          if (err) {
+            return res.status(500).json({
+              message: "Failed to update user with new refresh token",
+              info: {}
+            });
+          }
+
+          // Return the new tokens
+          return res.status(200).json({
+            message: "Tokens refreshed successfully",
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          });
+        });
+      });
+  } catch (error) {
+      console.error('Error refreshing token:', error);
+      return res.status(500).json({
+          message: "Failed to refresh token",
+          info: {}
+      });
   }
 };
 
@@ -598,7 +660,7 @@ exports.appleCallbackGet = async function(req, res) {
         const savedUser = await newUser.save();
 
         const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
 
         try {
           await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
@@ -616,7 +678,7 @@ exports.appleCallbackGet = async function(req, res) {
       } else {
 
         const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
         
         if (user.usernameChanged){
           return res.status(200).json({
@@ -700,7 +762,7 @@ exports.appleCallbackGet = async function(req, res) {
 //         const savedUser = await newUser.save();
 
 //         const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-//         const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+//         const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
 
 //         try {
 //           await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
@@ -718,7 +780,7 @@ exports.appleCallbackGet = async function(req, res) {
 //       } else {
 
 //         const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-//         const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+//         const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
         
 //         if (user.usernameChanged){
 //           return res.status(200).json({
@@ -809,7 +871,7 @@ exports.appleCallbackPost = async function(req, res) {
         const savedUser = await newUser.save();
 
         const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
 
         try {
           await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
@@ -838,7 +900,7 @@ exports.appleCallbackPost = async function(req, res) {
       } else {
 
         const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
         
         if (user.usernameChanged){
 
@@ -939,7 +1001,7 @@ exports.googleRegistration = async function(req, res) {
           const savedUser = await newUser.save();
 
           const accessToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-          const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+          const refreshToken = jwt.sign({ _id: savedUser._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
 
           try {
             await User.findByIdAndUpdate(savedUser._id, { refreshToken: refreshToken });
@@ -957,7 +1019,7 @@ exports.googleRegistration = async function(req, res) {
         } else {
 
           const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-          const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '60d' });
+          const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
           
           if (user.usernameChanged){
             return res.status(200).json({

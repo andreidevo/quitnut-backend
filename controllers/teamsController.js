@@ -982,11 +982,13 @@ exports.deleteAccount = async function(req, res) {
       { $pull: { reportCounts: { userid: userId } } }
     );
     console.log("reports deleted");
+    
 
 
     // Finally, delete the user's account
     await User.findByIdAndDelete(userId);
     console.log("user deleted");
+    console.log(userId);
 
 
     return res.status(200).json({
