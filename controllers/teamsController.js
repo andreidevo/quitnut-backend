@@ -1000,7 +1000,7 @@ exports.changeStatuses = async function(req, res) {
 };
 
 exports.getMembers = async function(req, res) {
-  const { id, page = 1, pageSize = 10 } = req.body; // Team ID and pagination options
+  const { id, page = 1, pageSize = 40 } = req.body; // Team ID and pagination options
 
   if (!req.user) {
     return res.status(401).json({
