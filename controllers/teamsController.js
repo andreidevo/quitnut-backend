@@ -745,6 +745,9 @@ exports.removeMember = async function(req, res) {
   const { id, user_name } = req.body; // Assuming this is the Team ID
 
   const user = req.user; 
+
+  console.log("REMOVE start");
+
   if (!user) {
     return res.status(401).json({
       message: "No token found or user is not authenticated",
@@ -754,6 +757,8 @@ exports.removeMember = async function(req, res) {
 
   try {
     // First, retrieve the team to check if the current user is the owner
+    console.log("team search");
+
     const team = await Team.findById(id);
     if (!team) {
       return res.status(404).json({
@@ -762,6 +767,9 @@ exports.removeMember = async function(req, res) {
       });
     }
 
+    console.log("team found");
+
+
     const userToRemove = await Team.findOne({username: user_name});
     if (!userToRemove) {
       return res.status(404).json({
@@ -769,6 +777,9 @@ exports.removeMember = async function(req, res) {
         info: {}
       });
     }
+
+    console.log("team found");
+
 
     const userId = new mongoose.Types.ObjectId(user._id);
     const userToRemoveID = new mongoose.Types.ObjectId(userToRemove._id);
