@@ -502,11 +502,7 @@ module.exports = function filter(string) {
 
   const res = regexp.test(string);
 
-  if (res){
-    return res
-  } else {
-    return false;
-  }
+  return res;
   
 };
 
