@@ -3,8 +3,6 @@ const dictionary = [
   '2g1c',
   'acrotomophilia',
   'ahole',
-  'alabama hot pocket',
-  'alaskan pipeline',
   'amcik',
   'anal',
   'andskota',
@@ -24,7 +22,6 @@ const dictionary = [
   'autoerotic',
   'ayir',
   'azzhole',
-  'b!\\+ch',
   'b!tch',
   'b00b',
   'b17ch',
@@ -39,7 +36,6 @@ const dictionary = [
   'bbw',
   'bdsm',
   'bestiality',
-  'bi\\+ch',
   'bi7ch',
   'Biatch',
   'birdlock',
@@ -76,9 +72,8 @@ const dictionary = [
   'cnts',
   'cntz',
   'cock-head',
-  'cock-sucker',
   'cockhead',
-  'CockSucker',
+  "suck",
   'coprolagnia',
   'coprophilia',
   'crap',
@@ -95,8 +90,7 @@ const dictionary = [
   'deepthroat',
   'dego',
   'dendrophilia',
-  'dickhead',
-  'dickface',
+  'dick',
   'dike',
   'dild0',
   'dild0s',
@@ -159,7 +153,6 @@ const dictionary = [
   'foreskin',
   'Fotze',
   'frotting',
-  'fucker',
   'fudgepacker',
   'fuk',
   'Fukah',
@@ -227,6 +220,7 @@ const dictionary = [
   'kinky',
   'klootzak',
   'knob',
+  "fuck",
   'knobbing',
   'knulle',
   'kraut',
@@ -237,12 +231,11 @@ const dictionary = [
   'kurwa',
   'kusi',
   'kyrpa',
-  'l3i\\+ch',
   'l3itch',
   'lesbo',
   'Lezzian',
-  'Lipshits',
   'Lipshitz',
+  "shit",
   'lolita',
   'lovemaking',
   'mamhoon',
@@ -266,8 +259,6 @@ const dictionary = [
   'milf',
   'mofo',
   'monkleigh',
-  'mother-fucker',
-  'motherfucker',
   'mouliewop',
   'muffdiving',
   'muie',
@@ -379,7 +370,6 @@ const dictionary = [
   'retard',
   'rimjob',
   'rimming',
-  's\\.o\\.b\\.',
   's&m',
   'sadism',
   'sadist',
@@ -396,7 +386,6 @@ const dictionary = [
   'scrotum',
   'semen',
   'sexo',
-  'sh!\\+',
   'Sh!t',
   'sh!t',
   'sh!t',
@@ -408,10 +397,8 @@ const dictionary = [
   'sharmuta',
   'sharmute',
   'shemale',
-  'shi\\+',
   'shibari',
   'shipal',
-  'shit',
   'shota',
   'shrimping',
   'Shyt',
@@ -508,17 +495,19 @@ module.exports = function filter(string) {
 
   string = string || '';
   string = string.toLowerCase();
-  var regexp = new RegExp(dictionary.join('|'), 'gi');
+  // var regexp = new RegExp(dictionary.join('|'), 'gi');
+  var regexp = new RegExp(dictionary.map(escapeRegex).join('|'), 'gi');
   console.log(regexp);
 
   console.log("PROFOUNT");
-  console.log(string.match(regexp));
-  const res = string.match(regexp);
+  console.log(regexp.test(string));
+  
+  const res = regexp.test(string);
 
   if (res){
     return res
   } else {
-    return true;
+    return false;
   }
   
 };
