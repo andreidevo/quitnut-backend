@@ -22,7 +22,6 @@ const dictionary = [
   'autoerotic',
   'ayir',
   'azzhole',
-  'b!tch',
   'b00b',
   'b17ch',
   'b1tch',
@@ -167,7 +166,6 @@ const dictionary = [
   'futanari',
   'futkretzn',
   'fux0r',
-  'g-spot',
   'g00k',
   'gayz',
   'goatcx',
@@ -370,7 +368,6 @@ const dictionary = [
   'retard',
   'rimjob',
   'rimming',
-  's&m',
   'sadism',
   'sadist',
   'santorum',
@@ -386,9 +383,6 @@ const dictionary = [
   'scrotum',
   'semen',
   'sexo',
-  'Sh!t',
-  'sh!t',
-  'sh!t',
   'sh1t',
   'sh1ter',
   'sh1ts',
@@ -490,18 +484,22 @@ const dictionary = [
 ];
 
 
+// function escapeRegex(word) {
+//   return word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+// }
+
 module.exports = function filter(string) {
 
 
   string = string || '';
   string = string.toLowerCase();
-  // var regexp = new RegExp(dictionary.join('|'), 'gi');
-  var regexp = new RegExp(dictionary.map(escapeRegex).join('|'), 'gi');
+  var regexp = new RegExp(dictionary.join('|'), 'gi');
+  // var regexp = new RegExp(dictionary.map(escapeRegex).join('|'), 'gi');
   console.log(regexp);
 
   console.log("PROFOUNT");
   console.log(regexp.test(string));
-  
+
   const res = regexp.test(string);
 
   if (res){
