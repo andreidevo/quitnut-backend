@@ -17,12 +17,11 @@ const NodeRSA = require('node-rsa');
 const request = require('request-promise-native');
 const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
-const BadWordsNext = require('bad-words-next');
-const en = require('bad-words-next/data/en.json');
-const Filter = require('bad-words');
+// const BadWordsNext = require('bad-words-next');
+// const en = require('bad-words-next/data/en.json');
+// const Filter = require('bad-words');
 
-
-// const containsFilteredWords = require('../utils/censorship/rejexBadwords');
+const filter = require('../utils/censorship/rejexBadwords');
 
 const googleClient = new OAuth2Client(process.env.GoogleID);
 
@@ -174,7 +173,6 @@ function validateUsername(username) {
   // Check the length of the username
   const isLengthValid = username.length <= 30;
 
-  const filter = new Filter();
 
   // List of prohibited words
   // const badWords = ['dick', 'suck', 'pussy', "fuck", "sex", "porno", "penis", "boobs", "jerking"];
@@ -186,7 +184,7 @@ function validateUsername(username) {
 
   // Check if username contains any bad words
   // const isContentValid = !containsBadWords(username);
-  const isContentValid = !filter.isProfane(username);
+  const isContentValid = !filter(username);
 
   console.log("is valid??");
   console.log(isContentValid);
