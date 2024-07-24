@@ -568,13 +568,13 @@ exports.getCommunityInfo = async function(req, res) {
     }
     const userId = new mongoose.Types.ObjectId(user._id);
     const isAdmin = community.ownerID.equals(userId);
-    const isMember = community.members.some(member => member._id.equals(userId));
+    const isMember = community.members.some(member => member.user.equals(userId));
 
     console.log("USER ID:")
     console.log(userId);
     community.members.forEach(member => {
       console.log(member); 
-      if (member._id.equals(userId)) {
+      if (member.user.equals(userId)) {
         console.log("EQUALS"); 
         console.log(userId); 
       }
@@ -626,7 +626,7 @@ exports.getCommunityInfoTeamName = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
 
     const isAdmin = community.ownerID.equals(userId);
-    const isMember = community.members.some(member => member._id.equals(userId));
+    const isMember = community.members.some(member => member.user.equals(userId));
 
     let communityData = community.toObject();
     delete communityData.ownerID;
