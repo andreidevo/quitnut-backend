@@ -7,7 +7,8 @@ const removeZodSchema = z.object({
         z.number()
     ]),
     user_name: z.union([
-      z.string()  
+      z.string(),
+      z.number()
     ]),
 });
 
