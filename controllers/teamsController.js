@@ -627,7 +627,7 @@ async function reRankTeamMembers(teamId) {
 }
 
 exports.joinToTeam = async function(req, res) {
-  const { id, private } = req.body;
+  const { id } = req.body;
 
   const user = req.user; 
 
