@@ -706,7 +706,7 @@ exports.joinToTeam = async function(req, res) {
 
     const updatedTeam = await Team.findByIdAndUpdate(
       id,
-      { $set: { membersCount: teamUpdate.members.length + 1 } },
+      { $set: { membersCount: teamUpdate.members.length } },
       { new: true }
     );
 
@@ -826,7 +826,7 @@ exports.removeMember = async function(req, res) {
 
     const updatedTeam = await Team.findByIdAndUpdate(
       id,
-      { $set: { membersCount: teamUpdate.members.length - 1 } },
+      { $set: { membersCount: teamUpdate.members.length } },
       { new: true }
     );
 
@@ -909,7 +909,7 @@ exports.exitTeam = async function(req, res) {
 
     const updatedTeam = await Team.findByIdAndUpdate(
       id,
-      { $set: { membersCount: teamUpdate.members.length - 1 } },
+      { $set: { membersCount: teamUpdate.members.length} },
       { new: true }
     );
 
