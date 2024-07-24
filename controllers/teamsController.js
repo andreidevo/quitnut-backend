@@ -786,8 +786,14 @@ exports.removeMember = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
     const userToRemoveID = new mongoose.Types.ObjectId(userToRemove._id);
 
+    console.log("USER ADMIN");
+    console.log(userId);
+
     console.log("USER TO REMOME");
     console.log(userToRemoveID);
+
+    console.log("TEAM OWNER");
+    console.log(team.ownerID);
 
     if (!team.ownerID.equals(userId)) {
       return res.status(403).json({
@@ -796,7 +802,10 @@ exports.removeMember = async function(req, res) {
       });
     }
 
-    console.log("ME OWNER");
+
+
+    console.log("TEAM OWNER");
+    console.log(team.ownerID);
 
     if (team.ownerID.equals(userToRemoveID)) {
       return res.status(403).json({
