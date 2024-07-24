@@ -2,7 +2,7 @@ const { z } = require("zod");
 const { validateQuery } = require("../validateQuery.js");
 
 const apppleCallbackGetZodSchema = z.object({
-  token: z.string(),
+  // token: z.string(),
   code: z.string(),
   useBundleId: z.string()
 });

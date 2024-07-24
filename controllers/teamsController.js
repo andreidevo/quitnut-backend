@@ -561,7 +561,6 @@ exports.getCommunityInfo = async function(req, res) {
 
   try {
     const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members').exec();
-    console.log("found?");
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
@@ -569,17 +568,6 @@ exports.getCommunityInfo = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
     const isAdmin = community.ownerID.equals(userId);
     const isMember = community.members.some(member => member.user.equals(userId));
-
-    console.log("USER ID:")
-    console.log(userId);
-    community.members.forEach(member => {
-      console.log(member); 
-      if (member.user.equals(userId)) {
-        console.log("EQUALS"); 
-        console.log(userId); 
-      }
-    });
-
 
     let communityData = community.toObject();
     delete communityData.ownerID;
@@ -786,6 +774,9 @@ exports.removeMember = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
     const userToRemoveID = new mongoose.Types.ObjectId(userToRemove._id);
 
+    console.log("USER TO REMOME");
+    console.log(userToRemoveID);
+
     if (!team.ownerID.equals(userId)) {
       return res.status(403).json({
         message: "Unauthorized: Owner can't exit the team",
@@ -793,12 +784,17 @@ exports.removeMember = async function(req, res) {
       });
     }
 
+    console.log("ME OWNER");
+
     if (team.ownerID.equals(userToRemoveID)) {
       return res.status(403).json({
         message: "Can't remove owner",
         info: {}
       });
     }
+
+    console.log("USER NOT OWNER");
+
 
 
     const teamUpdate = await Team.findByIdAndUpdate(
