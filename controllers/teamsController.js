@@ -570,8 +570,8 @@ exports.getCommunityInfo = async function(req, res) {
     const isAdmin = community.ownerID.equals(userId);
     const isMember = community.members.some(member => member._id.equals(userId));
 
-    print("USER ID:")
-    print(userId);
+    console.log("USER ID:")
+    console.log(userId);
     community.members.forEach(member => {
       console.log(member); 
       if (member._id.equals(userId)) {
