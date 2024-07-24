@@ -499,8 +499,12 @@ module.exports = function filter(string) {
 
   console.log("PROFOUNT");
   console.log(regexp.test(string));
+  console.log(regexp.test(string));
 
   const res = regexp.test(string);
+  console.log("RES");
+  console.log(res);
+
 
   return res;
   
