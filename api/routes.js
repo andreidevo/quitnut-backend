@@ -69,7 +69,7 @@ module.exports = function(app) {
   app.route('/api/teams/accept_change').post(validateAcceptChange, verifyJWT, asyncHandler(communityHandlers.accept_change));
   app.route('/api/teams/report_team').post(validateReport, verifyJWT, asyncHandler(communityHandlers.report_team));
   app.route('/api/teams/getMembers').post(validateGetMembers, verifyJWT, asyncHandler(communityHandlers.getMembers));
-  app.route('/api/teams/setStatuses/:teamId').post(verifyJWT, asyncHandler(communityHandlers.changeStatuses));
+  app.route('/api/teams/setStatuses/:teamId').post(validateChangeStatuses, verifyJWT, asyncHandler(communityHandlers.changeStatuses));
   app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, asyncHandler(communityHandlers.removeMember));
 
 

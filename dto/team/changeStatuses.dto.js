@@ -2,11 +2,11 @@ const { z } = require("zod");
 const { validate } = require("../validate.js");
 
 const changeStatusesZodSchema = z.object({
-    updates: z.union([
-        z.string(),
-        z.number(),
-        z.array()
-    ]),
+  updates: z.array(z.object({
+    Type: z.string(),
+    streakDays: z.number(),
+    maxPeople: z.number()
+  }))
 });
 
 const validateChangeStatuses = validate(changeStatusesZodSchema);
