@@ -588,6 +588,49 @@ exports.getCommunityInfo = async function(req, res) {
   }
 };
 
+exports.getCommunityInfoTeamName = async function(req, res) {
+  const { id } = req.body;
+
+  const user = req.user; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  console.log("ok");
+
+  try {
+    const community = await Team.findOne({publicname: id}).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses').exec();
+    console.log("found?");
+
+    if (!community) {
+      return res.status(404).json({ message: "Community not found" });
+    }
+    const userId = new mongoose.Types.ObjectId(user._id);
+    const isAdmin = community.ownerID.equals(userId);
+
+    let communityData = community.toObject();
+    delete communityData.ownerID;
+
+    return res.status(200).json({
+      message: "ok",
+      info: {
+        ...communityData,
+        isAdmin: isAdmin        
+      }
+    });
+  } catch (error) {
+    console.error('Error retrieving teams:', error);
+    return res.status(500).json({
+      message: "Failed to retrieve teams",
+      info: {}
+    });
+  }
+};
+
 async function reRankTeamMembers(teamId) {
   console.log("RERANK");
 
