@@ -770,7 +770,9 @@ exports.removeMember = async function(req, res) {
     console.log("team found");
 
 
-    const userToRemove = await Team.findOne({username: user_name});
+    const userToRemove = await User.findOne({username: user_name});
+    console.log(userToRemove);
+
     if (!userToRemove) {
       return res.status(404).json({
         message: "User to remove not found",
