@@ -504,24 +504,23 @@ const dictionary = [
 
 
 module.exports = function filter(string) {
+
+
   string = string || '';
+  string = string.toLowerCase();
   var regexp = new RegExp(dictionary.join('|'), 'gi');
   console.log(regexp);
 
   console.log("PROFOUNT");
   console.log(string.match(regexp));
+  const res = string.match(regexp);
 
-  return string.replace(regexp, function(s) {
-    var i = 0;
-    var asterisks = '';
-
-    while (i < s.length) {
-      asterisks += '*';
-      i++;
-    }
-    console.log(asterisks);
-    return asterisks;
-  });
+  if (res){
+    return res
+  } else {
+    return true;
+  }
+  
 };
 
 
