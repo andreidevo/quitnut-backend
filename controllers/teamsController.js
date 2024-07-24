@@ -969,17 +969,25 @@ exports.deleteAccount = async function(req, res) {
       });
     }
 
+    console.log("teams deleted");
+
     // Delete all communities where the user is the owner
     await Team.deleteMany({ ownerID: userId });
+    console.log("communities deleted");
+
 
     // Remove all reports sent by this user
     await Team.updateMany(
       {},
       { $pull: { reportCounts: { userid: userId } } }
     );
+    console.log("reports deleted");
+
 
     // Finally, delete the user's account
     await User.findByIdAndDelete(userId);
+    console.log("user deleted");
+
 
     return res.status(200).json({
       message: "User account deleted successfully"
