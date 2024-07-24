@@ -943,6 +943,58 @@ exports.exitTeam = async function(req, res) {
   }
 };
 
+
+
+
+exports.deleteAccount = async function(req, res) {
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+    const userId = new mongoose.Types.ObjectId(user._id);
+
+    // Remove user from all communities' members lists
+    const teams = await Team.find({ members: userId });
+
+    // Remove user from each team and decrement membersCount
+    for (let team of teams) {
+      await Team.findByIdAndUpdate(team._id, {
+        $pull: { members: userId },
+        $inc: { membersCount: -1 } // Decrement membersCount
+      });
+    }
+
+    // Delete all communities where the user is the owner
+    await Team.deleteMany({ ownerID: userId });
+
+    // Remove all reports sent by this user
+    await Team.updateMany(
+      {},
+      { $pull: { reportCounts: { userid: userId } } }
+    );
+
+    // Finally, delete the user's account
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      message: "User account deleted successfully"
+    });
+  } catch (error) {
+    console.error('Error deleting user account:', error);
+    return res.status(500).json({
+      message: "Failed to delete user account",
+      info: {}
+    });
+  }
+};
+
+
+
 exports.changeStatuses = async function(req, res) {
   const teamId  = req.params.teamId;
   const { updates } = req.body; 
