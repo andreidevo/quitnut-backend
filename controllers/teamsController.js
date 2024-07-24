@@ -569,6 +569,15 @@ exports.getCommunityInfo = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
     const isAdmin = community.ownerID.equals(userId);
     const isMember = community.members.some(member => member._id.equals(userId));
+    
+    community.members.forEach(member => {
+      console.log(member); 
+      if (member._id.equals(userId)) {
+        console.log("EQUALS"); 
+        console.log(userId); 
+      }
+    });
+
 
     let communityData = community.toObject();
     delete communityData.ownerID;
