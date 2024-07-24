@@ -559,7 +559,7 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members').exec();
+    const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members membersCount').exec();
 
     if (!community) {
       return res.status(404).json({ message: "Community not found" });
@@ -604,7 +604,7 @@ exports.getCommunityInfoTeamName = async function(req, res) {
   console.log("ok");
 
   try {
-    const community = await Team.findOne({publicname: id}).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members').exec();
+    const community = await Team.findOne({publicname: id}).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members membersCount').exec();
     console.log("found?");
 
     if (!community) {
