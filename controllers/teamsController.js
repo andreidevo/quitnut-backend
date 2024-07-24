@@ -964,7 +964,7 @@ exports.deleteAccount = async function(req, res) {
     // Remove user from each team and decrement membersCount
     for (let team of teams) {
       await Team.findByIdAndUpdate(team._id, {
-        $pull: { members: userId },
+        $pull: { members: { user: userId } }, // Correctly specify the pull condition
         $inc: { membersCount: -1 } // Decrement membersCount
       });
     }
