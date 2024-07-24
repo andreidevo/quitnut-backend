@@ -509,7 +509,7 @@ module.exports = function filter(string) {
   console.log(regexp);
 
   console.log("PROFOUNT");
-  console.log(str.match(regexp));
+  console.log(string.match(regexp));
 
   return string.replace(regexp, function(s) {
     var i = 0;
