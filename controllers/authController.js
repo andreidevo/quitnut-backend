@@ -19,6 +19,7 @@ const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
 const BadWordsNext = require('bad-words-next');
 const en = require('bad-words-next/data/en.json');
+const Filter = require('bad-words');
 
 
 // const containsFilteredWords = require('../utils/censorship/rejexBadwords');
