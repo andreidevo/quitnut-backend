@@ -43,7 +43,7 @@ module.exports = function(app) {
   app.route('/api/auth/ss').post(validateSs, verifyJWT, asyncHandler(authHandlers.set_premium));
 
   app.route('/api/auth/google').post(validateGoogleRegisterZodSchema, asyncHandler(authHandlers.googleRegistration));
-  app.route('/api/callback/apple').get(validateApppleCallbackGet, signUpLimiter, asyncHandler(authHandlers.appleCallbackGet));
+  app.route('/api/callback/apple').get(signUpLimiter, asyncHandler(authHandlers.appleCallbackGet));
   // app.route('/api/callback/appleandroid').get(signUpLimiter, asyncHandler(authHandlers.appleCallbackGetAndroid));
   app.route('/api/callback/apple').post(validateApppleCallbackPost, signUpLimiter, asyncHandler(authHandlers.appleCallbackPost));
 
