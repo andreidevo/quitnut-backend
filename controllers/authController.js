@@ -270,21 +270,21 @@ exports.refreshToken = async function(req, res) {
 
         // Update the refreshToken in the database
         savedUser.refreshToken = refreshToken;
-        savedUser.save((err, updatedUser) => {
-          if (err) {
-            return res.status(500).json({
-              message: "Failed to update user with new refresh token",
-              info: {}
-            });
-          }
-
-          // Return the new tokens
-          return res.status(200).json({
-            message: "Tokens refreshed successfully",
-            accessToken: accessToken,
-            refreshToken: refreshToken
+        savedUser.save()
+          .then(updatedUser => {
+              // Return the new tokens
+              return res.status(200).json({
+                  message: "Tokens refreshed successfully",
+                  accessToken: accessToken,
+                  refreshToken: refreshToken
+              });
+          })
+          .catch(err => {
+              return res.status(500).json({
+                  message: "Failed to update user with new refresh token",
+                  info: {}
+              });
           });
-        });
       });
   } catch (error) {
       console.error('Error refreshing token:', error);
