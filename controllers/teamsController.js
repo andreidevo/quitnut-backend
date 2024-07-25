@@ -702,7 +702,8 @@ exports.joinToTeam = async function(req, res) {
         message: "Team not found",
         info: {}
       });
-    }
+    } 
+
 
     const updatedTeam = await Team.findByIdAndUpdate(
       id,
@@ -710,13 +711,18 @@ exports.joinToTeam = async function(req, res) {
       { new: true }
     );
 
-    const teamId = new mongoose.Types.ObjectId(id);    
+    console.log("team update");
 
+
+    const teamId = new mongoose.Types.ObjectId(id);    
+    
     const userUpdate = await User.findByIdAndUpdate(
       user._id,
       { $addToSet: { communities: teamId } }, 
       { new: true } 
     );
+
+    console.log("user updated");
 
     if (!userUpdate) {
       return res.status(404).json({
@@ -724,6 +730,9 @@ exports.joinToTeam = async function(req, res) {
         info: {}
       });
     }
+
+    console.log("calling rerank");
+
 
     await reRankTeamMembers(teamId);
 
@@ -982,7 +991,7 @@ exports.deleteAccount = async function(req, res) {
       { $pull: { reportCounts: { userid: userId } } }
     );
     console.log("reports deleted");
-    
+
 
 
     // Finally, delete the user's account

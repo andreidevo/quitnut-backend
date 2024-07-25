@@ -8,8 +8,8 @@ const verifyJWT = (req, res, next) => {
     return res.sendStatus(401);
   }
 
-  console.log("AUTH ");
-  console.log(authHeader);
+  // console.log("AUTH ");
+  // console.log(authHeader);
 
   const token = authHeader.split(' ')[1];
   
