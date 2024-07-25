@@ -1,5 +1,9 @@
-const jwt = require('jsonwebtoken');
+
+var mongoose = require('mongoose'),
 User = mongoose.model('User');
+
+const jwt = require('jsonwebtoken');
+
 
 const verifyJWT = (req, res, next) => {
 
