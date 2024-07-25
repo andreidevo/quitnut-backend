@@ -308,6 +308,15 @@ exports.set_username = async function(req, res) {
 
 
   if (user !== null){
+
+    var find = await User.findOne({ _id: user._id });
+    
+    if (find.banned.status){
+      return res.status(500).json({
+        message: "The user has been banned for the following reason: " + find.banned.reason,
+      });
+    }
+
     var valid = validateUsername(username);
     console.log(valid);
 

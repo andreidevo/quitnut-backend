@@ -75,6 +75,12 @@ exports.create = async function(req, res) {
 
     var find = await User.findOne({ _id: user._id });
 
+    if (find.banned.status){
+      return res.status(500).json({
+        message: "The user has been banned for the following reason: " + find.banned.reason,
+      });
+    }
+
     var valid = validateTeamname(publicname);
 
     if (valid && find){

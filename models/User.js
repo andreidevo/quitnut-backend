@@ -27,7 +27,7 @@ var UserSchema = new Schema({
   communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
   publicTeams: { type: Number, default: 0},
   privateTeams: { type: Number, default: 0},
-  
+
   // STREAK
   streak: {
     lastReset: { type: String, default: ""},
@@ -43,6 +43,11 @@ var UserSchema = new Schema({
 
   // CONTESTS
   challenges: [{ type: Schema.Types.ObjectId, ref: 'Challenge' }],
+
+  banned: {
+    status: { type: Boolean, default: false },
+    reason: { type: String, default: ""},
+  }, // can't create groups, can't change username
 
 });
 
