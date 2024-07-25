@@ -49,6 +49,8 @@ var UserSchema = new Schema({
     reason: { type: String, default: ""},
   }, // can't create groups, can't change username
 
+  lastActive: { type: Date, default: Date.now }
+
 });
 
 UserSchema.methods.comparePassword = function(password) {
