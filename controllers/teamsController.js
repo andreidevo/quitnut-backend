@@ -704,7 +704,7 @@ exports.joinToTeam = async function(req, res) {
 
     // check dontaccept
 
-    const team = await Team.findById(teamId);
+    const team = await Team.findById(id);
 
     // If team does not exist or 'dontAccept' is true, return an error
     if (!team) {
