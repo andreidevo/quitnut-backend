@@ -4,6 +4,8 @@
 
 var mongoose = require('mongoose'),
 jwt = require('jsonwebtoken'),
+Report = mongoose.model('Report');
+
 bcrypt = require('bcrypt');
 const TelegramBot = require('node-telegram-bot-api');
 
@@ -93,9 +95,44 @@ exports.send_report = async function(req, res) {
   }
 
 
+
+
   bot.sendMessage("1979434110", messageText, { parse_mode: 'HTML' });
   bot.sendMessage("1401236082", messageText, { parse_mode: 'HTML' });
+
+  const newReport = new Report({
+      ownerID: req.user._id,
+      data: report, 
+  });
+
+  // Save the new report to the database
+  const savedReport = await newReport.save();
 
   return res.status(200).send('ok');
 };
 
+
+exports.send_report_token = async function(req, res) {
+
+  var user = req.user;
+
+  const report = req.body.report
+  const uuid = req.headers['uuid'];
+
+  console.log(report);
+  
+  if (typeof report !== 'string' || report.length > 2000) {
+    return res.status(400).send('Invalid report');
+  }
+
+  const newReport = new Report({
+    ownerID: req.user._id,
+    data: report, 
+    uuid: uuid
+  });
+
+  // Save the new report to the database
+  const savedReport = await newReport.save();
+
+  return res.status(200).send('ok');
+};

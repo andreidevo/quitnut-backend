@@ -53,6 +53,7 @@ module.exports = function(app) {
   app.route('/api/auth/set_laststreak').post(validateSetLastStreak, verifyJWT, asyncHandler(authHandlers.set_lastStreak));
   app.route('/api/auth/set_startdate').post(validateSetStartDateZodSchema, verifyJWT, asyncHandler(authHandlers.set_startDate));
   app.route('/api/urs').post(validateSendReportZodSchema, signUpLimiter, asyncHandler(contentHandlers.send_report));
+  app.route('/api/urstoken').post(validateSendReportZodSchema, verifyJWT, asyncHandler(contentHandlers.send_report_token));
   app.route('/api/teams/delete').post(verifyJWT, asyncHandler(communityHandlers.deleteAccount));
 
 

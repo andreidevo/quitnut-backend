@@ -7,6 +7,7 @@ app = express(),
 port = process.env.PORT || 5001,
 User = require('./models/User'),
 Team = require('./models/Team'),
+Report = require('./models/Report'),
 // Resource = require('./models/Content'),
 bodyParser = require('body-parser'),
 jsonwebtoken = require("jsonwebtoken");
