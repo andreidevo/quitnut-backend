@@ -256,7 +256,7 @@ exports.refreshToken = async function(req, res) {
 
       // Optional: Verify the existing refreshToken if it is provided in the request and is still valid
       const currentRefreshToken = savedUser.refreshToken; // Assuming refreshToken is stored in the User model
-      jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', (err, decoded) => {
+      jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', async (err, decoded) => {
         if (err) {
           return res.status(403).json({
             message: "Invalid or expired refresh token",
@@ -264,27 +264,31 @@ exports.refreshToken = async function(req, res) {
           });
         }
 
+          // Check if the token expires in less than 50 days
+        const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
+        if (daysUntilExpiry <= 60) {
+          // Token is about to expire, issue a new one
+          savedUser.refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
+        }
+
         // Generate new accessToken and refreshToken
         const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
-        const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', { expiresIn: '180d' });
-
-        // Update the refreshToken in the database
-        savedUser.refreshToken = refreshToken;
-        savedUser.save()
-          .then(updatedUser => {
-              // Return the new tokens
-              return res.status(200).json({
-                  message: "Tokens refreshed successfully",
-                  accessToken: accessToken,
-                  refreshToken: refreshToken
-              });
-          })
-          .catch(err => {
-              return res.status(500).json({
-                  message: "Failed to update user with new refresh token",
-                  info: {}
-              });
-          });
+        
+          try {
+            await savedUser.save();
+            // Return the new tokens
+            res.status(200).json({
+              message: "Tokens refreshed successfully",
+              accessToken: accessToken,
+              refreshToken: savedUser.refreshToken
+            });
+          } catch (saveError) {
+            console.error('Error saving the updated user:', saveError);
+            return res.status(500).json({
+              message: "Failed to update user with new refresh token",
+              info: {}
+            });
+          }
       });
   } catch (error) {
       console.error('Error refreshing token:', error);
