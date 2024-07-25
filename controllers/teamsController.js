@@ -513,7 +513,7 @@ exports.getPublicTeams = async function(req, res) {
       { $match: { 
         "members.user": { $ne: userId },
         typeTeam: 'Public', 
-        dontaccept: false 
+        // dontaccept: false 
       }},
       {
         $lookup: {
@@ -698,6 +698,19 @@ exports.joinToTeam = async function(req, res) {
 
   try {
     const userId = new mongoose.Types.ObjectId(user._id);
+
+
+    // check dontaccept
+
+    const team = await Team.findById(teamId);
+
+    // If team does not exist or 'dontAccept' is true, return an error
+    if (!team) {
+        return { error: true, message: "Team not found." };
+    }
+    if (team.dontAccept === true) {
+        return { error: true, message: "This team is not accepting new members." };
+    }
 
     const teamUpdate = await Team.findByIdAndUpdate(
       id,
