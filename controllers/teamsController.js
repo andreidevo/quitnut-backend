@@ -970,8 +970,13 @@ exports.deleteAccount = async function(req, res) {
     // Remove user from all communities' members lists
     const teams = await Team.find({ members: userId });
 
+    console.log("TEAMS");
+    console.log(teams);
+
     // Remove user from each team and decrement membersCount
     for (let team of teams) {
+      console.log("each team");
+      console.log(team._id);
       await Team.findByIdAndUpdate(team._id, {
         $pull: { members: { user: userId } }, // Correctly specify the pull condition
         $inc: { membersCount: -1 } // Decrement membersCount
