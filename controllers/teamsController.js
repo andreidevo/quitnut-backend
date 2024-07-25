@@ -650,10 +650,12 @@ async function reRankTeamMembers(teamId) {
 
     // Calculate the streak for each member and create a map of userId to streak
     const now = new Date();
-    const memberStreaks = team.members.map(member => ({
-        userId: member.user._id,
-        streak: (now - new Date(member.user.streak.lastReset)) / (1000 * 60) // Minutes since last reset
-    }));
+    const memberStreaks = team.members
+      .filter(member => member.user && member.user._id)  // Filter out members without a valid user ID
+      .map(member => ({
+          userId: member.user._id,
+          streak: (now - new Date(member.user.streak.lastReset)) / (1000 * 60) // Calculate minutes since last reset
+      }));
 
     // Sort by streak in descending order
     memberStreaks.sort((a, b) => b.streak - a.streak);
@@ -1107,12 +1109,14 @@ exports.getMembers = async function(req, res) {
 
     // Map sorted members to include required data
     const now = new Date();
-    const result = sortedMembers.map(member => ({
-      username: member.user.username,
-      differenceInMinutes: (now - new Date(member.user.streak.lastReset)) / (1000 * 60), // Convert difference to minutes
-      rank: member.rank
+    const result = sortedMembers
+    .filter(member => member.user && member.user.username && member.user.streak && member.user.streak.lastReset)
+    .map(member => ({
+        username: member.user.username,
+        differenceInMinutes: (now - new Date(member.user.streak.lastReset)) / (1000 * 60), // Convert difference to minutes
+        rank: member.rank
     }));
-
+    
     // Return paginated sorted members
     return res.status(200).json({
       message: "Members retrieved successfully",
