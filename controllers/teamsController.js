@@ -710,8 +710,12 @@ exports.joinToTeam = async function(req, res) {
     if (!team) {
         return { error: true, message: "Team not found." };
     }
-    if (team.dontAccept === true) {
-        return { error: true, message: "This team is not accepting new members." };
+
+    console.log(team.dontaccept);
+    if (team.dontaccept === true) {
+      return res.status(500).json({
+        message: "This team is not accepting new members.",
+      });
     }
 
     const teamUpdate = await Team.findByIdAndUpdate(
