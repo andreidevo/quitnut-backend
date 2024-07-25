@@ -970,7 +970,7 @@ exports.deleteAccount = async function(req, res) {
     const userId = new mongoose.Types.ObjectId(user._id);
 
     // Remove user from all communities' members lists
-    const teams = await Team.find({ members: userId });
+    const teams = await Team.find({ "members.user": userId });
 
     console.log("TEAMS");
     console.log(teams);
@@ -1116,7 +1116,7 @@ exports.getMembers = async function(req, res) {
         differenceInMinutes: (now - new Date(member.user.streak.lastReset)) / (1000 * 60), // Convert difference to minutes
         rank: member.rank
     }));
-    
+
     // Return paginated sorted members
     return res.status(200).json({
       message: "Members retrieved successfully",
