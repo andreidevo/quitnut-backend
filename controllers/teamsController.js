@@ -473,7 +473,8 @@ exports.getAllTeams = async function(req, res) {
           title: '$metadata.title',
           priority: 1,
           membersCount: 1,
-          typeTeam: 1
+          typeTeam: 1,
+          dontaccept: 1
         }
       }
     ]);
@@ -532,6 +533,7 @@ exports.getPublicTeams = async function(req, res) {
         title: '$metadata.title',
         priority: 1,
         membersCount: 1,
+        dontAccept: 1
       }}
     ]);
 
