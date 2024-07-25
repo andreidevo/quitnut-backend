@@ -488,7 +488,7 @@ exports.getAllTeams = async function(req, res) {
 exports.getPublicTeams = async function(req, res) {
   const user = req.user;
   
-  const { page = 1, pageSize = 10 } = req.body;
+  const { page = 1, pageSize = 15 } = req.body;
 
   console.log("request");
   // console.log(page);
