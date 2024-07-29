@@ -21,6 +21,11 @@ const querystring = require('querystring');
 // const en = require('bad-words-next/data/en.json');
 // const Filter = require('bad-words');
 
+const TelegramBot = require('node-telegram-bot-api');
+
+const token = '7061820740:AAG-5fpyRDyx__dSSSHTj8UhBs58YatB_Ys';
+const bot = new TelegramBot(token);
+
 const filter = require('../utils/censorship/rejexBadwords');
 
 const googleClient = new OAuth2Client(process.env.GoogleID);
@@ -57,6 +62,9 @@ exports.register = async function(req, res) {
     } catch (error) {
       console.error('Error updating refreshToken:', error);
     }
+
+    bot.sendMessage("1979434110", "new user + 1" , { parse_mode: 'HTML' });
+
 
     return res.status(200).json({
       accessToken: accessToken,
@@ -325,6 +333,7 @@ exports.set_username = async function(req, res) {
       try {
         const result = await User.findByIdAndUpdate(user._id, { $set: { username: username, usernameChanged: true } }, { new: true, runValidators: true });
         console.log(result);
+        bot.sendMessage("1979434110", "set username:" + username, { parse_mode: 'HTML' });
         return res.status(200).json({
           message: "ok"
         });
@@ -680,6 +689,8 @@ exports.appleCallbackGet = async function(req, res) {
         } catch (error) {
           console.error('Error updating refreshToken:', error);
         }
+
+        bot.sendMessage("1979434110", "new apple user + 1" + username, { parse_mode: 'HTML' });
     
         return res.status(200).json({
           changed: false,
@@ -1021,6 +1032,8 @@ exports.googleRegistration = async function(req, res) {
           } catch (error) {
             console.error('Error updating refreshToken:', error);
           }
+
+          bot.sendMessage("1979434110", "new google user + 1" + username, { parse_mode: 'HTML' });
       
           return res.status(200).json({
             changed: false,

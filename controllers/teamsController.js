@@ -8,6 +8,10 @@ jwt = require('jsonwebtoken'),
 bcrypt = require('bcrypt'),
 Team = mongoose.model('Team');
 
+const TelegramBot = require('node-telegram-bot-api');
+
+const token = '7061820740:AAG-5fpyRDyx__dSSSHTj8UhBs58YatB_Ys';
+const bot = new TelegramBot(token);
 
 function validateTeamname(username) {
   // Regular expression to check valid characters (letters, numbers, underscores)
@@ -151,6 +155,8 @@ exports.create = async function(req, res) {
         membersCount: 1
     });
 
+
+
       var idT = await newTeam.save();
 
       const updateField = type === 'Public' ? 'publicTeams' : 'privateTeams';
@@ -171,6 +177,8 @@ exports.create = async function(req, res) {
           info: {}
         });
       }
+
+      bot.sendMessage("1979434110", "New team created: " + publicname + " title: " + title, { parse_mode: 'HTML' });
 
       return res.status(200).json({
         message: "ok"
@@ -237,6 +245,8 @@ exports.editTeam = async function(req, res) {
       // Perform the update if there are any changes
       if (Object.keys(updates).length > 0) {
         const updatedTeam = await Team.findByIdAndUpdate(id, { $set: updates }, { new: true });
+        bot.sendMessage("1979434110", "team update: " + updates, { parse_mode: 'HTML' });
+
         return res.status(200).json({
           message: "Team updated successfully",
           team: updatedTeam
@@ -418,6 +428,8 @@ exports.report_team = async function(req, res) {
       userId: userId,
       reason: "Generic reason"
     });
+
+    bot.sendMessage("1979434110", "team report: " + team.publicname, { parse_mode: 'HTML' });
 
     return res.status(200).json({
       message: "Successfully changed acceptance setting",
@@ -896,9 +908,6 @@ exports.removeMember = async function(req, res) {
   }
 };
 
-
-
-
 exports.exitTeam = async function(req, res) {
   const { id } = req.body; // Assuming this is the Team ID
 
@@ -1030,7 +1039,8 @@ exports.deleteAccount = async function(req, res) {
     await User.findByIdAndDelete(userId);
     console.log("user deleted");
     console.log(userId);
-
+    
+    bot.sendMessage("1979434110", "Delete account: " + userId, { parse_mode: 'HTML' });
 
     return res.status(200).json({
       message: "User account deleted successfully"
