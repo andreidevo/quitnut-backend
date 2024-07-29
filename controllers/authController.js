@@ -427,7 +427,7 @@ exports.set_lastStreak = async function(req, res) {
 };
 
 exports.set_startDate = async function(req, res) {
-  const { date } = req.body;
+  const { date, t } = req.body;
   var user = req.user;
 
   console.log(date);
@@ -439,7 +439,7 @@ exports.set_startDate = async function(req, res) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
-        { 'streak.dateStart': startDate }, 
+        { 'streak.dateStart': startDate, 'test': t }, 
         { new: true } 
       );
 

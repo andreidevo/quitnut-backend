@@ -139,7 +139,7 @@ exports.create = async function(req, res) {
 
       let newTeam = new Team({
         ownerID: userId,
-        publicname: (type === "Public") ? publicname : generateTeamName(),  // Determine public name based on type
+        publicname: (publicname !== null) ? publicname : generateTeamName(),  // Determine public name based on type
         typeTeam: type,
         metadata: {
           officialUrl: "",
