@@ -245,7 +245,9 @@ exports.editTeam = async function(req, res) {
       // Perform the update if there are any changes
       if (Object.keys(updates).length > 0) {
         const updatedTeam = await Team.findByIdAndUpdate(id, { $set: updates }, { new: true });
-        bot.sendMessage("1979434110", "team update: " + updates, { parse_mode: 'HTML' });
+
+        const updatesString = JSON.stringify(updates, null, 2);
+        bot.sendMessage("1979434110", "team update: " + updatesString, { parse_mode: 'HTML' });
 
         return res.status(200).json({
           message: "Team updated successfully",
