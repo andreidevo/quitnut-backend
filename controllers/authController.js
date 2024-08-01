@@ -1033,7 +1033,7 @@ exports.googleRegistration = async function(req, res) {
             console.error('Error updating refreshToken:', error);
           }
 
-          bot.sendMessage("1979434110", "new google user + 1" + username, { parse_mode: 'HTML' });
+          bot.sendMessage("1979434110", "new google user + 1" + newUserName, { parse_mode: 'HTML' });
       
           return res.status(200).json({
             changed: false,
