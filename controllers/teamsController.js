@@ -1127,7 +1127,7 @@ exports.getMembers = async function(req, res) {
   
     const team = await Team.findById(id).populate({
       path: 'members.user',
-      select: 'username streak.lastReset'
+      select: 'username streak.lastReset streak.dateStart'
     });
 
     if (!team) {
