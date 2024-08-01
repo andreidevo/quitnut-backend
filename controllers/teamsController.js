@@ -1151,7 +1151,8 @@ exports.getMembers = async function(req, res) {
     .map(member => ({
         username: member.user.username,
         differenceInMinutes: (now - new Date(member.user.streak.lastReset)) / (1000 * 60), // Convert difference to minutes
-        rank: member.rank
+        rank: member.rank,
+        dateStart: member.user.streak.dateStart
     }));
 
     // Return paginated sorted members
