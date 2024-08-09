@@ -15,7 +15,7 @@ var UserSchema = new Schema({
   authProvider: { type: String, required: true }, // types: Google, Apple, email 
   authId: { type: String, required: true}, // getting id from Apple/Google
   refreshToken: { type: String },
-  username: { type: String, unique: true, required: true, lowercase: true}, // <---- UNIQUE 
+  username: { type: String, unique: true, required: true}, // <---- UNIQUE 
   usernameChanged: { type: Boolean, default: false },
   subscription: {
     status: { type: String, default: "null"}, // null, sub, lifetime
