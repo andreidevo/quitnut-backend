@@ -1,6 +1,8 @@
 'use strict';
 
 const asyncHandler = require('express-async-handler');
+var multer = require('multer');
+
 const { loginValidation } = require ("../middleware/inputValidation.js")
 const { signUpLimiter, newsletterLimiter } = require ("../middleware/rateLimiters.js")
 const { verifyJWT } = require ("../middleware/authenticateToken.js")
@@ -77,7 +79,22 @@ module.exports = function(app) {
   app.route('/api/teams/setStatuses/:teamId').post(validateChangeStatuses, verifyJWT, asyncHandler(communityHandlers.changeStatuses));
   app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, asyncHandler(communityHandlers.removeMember));
 
-  app.route('/api/teams/uploadImg').post(verifyJWT, asyncHandler(communityHandlers.uploadImageToS3));
+  // app.route('/api/teams/uploadImg').post(verifyJWT, asyncHandler(communityHandlers.uploadImageToS3));
+  
+  const upload = multer({
+    limits: { fileSize: 2 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+      const mimeType = mime.lookup(file.originalname);
+      if (ALLOWED_IMAGE_TYPES.includes(mimeType)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid file type. Only JPEG, PNG, and GIF images are allowed.'));
+      }
+    }
+  });
+
+  app.route('/api/teams/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3));
+
 
 
   

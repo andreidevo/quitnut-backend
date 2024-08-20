@@ -17,6 +17,8 @@ var https = require("https");
 const cors = require('cors');
 const punycode = require('punycode/');
 const cookieParser = require('cookie-parser');
+var multer = require("multer");
+var upload = multer();
 
 dotenv.config({ path: '.env' });
 
@@ -42,8 +44,9 @@ function detailedLogRequests(req, res, next) {
   console.log(`${req.method} ${req.originalUrl} - Query: ${JSON.stringify(req.query)} - Body: ${JSON.stringify(req.body)} - IP: ${req.ip}`);
   console.log(`${req.method} ${req.originalUrl} - Query: ${req.query} - Body: ${req.body} - IP: ${req.ip}`);
   console.log(`${req}`);
-  console.log(`${req.file}`);
-  console.log(`${req.files}`);
+  console.log(`${req.body}`);
+  console.log(`${req.body.name}`);
+  console.log(`${req.body.bucket_name}`);
 
   next();
 }
@@ -67,8 +70,9 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(upload.array());
 
 app.use(detailedLogRequests);
 
