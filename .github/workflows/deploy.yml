@@ -18,18 +18,18 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.ACTIONS_KEY }}
 
-    - name: Execute SSH commands
-      run: |
-       ssh -o StrictHostKeyChecking=no root@138.68.71.251 '
-        cd /srv/quitnut-backend && 
-        git config user.email "novatovvv@gmail.com" &&
-        git config user.name "Andrei" &&
-        git config pull.rebase true &&
-        git add .
-        if [ -z "$(git status --porcelain)" ]; then
-          echo "No changes to commit";
-        else
-          git commit -m "[skip ci] Update configurations" &&
-          git push;
-        fi' && git fetch --all && git reset --hard origin/main && git pull
+    # - name: Execute SSH commands
+    #   run: |
+    #    ssh -o StrictHostKeyChecking=no root@138.68.71.251 '
+    #     cd /srv/quitnut-backend && 
+    #     git config user.email "novatovvv@gmail.com" &&
+    #     git config user.name "Andrei" &&
+    #     git config pull.rebase true &&
+    #     git add .
+    #     if [ -z "$(git status --porcelain)" ]; then
+    #       echo "No changes to commit";
+    #     else
+    #       git commit -m "[skip ci] Update configurations" &&
+    #       git push;
+    #     fi' && git fetch --all && git reset --hard origin/main && git pull
       

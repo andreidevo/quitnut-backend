@@ -56,8 +56,6 @@ var TeamSchema = new Schema({
     reason: { type: String, required: true }
   }],
 
-  test:  { type: String, default: ""}
-
 });
 
 TeamSchema.index({ membersCount: 1 });

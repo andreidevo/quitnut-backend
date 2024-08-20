@@ -8,6 +8,10 @@ jwt = require('jsonwebtoken'),
 bcrypt = require('bcrypt'),
 Team = mongoose.model('Team');
 
+const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const mime = require('mime-types');
+
 const TelegramBot = require('node-telegram-bot-api');
 
 const token = '7061820740:AAG-5fpyRDyx__dSSSHTj8UhBs58YatB_Ys';
@@ -581,6 +585,7 @@ exports.getCommunityInfo = async function(req, res) {
   console.log("ok");
 
   try {
+    console.log(id);
     const community = await Team.findById(id).select('ownerID publicname typeTeam dontaccept metadata dontaccept statuses members membersCount').exec();
 
     if (!community) {
@@ -718,6 +723,7 @@ exports.joinToTeam = async function(req, res) {
 
     // check dontaccept
     
+    console.log(id);
     const team = await Team.findById(id);
 
     // If team does not exist or 'dontAccept' is true, return an error
@@ -991,6 +997,97 @@ exports.exitTeam = async function(req, res) {
 };
 
 
+
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',   // JPEG
+  'image/jpg',    // JPG (often used interchangeably with 'image/jpeg')
+  'image/png',    // PNG
+  'image/webp',   // WebP
+];
+
+
+const s3 = new S3Client({
+  region: 'us-east-1', 
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+const upload = multer({
+  limits: { fileSize: 2 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const mimeType = mime.lookup(file.originalname);
+    if (ALLOWED_IMAGE_TYPES.includes(mimeType)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG, PNG, and GIF images are allowed.'));
+    }
+  }
+});
+
+exports.uploadImageToS3 = async function(req, res) {
+  const user = req.user; 
+
+  const { bucket_name } = req.body; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: 'No token found or user is not authenticated',
+      info: {}
+    });
+  }
+  
+  console.log(req.body.name);
+  console.log(req.files);
+  console.log(bucket_name);
+  if (bucket_name !== "quitximages"){
+    return res.status(401).json({
+      message: 'No bucket with this name',
+      info: {}
+    });
+  }
+
+  // Use multer to handle the file upload
+  upload.single('image')(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const bucketName = bucket_name;
+    const fileName = Date.now() + '-' + user._id; // Generate a unique file name
+
+    // S3 upload parameters
+    const params = {
+      Bucket: bucketName,
+      Key: fileName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      ACL: 'public-read' // Set permissions as required
+    };
+
+    try {
+      // Upload the image to S3
+      // const data = await s3.upload(params).promise();
+      const data = await s3.send(new PutObjectCommand(params));
+      return res.status(200).json({
+        message: 'File uploaded successfully',
+        url: data.Location
+      });
+    } catch (uploadError) {
+      console.error('Error uploading to S3:', uploadError);
+      return res.status(500).json({
+        message: 'Failed to upload file',
+        error: uploadError.message
+      });
+    }
+  });
+};
 
 
 exports.deleteAccount = async function(req, res) {

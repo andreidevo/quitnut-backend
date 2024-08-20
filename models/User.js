@@ -21,7 +21,7 @@ var UserSchema = new Schema({
     status: { type: String, default: "null"}, // null, sub, lifetime
     history: { type: String, default: ""}, // just adding json here like: "lifetime: Date, sub: Date"
   },
-  imageUrl: { type: String },
+  imageUrl: { type: String }, // IMAGE
 
   // TEAMS
   communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
@@ -49,7 +49,9 @@ var UserSchema = new Schema({
     reason: { type: String, default: ""},
   }, // can't create groups, can't change username
 
-  lastActive: { type: Date, default: Date.now }
+  lastActive: { type: Date, default: Date.now },
+
+  test:  { type: String, default: ""}
 
 });
 

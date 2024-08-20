@@ -40,6 +40,11 @@ function originIsAllowed(origin) {
 
 function detailedLogRequests(req, res, next) {
   console.log(`${req.method} ${req.originalUrl} - Query: ${JSON.stringify(req.query)} - Body: ${JSON.stringify(req.body)} - IP: ${req.ip}`);
+  console.log(`${req.method} ${req.originalUrl} - Query: ${req.query} - Body: ${req.body} - IP: ${req.ip}`);
+  console.log(`${req}`);
+  console.log(`${req.file}`);
+  console.log(`${req.files}`);
+
   next();
 }
 
@@ -62,7 +67,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(detailedLogRequests);
