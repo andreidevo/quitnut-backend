@@ -1,7 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.TGKEY;
 const bot = new TelegramBot(token, { polling: false });
-
+var mongoose = require('mongoose'),
+User = mongoose.model('User'),
+Team = mongoose.model('Team');
 
 
 // bot.setWebHook('https://quitnut.app/botWebhook');
