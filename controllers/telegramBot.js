@@ -52,7 +52,7 @@ const handleCommands = async (update) => {
     console.log(update.body.message.text);
 
     if (update.body && update.body.message.text) {
-      const text = message.body.text.trim().split(' ')[0];  // Get command part before any space
+      const text = update.body.message.text.trim().split(' ')[0];  // Get command part before any space
 
     // Handle different commands
       switch (text) {
