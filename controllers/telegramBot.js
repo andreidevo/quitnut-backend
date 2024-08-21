@@ -32,6 +32,12 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   bot.sendMessage(chatId, resp);
 });
 
+function formatReportCounts(reportCounts) {
+  return reportCounts.map((report, index) => {
+    return `${index + 1} - Reason: ${report.reason}`;
+  }).join('\n');
+}
+
 
 const handleInlineButtons = async (callbackQuery) => {
 
@@ -68,16 +74,10 @@ const handleInlineButtons = async (callbackQuery) => {
 
     switch(button_tag) {
       case 'remove_photo_user':
-
-          // get user data 
-
           try {
             var userFound = await User.findOne({ _id: id_user });
             console.log(userFound);
-            // var userFound2 = await User.findOne({ _id: id_user });
             const imageKey = userFound.imageUrl;
-            
-            // get image KEY
 
             var params = {
               Bucket: "quitximages", 
@@ -92,8 +92,6 @@ const handleInlineButtons = async (callbackQuery) => {
               bot.sendMessage("1979434110", `${err} can't delete photo from s3`);
             }
 
-            
-
           } catch (error) {
             console.log(error);
             bot.sendMessage("1979434110", `${error} can't delete photo from s3`);
@@ -105,16 +103,46 @@ const handleInlineButtons = async (callbackQuery) => {
             bot.sendMessage("1979434110", `${id_user} can't remove photo`);
           }
 
-
-
           bot.sendMessage("1979434110", `${id_user} removed photo`);
           break;
-      case 'block_user':
-          bot.sendMessage("1979434110", `${id_user} block user`);
-          break;
-      case 'unblock_user':
-        bot.sendMessage("1979434110", `${id_user} unblock user`);
+      // case 'block_user':
+
+      //     try {
+      //       // var userFound = await User.findOne({ _id: id_user });
+      //       // console.log(userFound);
+              
+      //       await User.updateOne({ _id: id_user }, { $set: { imageUrl: "" } });
+
+      //     } catch (error) {
+      //       console.log(error);
+      //       bot.sendMessage("1979434110", `${error} can't block user`);
+      //     }
+
+      //     bot.sendMessage("1979434110", `${id_user} block user`);
+      //     break;
+      case 'reports_list_user':
+        var userFound = await User.findOne({ _id: id_user });
+
+        const message = formatReportCounts(reportCounts);
+        try {
+          await bot.sendMessage("1979434110", message);
+        } catch (error) {
+          console.error('Failed to send message:', error);
+          await bot.sendMessage("1979434110", error);
+        }
+
+        // bot.sendMessage("1979434110", `${id_user} unblock user`);
         break;
+      case 'printid_user':
+          var userFound = await User.findOne({ _id: id_user });
+          
+          if (userFound !== undefined){
+            await bot.sendMessage("1979434110", id_user);
+          } else {
+            await bot.sendMessage("1979434110", "No user found");
+          }
+
+          break;
     }
   }
 };
