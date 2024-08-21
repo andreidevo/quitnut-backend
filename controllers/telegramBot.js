@@ -43,6 +43,22 @@ function formatReportCounts(reportCounts) {
 }
 
 
+const handleCommands = async (update) => {
+  if (update.callback_query) {
+    return handleInlineButton(update.callback_query);
+  } else {
+    console.log(update.message);
+    console.log(update.message.text);
+
+    if (update.message && update.message.text) {
+      if (update.message.text.startsWith('/')) {
+        // Handle commands
+        return handleCommand(update.message);
+      }
+    }
+  }
+}
+
 const handleInlineButtons = async (callbackQuery) => {
 
   console.log("HANDLER");
@@ -155,5 +171,6 @@ const handleInlineButtons = async (callbackQuery) => {
 
 module.exports = {
   bot,
-  handleInlineButtons 
+  handleInlineButtons,
+  handleCommands
 };
