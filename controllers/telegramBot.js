@@ -89,12 +89,20 @@ const handleInlineButtons = async (callbackQuery) => {
               console.log("Success", data);
             } catch (err) {
               console.error("Error", err);
+              bot.sendMessage("1979434110", `${err} can't delete photo from s3`);
             }
 
-            // await User.updateOne({ _id: user._id }, { $set: { imageUrl: "" } });
+            
 
           } catch (error) {
             console.log(error);
+            bot.sendMessage("1979434110", `${error} can't delete photo from s3`);
+          }
+          
+          try {
+            await User.updateOne({ _id: id_user }, { $set: { imageUrl: "" } });
+          } catch (error) {
+            bot.sendMessage("1979434110", `${id_user} can't remove photo`);
           }
 
 
