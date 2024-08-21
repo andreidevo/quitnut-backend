@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
 User = mongoose.model('User'),
 Team = mongoose.model('Team');
 
+const { s3 } = require('./s3controller');
 
 // bot.setWebHook('https://quitnut.app/botWebhook');
 

@@ -13,6 +13,7 @@ const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/clien
 const mime = require('mime-types');
 
 const { bot } = require('./telegramBot');
+const { s3 } = require('./s3controller');
 
 function validateTeamname(username) {
   // Regular expression to check valid characters (letters, numbers, underscores)
@@ -1002,14 +1003,6 @@ const ALLOWED_IMAGE_TYPES = [
   'image/webp',   // WebP
 ];
 
-
-const s3 = new S3Client({
-  region: 'us-east-1', 
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
 
 const upload = multer({
   limits: { fileSize: 2 * 1024 * 1024 }, // 5MB limit
