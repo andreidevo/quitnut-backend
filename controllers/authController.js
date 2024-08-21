@@ -447,7 +447,7 @@ exports.set_startDate = async function(req, res) {
         { new: true } 
       );
 
-      const updatedUser = await User.findByIdAndUpdate(
+      const updatedUser2 = await User.findByIdAndUpdate(
         user._id,
         { 'test': t },
         { new: true }
