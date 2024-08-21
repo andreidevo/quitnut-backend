@@ -72,9 +72,16 @@ const handleCommands = async (req, res) => {
     // Handle different commands
       switch (text) {
         case '/reportuser':
-          const id = req.body.message.text.trim().split(' ')[1];
+          const idJoint = req.body.message.text.trim().split(' ')[1];
+          const id = idJoint.split(':')[0];
+
+          console.log(id);
+
           const reason = req.body.message.text.trim().split(':')[1]; 
           const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+
+          console.log(user_reported);
+
 
           const updatedUser = await User.findByIdAndUpdate(
             id, 
