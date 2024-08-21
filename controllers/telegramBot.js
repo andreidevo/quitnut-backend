@@ -69,12 +69,14 @@ const handleInlineButtons = async (callbackQuery) => {
 
           try {
             var userFound = await User.findOne({ _id: id_user });
+            console.log(userFound);
+            // var userFound2 = await User.findOne({ _id: id_user });
             const imageKey = userFound.imageUrl;
             
             // get image KEY
 
             var params = {
-              Bucket: bucketName, 
+              Bucket: "quitximages", 
               Key: "1724228328474-66702b9a51b3c8d532202972"
             };
       
