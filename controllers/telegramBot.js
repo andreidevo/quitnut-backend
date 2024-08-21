@@ -62,7 +62,39 @@ const handleInlineButtons = async (callbackQuery) => {
 
     switch(button_tag) {
       case 'remove_photo_user':
-          bot.sendMessage("1979434110", `${id_user} remove photo`);
+
+          // get user data 
+
+          try {
+            var userFound = await User.findOne({ _id: user._id });
+            const imageKey = userFound.imageUrl;
+            
+            // get image KEY
+
+            var params = {
+              Bucket: bucketName, 
+              Key: "1724228328474-66702b9a51b3c8d532202972"
+            };
+      
+            s3.deleteObject(params, function(err, data) {
+                if (err) {
+                    console.log(err, err.stack); // an error occurred
+                    res.status(500).send('Failed to delete');
+                } else {
+                    console.log(data);           // successful response
+                    res.send('Successfully deleted');
+                }
+            });
+
+            // await User.updateOne({ _id: user._id }, { $set: { imageUrl: "" } });
+
+          } catch (error) {
+            console.log(error);
+          }
+
+
+
+          bot.sendMessage("1979434110", `${id_user} removed photo`);
           break;
       case 'block_user':
           bot.sendMessage("1979434110", `${id_user} block user`);
