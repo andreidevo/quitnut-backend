@@ -77,7 +77,7 @@ const handleInlineButtons = async (callbackQuery) => {
 
             var params = {
               Bucket: "quitximages", 
-              Key: "1724228328474-66702b9a51b3c8d532202972"
+              Key: imageKey
             };
       
             s3.deleteObject(params, function(err, data) {
