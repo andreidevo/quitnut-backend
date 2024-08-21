@@ -17,14 +17,9 @@ const NodeRSA = require('node-rsa');
 const request = require('request-promise-native');
 const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
-// const BadWordsNext = require('bad-words-next');
-// const en = require('bad-words-next/data/en.json');
-// const Filter = require('bad-words');
 
-const TelegramBot = require('node-telegram-bot-api');
 
-const token = '7061820740:AAG-5fpyRDyx__dSSSHTj8UhBs58YatB_Ys';
-const bot = new TelegramBot(token);
+const bot = require('./TelegramBot');
 
 const filter = require('../utils/censorship/rejexBadwords');
 

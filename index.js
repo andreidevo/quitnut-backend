@@ -20,6 +20,10 @@ const cookieParser = require('cookie-parser');
 var multer = require("multer");
 var upload = multer();
 
+
+
+
+
 dotenv.config({ path: '.env' });
 
 
@@ -72,7 +76,7 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(upload.array());
+// app.use(upload.array());
 
 app.use(detailedLogRequests);
 

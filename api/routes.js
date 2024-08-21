@@ -2,6 +2,7 @@
 
 const asyncHandler = require('express-async-handler');
 var multer = require('multer');
+const mime = require('mime-types');
 
 const { loginValidation } = require ("../middleware/inputValidation.js")
 const { signUpLimiter, newsletterLimiter } = require ("../middleware/rateLimiters.js")
@@ -80,7 +81,13 @@ module.exports = function(app) {
   app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, asyncHandler(communityHandlers.removeMember));
 
   // app.route('/api/teams/uploadImg').post(verifyJWT, asyncHandler(communityHandlers.uploadImageToS3));
-  
+  const ALLOWED_IMAGE_TYPES = [
+    'image/jpeg',   // JPEG
+    'image/jpg',    // JPG (often used interchangeably with 'image/jpeg')
+    'image/png',    // PNG
+    'image/webp',   // WebP
+  ];
+
   const upload = multer({
     limits: { fileSize: 2 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
@@ -93,7 +100,11 @@ module.exports = function(app) {
     }
   });
 
-  app.route('/api/teams/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3));
+  app.route('/api/teams/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3Team));
+
+
+
+  app.route('/api/user/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3User));
 
 
 

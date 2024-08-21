@@ -9,13 +9,10 @@ bcrypt = require('bcrypt'),
 Team = mongoose.model('Team');
 
 const multer = require('multer');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const mime = require('mime-types');
 
-const TelegramBot = require('node-telegram-bot-api');
-
-const token = '7061820740:AAG-5fpyRDyx__dSSSHTj8UhBs58YatB_Ys';
-const bot = new TelegramBot(token);
+const bot = require('./TelegramBot');
 
 function validateTeamname(username) {
   // Regular expression to check valid characters (letters, numbers, underscores)
@@ -1026,7 +1023,145 @@ const upload = multer({
   }
 });
 
-exports.uploadImageToS3 = async function(req, res) {
+async function fetchDataFromS3(bucketName, key) {
+  const params = {
+      Bucket: bucketName,
+      Key: key
+  };
+
+  try {
+      const command = new GetObjectCommand(params);
+      const { Body } = await s3.send(command);
+      
+      // Convert stream to buffer
+      return await streamToBuffer(Body);
+  } catch (err) {
+      console.error('Error fetching data from S3:', err);
+      throw err;
+  }
+}
+
+function streamToBuffer(stream) {
+  return new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on('data', (chunk) => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+}
+
+exports.uploadImageToS3User = async function(req, res) {
+  const user = req.user; 
+
+  const { bucket_name } = req.body; 
+
+  if (!user) {
+    return res.status(401).json({
+      message: 'No token found or user is not authenticated',
+      info: {}
+    });
+  }
+  
+  console.log("Separation");
+  console.log(req.file);
+  console.log(bucket_name);
+  if (bucket_name !== "quitximages"){
+    return res.status(401).json({
+      message: 'No bucket with this name',
+      info: {}
+    });
+  }
+
+  if (req.file === undefined){
+    return res.status(401).json({
+      message: 'File is undefined',
+      info: {}
+    });
+  }
+  console.log("start 1");
+
+  const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const bucketName = bucket_name;
+    const fileName = Date.now() + '-' + user._id;
+
+    const params = {
+      Bucket: bucketName,
+      Key: fileName,
+      Body: file.buffer,
+      ContentType: file.mimetype
+    };
+
+    console.log(params);
+
+
+    try {
+      const data = await s3.send(new PutObjectCommand(params));
+      const imageUrl = data.Location
+
+      console.log(data);
+
+      // Ssend to a review 
+
+      const caption = `<b>Photo user new. </b> \n\n<b>User id:</b> ${user._id}`;
+
+      const options = {
+        caption: caption,  // Update your caption as needed
+        parse_mode: 'HTML',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: 'Remove Photo', callback_data: 'remove_photo:' + user._id}],
+                [{ text: 'Block User', callback_data: 'block_user:' + user._id}]
+            ]
+        }
+      };
+      
+      try {
+        (async () => {
+            try {
+                const buffer = await fetchDataFromS3(bucketName, fileName);
+
+                console.log(buffer);
+
+                bot.sendPhoto("1979434110", buffer, options);
+
+                console.log('Data fetched successfully:', buffer);
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            }
+        })();
+        
+      } catch (err){
+        console.log(err);
+      }
+
+      try {
+        await User.updateOne({ _id: user._id }, { $set: { imageUrl: imageUrl } });
+      } catch (err) {
+        console.error("Failed to update user's image URL:", err);
+        throw err; 
+      }
+
+      // https://us-east-1.console.aws.amazon.com/s3/object/quitximages?region=us-east-1&bucketType=general&prefix=fileName
+
+      return res.status(200).json({
+        message: 'File uploaded successfully',
+        url: data.Location
+      });
+    } catch (uploadError) {
+      
+      console.error('Error uploading to S3:', uploadError);
+      return res.status(500).json({
+        message: 'Failed to upload file',
+        error: uploadError.message
+      });
+    }
+};
+
+exports.uploadImageToS3Team = async function(req, res) {
   const user = req.user; 
 
   const { bucket_name } = req.body; 
@@ -1040,6 +1175,8 @@ exports.uploadImageToS3 = async function(req, res) {
   
   console.log(req.body.name);
   console.log(req.files);
+  console.log("Separation");
+  console.log(req.file);
   console.log(bucket_name);
   if (bucket_name !== "quitximages"){
     return res.status(401).json({
@@ -1048,13 +1185,16 @@ exports.uploadImageToS3 = async function(req, res) {
     });
   }
 
-  // Use multer to handle the file upload
-  upload.single('image')(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ message: err.message });
-    }
+  if (req.file === undefined){
+    return res.status(401).json({
+      message: 'File is undefined',
+      info: {}
+    });
+  }
+  console.log("start 1");
 
-    const file = req.file;
+  // Use multer to handle the file upload
+  const file = req.file;
     if (!file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
@@ -1062,31 +1202,39 @@ exports.uploadImageToS3 = async function(req, res) {
     const bucketName = bucket_name;
     const fileName = Date.now() + '-' + user._id; // Generate a unique file name
 
+    console.log(fileName);
+
+
     // S3 upload parameters
     const params = {
       Bucket: bucketName,
       Key: fileName,
       Body: file.buffer,
-      ContentType: file.mimetype,
-      ACL: 'public-read' // Set permissions as required
+      ContentType: file.mimetype
     };
+
+    console.log(params);
+
 
     try {
       // Upload the image to S3
       // const data = await s3.upload(params).promise();
       const data = await s3.send(new PutObjectCommand(params));
+
+      console.log(data);
+
       return res.status(200).json({
         message: 'File uploaded successfully',
         url: data.Location
       });
     } catch (uploadError) {
+      
       console.error('Error uploading to S3:', uploadError);
       return res.status(500).json({
         message: 'Failed to upload file',
         error: uploadError.message
       });
     }
-  });
 };
 
 

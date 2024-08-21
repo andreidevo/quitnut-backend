@@ -6,10 +6,7 @@ var mongoose = require('mongoose'),
 jwt = require('jsonwebtoken'),
 Report = mongoose.model('Report');
 
-const TelegramBot = require('node-telegram-bot-api');
-
-const token = '7061820740:AAG-5fpyRDyx__dSSSHTj8UhBs58YatB_Ys';
-const bot = new TelegramBot(token);
+const bot = require('./TelegramBot');
 
 
 exports.send_report = async function(req, res) {
