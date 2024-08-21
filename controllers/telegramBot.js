@@ -57,7 +57,7 @@ const handleInlineButtons = async (callbackQuery) => {
   console.log(first_name);
   console.log(button);
 
-  if (button !== undefined && tg_id.toString() === "1979434110"){
+  if (button !== undefined && tg_id.toString() === "1979434110" && first_name.toString() === "Andrei"){
 
     const button_tag =  button.split(":")[0];
     console.log(button_tag);
@@ -85,7 +85,7 @@ const handleInlineButtons = async (callbackQuery) => {
             };
       
             try {
-              const data = await s3Client.send(new DeleteObjectCommand(params));
+              const data = await s3.send(new DeleteObjectCommand(params));
               console.log("Success", data);
             } catch (err) {
               console.error("Error", err);
