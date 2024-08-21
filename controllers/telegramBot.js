@@ -72,7 +72,20 @@ const handleCommands = async (req, res) => {
     // Handle different commands
       switch (text) {
         case '/reportuser':
-          bot.sendMessage("1979434110", "Welcome to the bot!");
+          const id = req.body.message.text.trim().split(' ')[1];
+          const reason = req.body.message.text.trim().split(':')[1]; 
+          const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+
+          const updatedUser = await User.findByIdAndUpdate(
+            id, 
+            { $push: { reportCounts: {
+              userId: user_reported,
+              reason: reason
+            } } },
+            { new: true, safe: true } // options
+          );
+
+          bot.sendMessage("1979434110", `${id} reported: ${reason}`);
           break;
         case '/reportteam':
           bot.sendMessage("1979434110", "How can I help you? You can use /start to get started.");
