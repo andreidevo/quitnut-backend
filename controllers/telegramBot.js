@@ -105,7 +105,7 @@ const handleCommands = async (req, res) => {
           const reason2 = req.body.message.text.trim().split(':')[1]; 
           const user_reported2 = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
 
-          console.log(user_reported);
+          console.log(user_reported2);
 
           const updatedUser2 = await User.findByIdAndUpdate(
             id2, 
