@@ -44,8 +44,8 @@ function formatReportCounts(reportCounts) {
 
 
 const handleCommands = async (update) => {
-  if (update.callback_query) {
-    return handleInlineButton(update.callback_query);
+  if (update.body.callback_query) {
+    return handleInlineButton(update);
   } else {
     console.log(update.message);
     console.log(update.message.text);
