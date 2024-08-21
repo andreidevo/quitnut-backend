@@ -36,12 +36,16 @@ const handleInlineButtons = async (callbackQuery) => {
   console.log(callbackQuery);
   console.log("HANDLER2");
 
-  console.log(callbackQuery.data);
+  console.log(callbackQuery.body);
+  console.log("FROM");
+  console.log(callbackQuery.body.callback_query.from);
+  console.log("MESSAGE");
+  console.log(callbackQuery.body.callback_query.message);
 
 
-  const data = callbackQuery.data;
-  const chatId = callbackQuery.message.chat.id;
-  const messageId = callbackQuery.message.message_id;
+  // const data = callbackQuery.body;
+  // const chatId = callbackQuery.message.chat.id;
+  // const messageId = callbackQuery.message.message_id;
 
 
   // console.log(chatId);
