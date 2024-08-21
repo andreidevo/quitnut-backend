@@ -36,7 +36,7 @@ function formatReportCounts(reportCounts) {
   if (!reportCounts || reportCounts.length === 0) {
     return "No reports";
   }
-  
+
   return reportCounts.map((report, index) => {
     return `${index + 1} - Reason: ${report.reason}`;
   }).join('\n');
@@ -129,7 +129,6 @@ const handleInlineButtons = async (callbackQuery) => {
 
         const message = formatReportCounts(userFound.reportCounts);
 
-        if ()
         try {
           await bot.sendMessage("1979434110", message);
         } catch (error) {
