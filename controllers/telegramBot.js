@@ -5,6 +5,9 @@ var mongoose = require('mongoose'),
 User = mongoose.model('User'),
 Team = mongoose.model('Team');
 
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+
+
 const { s3 } = require('./s3controller');
 
 // bot.setWebHook('https://quitnut.app/botWebhook');
@@ -81,15 +84,12 @@ const handleInlineButtons = async (callbackQuery) => {
               Key: imageKey
             };
       
-            s3.deleteObject(params, function(err, data) {
-                if (err) {
-                    console.log(err, err.stack); // an error occurred
-                    res.status(500).send('Failed to delete');
-                } else {
-                    console.log(data);           // successful response
-                    res.send('Successfully deleted');
-                }
-            });
+            try {
+              const data = await s3Client.send(new DeleteObjectCommand(params));
+              console.log("Success", data);
+            } catch (err) {
+              console.error("Error", err);
+            }
 
             // await User.updateOne({ _id: user._id }, { $set: { imageUrl: "" } });
 
