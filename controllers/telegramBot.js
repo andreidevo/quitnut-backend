@@ -123,7 +123,7 @@ const handleInlineButtons = async (callbackQuery) => {
       case 'reports_list_user':
         var userFound = await User.findOne({ _id: id_user });
 
-        const message = formatReportCounts(reportCounts);
+        const message = formatReportCounts(userFound.reportCounts);
         try {
           await bot.sendMessage("1979434110", message);
         } catch (error) {
