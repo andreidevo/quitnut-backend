@@ -52,18 +52,26 @@ const handleCommands = async (update) => {
     console.log(update.body.message.text);
 
     if (update.body && update.body.message.text) {
-      const text = update.body.message.text.trim().split(' ')[0];  // Get command part before any space
+      const tg_id = update.body.message.from.id;
+      const first_name = update.body.message.from.first_name;
+      
+      if (!(tg_id.toString() === "1979434110" && first_name.toString() === "Andrei")){
+        return;
+      }
 
+
+      const text = update.body.message.text.trim().split(' ')[0];  // Get command part before any space
+      
     // Handle different commands
       switch (text) {
         case '/reportuser':
-          bot.sendMessage(chatId, "Welcome to the bot!");
+          bot.sendMessage("1979434110", "Welcome to the bot!");
           break;
         case '/reportteam':
-          bot.sendMessage(chatId, "How can I help you? You can use /start to get started.");
+          bot.sendMessage("1979434110", "How can I help you? You can use /start to get started.");
           break;
         default:
-          bot.sendMessage(chatId, "Sorry, I didn't understand that command.");
+          bot.sendMessage("1979434110", "Sorry, I didn't understand that command.");
           break;
       }
     }
