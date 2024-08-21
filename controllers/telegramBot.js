@@ -28,25 +28,33 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 
 
 const handleInlineButtons = async (callbackQuery) => {
+
+  console.log("HANDLER");
+  console.log(data);
+
+  console.log("HANDLER2");
+
+  console.log(callbackQuery);
+
+
   const data = callbackQuery.data;
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
 
-  console.log("HANDLER");
-  console.log(data);
-  console.log(chatId);
-  console.log(messageId);
 
-  if (chatId === "1979434110"){
-    switch(data) {
-      case 'remove_photo':
-          bot.sendMessage("1979434110", 'remove_photo pressed');
-          break;
-      case 'block_user':
-          bot.sendMessage("1979434110", 'block_user pressed');
-          break;
-    }
-  }
+  // console.log(chatId);
+  // console.log(messageId);
+
+  // if (chatId === "1979434110"){
+  //   switch(data) {
+  //     case 'remove_photo':
+  //         bot.sendMessage("1979434110", 'remove_photo pressed');
+  //         break;
+  //     case 'block_user':
+  //         bot.sendMessage("1979434110", 'block_user pressed');
+  //         break;
+  //   }
+  // }
 };
 
 
