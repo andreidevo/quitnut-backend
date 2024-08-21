@@ -82,20 +82,41 @@ const handleCommands = async (req, res) => {
 
           console.log(user_reported);
 
-
           const updatedUser = await User.findByIdAndUpdate(
             id, 
             { $push: { reportCounts: {
               userId: user_reported,
               reason: reason
             } } },
-            { new: true, safe: true } // options
+            { new: true, safe: true } 
           );
 
           bot.sendMessage("1979434110", `${id} reported: ${reason}`);
           break;
         case '/reportteam':
           bot.sendMessage("1979434110", "How can I help you? You can use /start to get started.");
+          break;
+        case '/banuser':
+          const idJoint = req.body.message.text.trim().split(' ')[1];
+          const id = idJoint.split(':')[0];
+
+          console.log(id);
+
+          const reason = req.body.message.text.trim().split(':')[1]; 
+          const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+
+          console.log(user_reported);
+
+          const updatedUser = await User.findByIdAndUpdate(
+            id, 
+            { $set: {
+              'banned.status': true,
+              'banned.reason': reason
+            } },
+            { new: true, safe: true } 
+          );
+
+          bot.sendMessage("1979434110", `${id} banned: ${reason}`);
           break;
         default:
           bot.sendMessage("1979434110", "Sorry, I didn't understand that command.");
