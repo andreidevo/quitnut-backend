@@ -57,13 +57,17 @@ const handleCommands = async (req, res) => {
     if (req.body && req.body.message.text) {
       const tg_id = req.body.message.from.id;
       const first_name = req.body.message.from.first_name;
+      console.log("LOL WE");
 
       if (!(tg_id.toString() === "1979434110" && first_name.toString() === "Andrei")){
         return;
       }
 
+      console.log("LOL WE HERE");
+
 
       const text = req.body.message.text.trim().split(' ')[0];  // Get command part before any space
+      console.log(text);
       
     // Handle different commands
       switch (text) {
