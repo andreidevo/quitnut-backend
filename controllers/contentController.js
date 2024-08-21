@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 jwt = require('jsonwebtoken'),
 Report = mongoose.model('Report');
 
-const bot = require('./telegramBot');
+const { bot }  = require('./telegramBot');
 
 
 exports.send_report = async function(req, res) {

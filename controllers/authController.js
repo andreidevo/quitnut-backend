@@ -19,7 +19,7 @@ const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
 
 
-const bot = require('./telegramBot');
+const { bot }  = require('./telegramBot');
 
 const filter = require('../utils/censorship/rejexBadwords');
 
