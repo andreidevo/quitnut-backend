@@ -49,9 +49,9 @@ const handleCommands = async (update) => {
   } else {
     console.log("COMMAND TEXT OAOAOAAOAOAOA");
     console.log(update.body);
-    console.log(update.body.text);
+    console.log(update.body.message.text);
 
-    if (update.body && update.body.text) {
+    if (update.body && update.body.message.text) {
       const text = message.body.text.trim().split(' ')[0];  // Get command part before any space
 
     // Handle different commands
