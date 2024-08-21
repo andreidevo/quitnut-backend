@@ -38,5 +38,5 @@ const tgLimiter = rateLimit({
 
 
 module.exports = {
-  signUpLimiter, newsletterLimiter
+  signUpLimiter, newsletterLimiter, tgLimiter
 };
