@@ -27,7 +27,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 });
 
 
-const handleInlineButtons = (callbackQuery) => {
+const handleInlineButtons = async (callbackQuery) => {
   const data = callbackQuery.data;
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
