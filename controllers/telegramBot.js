@@ -50,6 +50,7 @@ const handleInlineButtons = async (callbackQuery) => {
   console.log(tg_id);
   console.log(first_name);
   console.log(button);
+  console.log(button !== undefined && tg_id === "1979434110");
 
   if (button !== undefined && tg_id === "1979434110"){
 
