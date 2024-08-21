@@ -33,14 +33,14 @@ const handleInlineButtons = async (callbackQuery) => {
   // console.log(data);
 
 
-  console.log(callbackQuery);
-  console.log("HANDLER2");
+  // console.log(callbackQuery);
+  // console.log("HANDLER2");
 
-  console.log(callbackQuery.body);
-  console.log("FROM");
-  console.log(callbackQuery.body.callback_query.from);
-  console.log("MESSAGE");
-  console.log(callbackQuery.body.callback_query.message);
+  // console.log(callbackQuery.body);
+  // console.log("FROM");
+  // console.log(callbackQuery.body.callback_query.from);
+  // console.log("MESSAGE");
+  // console.log(callbackQuery.body.callback_query.message);
 
   const tg_id = callbackQuery.body.callback_query.from.id;
   const first_name = callbackQuery.body.callback_query.from.first_name;
