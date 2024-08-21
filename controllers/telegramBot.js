@@ -43,27 +43,27 @@ function formatReportCounts(reportCounts) {
 }
 
 
-const handleCommands = async (update) => {
+const handleCommands = async (req, res) => {
 
   res.status(200).send('OK');
-  
-  if (update.body.callback_query) {
-    return handleInlineButtons(update);
+
+  if (req.body.callback_query) {
+    return handleInlineButtons(req);
   } else {
     console.log("COMMAND TEXT OAOAOAAOAOAOA");
-    console.log(update.body);
-    console.log(update.body.message.text);
+    console.log(req.body);
+    console.log(req.body.message.text);
 
-    if (update.body && update.body.message.text) {
-      const tg_id = update.body.message.from.id;
-      const first_name = update.body.message.from.first_name;
+    if (req.body && req.body.message.text) {
+      const tg_id = req.body.message.from.id;
+      const first_name = req.body.message.from.first_name;
 
       if (!(tg_id.toString() === "1979434110" && first_name.toString() === "Andrei")){
         return;
       }
 
 
-      const text = update.body.message.text.trim().split(' ')[0];  // Get command part before any space
+      const text = req.body.message.text.trim().split(' ')[0];  // Get command part before any space
       
     // Handle different commands
       switch (text) {
