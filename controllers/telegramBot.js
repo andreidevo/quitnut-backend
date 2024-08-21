@@ -97,26 +97,26 @@ const handleCommands = async (req, res) => {
           bot.sendMessage("1979434110", "How can I help you? You can use /start to get started.");
           break;
         case '/banuser':
-          const idJoint = req.body.message.text.trim().split(' ')[1];
-          const id = idJoint.split(':')[0];
+          const idJoint2 = req.body.message.text.trim().split(' ')[1];
+          const id2 = idJoint2.split(':')[0];
 
-          console.log(id);
+          console.log(id2);
 
-          const reason = req.body.message.text.trim().split(':')[1]; 
-          const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+          const reason2 = req.body.message.text.trim().split(':')[1]; 
+          const user_reported2 = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
 
           console.log(user_reported);
 
           const updatedUser = await User.findByIdAndUpdate(
-            id, 
+            id2, 
             { $set: {
               'banned.status': true,
-              'banned.reason': reason
+              'banned.reason': reason2
             } },
             { new: true, safe: true } 
           );
 
-          bot.sendMessage("1979434110", `${id} banned: ${reason}`);
+          bot.sendMessage("1979434110", `${id2} banned: ${reason2}`);
           break;
         default:
           bot.sendMessage("1979434110", "Sorry, I didn't understand that command.");
