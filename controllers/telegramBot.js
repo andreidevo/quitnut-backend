@@ -30,11 +30,13 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 const handleInlineButtons = async (callbackQuery) => {
 
   console.log("HANDLER");
-  console.log(data);
+  // console.log(data);
 
-  console.log("HANDLER2");
 
   console.log(callbackQuery);
+  console.log("HANDLER2");
+
+  console.log(callbackQuery.data);
 
 
   const data = callbackQuery.data;
