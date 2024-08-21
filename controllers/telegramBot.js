@@ -44,6 +44,9 @@ function formatReportCounts(reportCounts) {
 
 
 const handleCommands = async (update) => {
+
+  res.status(200).send('OK');
+  
   if (update.body.callback_query) {
     return handleInlineButtons(update);
   } else {
@@ -77,7 +80,6 @@ const handleCommands = async (update) => {
     }
   }
 
-  res.status(200).send('OK');
 }
 
 const handleInlineButtons = async (callbackQuery) => {

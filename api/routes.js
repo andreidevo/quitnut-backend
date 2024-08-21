@@ -109,6 +109,6 @@ module.exports = function(app) {
 
   app.route('/api/user/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3User));
 
-  app.route('/webhook').post(tgLimiter, asyncHandler(telegramBot.handleCommands));
+  app.route('/webhook').post(asyncHandler(telegramBot.handleCommands));
 
 };
