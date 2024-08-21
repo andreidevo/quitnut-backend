@@ -68,7 +68,7 @@ const handleInlineButtons = async (callbackQuery) => {
           // get user data 
 
           try {
-            var userFound = await User.findOne({ _id: user._id });
+            var userFound = await User.findOne({ _id: id_user });
             const imageKey = userFound.imageUrl;
             
             // get image KEY
