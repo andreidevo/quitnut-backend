@@ -12,7 +12,7 @@ const multer = require('multer');
 const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const mime = require('mime-types');
 
-const bot = require('./TelegramBot');
+const bot = require('./telegramBot');
 
 function validateTeamname(username) {
   // Regular expression to check valid characters (letters, numbers, underscores)
