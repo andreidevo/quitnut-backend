@@ -107,7 +107,7 @@ const handleCommands = async (req, res) => {
 
           console.log(user_reported);
 
-          const updatedUser = await User.findByIdAndUpdate(
+          const updatedUser2 = await User.findByIdAndUpdate(
             id2, 
             { $set: {
               'banned.status': true,
