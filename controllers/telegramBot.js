@@ -47,11 +47,18 @@ const handleInlineButtons = async (callbackQuery) => {
 
   const button = callbackQuery.body.callback_query.data; // remove_photo:66702b9a51b3c8d532202972
 
+  console.log(tg_id);
+  console.log(first_name);
+  console.log(button);
+
   if (button !== undefined && tg_id === "1979434110"){
 
     const button_tag =  button.split(":")[0];
+    console.log(button_tag);
+
     const id_user =  button.split(":")[1];
 
+    console.log(id_user);
 
     switch(button_tag) {
       case 'remove_photo_user':
