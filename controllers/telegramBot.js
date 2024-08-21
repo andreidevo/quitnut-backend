@@ -42,25 +42,29 @@ const handleInlineButtons = async (callbackQuery) => {
   console.log("MESSAGE");
   console.log(callbackQuery.body.callback_query.message);
 
+  const tg_id = callbackQuery.body.callback_query.from.id;
+  const first_name = callbackQuery.body.callback_query.from.first_name;
 
-  // const data = callbackQuery.body;
-  // const chatId = callbackQuery.message.chat.id;
-  // const messageId = callbackQuery.message.message_id;
+  const button = callbackQuery.body.callback_query.data; // remove_photo:66702b9a51b3c8d532202972
+
+  if (button !== undefined && tg_id === "1979434110"){
+
+    const button_tag =  button.split(":")[0];
+    const id_user =  button.split(":")[1];
 
 
-  // console.log(chatId);
-  // console.log(messageId);
-
-  // if (chatId === "1979434110"){
-  //   switch(data) {
-  //     case 'remove_photo':
-  //         bot.sendMessage("1979434110", 'remove_photo pressed');
-  //         break;
-  //     case 'block_user':
-  //         bot.sendMessage("1979434110", 'block_user pressed');
-  //         break;
-  //   }
-  // }
+    switch(button_tag) {
+      case 'remove_photo_user':
+          bot.sendMessage("1979434110", `${id_user} remove photo`);
+          break;
+      case 'block_user':
+          bot.sendMessage("1979434110", `${id_user} block user`);
+          break;
+      case 'unblock_user':
+        bot.sendMessage("1979434110", `${id_user} unblock user`);
+        break;
+    }
+  }
 };
 
 

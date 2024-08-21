@@ -1113,8 +1113,9 @@ exports.uploadImageToS3User = async function(req, res) {
         parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Remove Photo', callback_data: 'remove_photo:' + user._id}],
+                [{ text: 'Remove Photo', callback_data: 'remove_photo_user:' + user._id}],
                 [{ text: 'Block User', callback_data: 'block_user:' + user._id}]
+                [{ text: 'Unblock User', callback_data: 'unblock_user:' + user._id}]
             ]
         }
       };
