@@ -47,8 +47,8 @@ const handleCommands = async (update) => {
   if (update.body.callback_query) {
     return handleInlineButtons(update);
   } else {
-    console.log(update.message);
-    console.log(update.message.text);
+    console.log("COMMAND TEXT OAOAOAAOAOAOA");
+    console.log(update);
 
     if (update.message && update.message.text) {
       if (update.message.text.startsWith('/')) {
