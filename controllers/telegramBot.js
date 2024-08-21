@@ -48,12 +48,23 @@ const handleCommands = async (update) => {
     return handleInlineButtons(update);
   } else {
     console.log("COMMAND TEXT OAOAOAAOAOAOA");
-    console.log(update);
+    console.log(update.body);
+    console.log(update.body.text);
 
-    if (update.message && update.message.text) {
-      if (update.message.text.startsWith('/')) {
-        // Handle commands
-        return handleCommand(update.message);
+    if (update.body && update.body.text) {
+      const text = message.body.text.trim().split(' ')[0];  // Get command part before any space
+
+    // Handle different commands
+      switch (text) {
+        case '/reportuser':
+          bot.sendMessage(chatId, "Welcome to the bot!");
+          break;
+        case '/reportteam':
+          bot.sendMessage(chatId, "How can I help you? You can use /start to get started.");
+          break;
+        default:
+          bot.sendMessage(chatId, "Sorry, I didn't understand that command.");
+          break;
       }
     }
   }
