@@ -15,6 +15,13 @@ const newsletterLimiter = rateLimit({
     "Too many requests sent from this IP, please try again after an hour"
 });
 
+const tgLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000 / 2, // 30 minutes
+  max: 50, // limit each IP to 5 create account requests per windowMs
+  message:  "Too many accounts created from this IP, please try again after an hour",
+  legacyHeaders: false
+});
+
 // const IDlimiter = rateLimit({
 //   store: new RedisStore({
 //       client: redisClient,

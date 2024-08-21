@@ -5,7 +5,7 @@ var multer = require('multer');
 const mime = require('mime-types');
 
 const { loginValidation } = require ("../middleware/inputValidation.js")
-const { signUpLimiter, newsletterLimiter } = require ("../middleware/rateLimiters.js")
+const { signUpLimiter, newsletterLimiter, tgLimiter } = require ("../middleware/rateLimiters.js")
 const { verifyJWT } = require ("../middleware/authenticateToken.js")
 const validateRegister = require('../dto/user/register.dto.js')
 const validateLogin = require('../dto/user/login.dto.js')
@@ -33,11 +33,12 @@ const validateGetMembers = require('../dto/team/getMembers.dto.js');
 const validateChangeStatuses = require('../dto/team/changeStatuses.dto.js');
 const uploadImage = require('../dto/team/uploadImage.dto.js');
 
-
+const { bot, handleInlineButtons } = require('../controllers/telegramBot');
 
 var authHandlers = require('../controllers/authController.js');
 var contentHandlers = require('../controllers/contentController.js');
 var communityHandlers = require('../controllers/teamsController.js');
+var telegramBot = require('../controllers/telegramBot.js');
 
 module.exports = function(app) {
   // ------- Auth
@@ -88,6 +89,8 @@ module.exports = function(app) {
     'image/webp',   // WebP
   ];
 
+  
+
   const upload = multer({
     limits: { fileSize: 2 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
@@ -106,9 +109,6 @@ module.exports = function(app) {
 
   app.route('/api/user/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3User));
 
+  app.route('/webhook').post(asyncHandler(tgLimiter, telegramBot.handleInlineButtons));
 
-
-  
-  
-  
 };

@@ -21,9 +21,6 @@ var multer = require("multer");
 var upload = multer();
 
 
-
-
-
 dotenv.config({ path: '.env' });
 
 
