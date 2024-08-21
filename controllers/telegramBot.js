@@ -54,7 +54,7 @@ const handleCommands = async (update) => {
     if (update.body && update.body.message.text) {
       const tg_id = update.body.message.from.id;
       const first_name = update.body.message.from.first_name;
-      
+
       if (!(tg_id.toString() === "1979434110" && first_name.toString() === "Andrei")){
         return;
       }
@@ -76,6 +76,8 @@ const handleCommands = async (update) => {
       }
     }
   }
+
+  res.status(200).send('OK');
 }
 
 const handleInlineButtons = async (callbackQuery) => {
