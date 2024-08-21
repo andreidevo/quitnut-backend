@@ -443,8 +443,14 @@ exports.set_startDate = async function(req, res) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
-        { 'streak.dateStart': startDate, 'test': t }, 
+        { 'streak.dateStart': startDate}, 
         { new: true } 
+      );
+
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { 'test': t },
+        { new: true }
       );
 
       return res.status(200).json({

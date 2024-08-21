@@ -51,7 +51,7 @@ var UserSchema = new Schema({
 
   lastActive: { type: Date, default: Date.now },
 
-  test:  { type: String, default: ""}
+  test: { type: String, default: ""}
 
 });
 
