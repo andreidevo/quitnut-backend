@@ -487,6 +487,7 @@ exports.getAllTeams = async function(req, res) {
         $project: { // Define which fields to include
           _id: 1, // Team _id
           title: '$metadata.title',
+          image: '$metadata.imageUrl',
           priority: 1,
           membersCount: 1,
           typeTeam: 1,
@@ -547,6 +548,7 @@ exports.getPublicTeams = async function(req, res) {
       { $project: { 
         _id: 1,
         title: '$metadata.title',
+        image: '$metadata.imageUrl',
         priority: 1,
         membersCount: 1,
         dontAccept: 1
