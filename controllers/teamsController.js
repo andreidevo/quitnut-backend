@@ -9,7 +9,7 @@ bcrypt = require('bcrypt'),
 Team = mongoose.model('Team');
 
 const multer = require('multer');
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const mime = require('mime-types');
@@ -1139,6 +1139,9 @@ exports.uploadImageToS3User = async function(req, res) {
     console.log(params);
 
 
+    const imagePreviousKey = teamExists.metadata.imageUrl
+
+
     try {
       const data = await s3.send(new PutObjectCommand(params));
       const imageUrl = data.Location
@@ -1181,6 +1184,26 @@ exports.uploadImageToS3User = async function(req, res) {
         
       } catch (err){
         console.log(err);
+      }
+
+      var userExists = User.findOne({ _id: user._id });
+      console.log("USER EXISTS");
+      console.log(userExists);
+
+      const imagePreviousKey = userExists.imageUrl;
+
+      if (imagePreviousKey !== undefined && imagePreviousKey !== ""){
+        var paramsDelete = {
+          Bucket: "quitximages", 
+          Key: imagePreviousKey
+        };
+
+        try {
+          const data = await s3.send(new DeleteObjectCommand(paramsDelete));
+          console.log("Success", data);
+        } catch (err) {
+          console.error("Error", err);
+        }
       }
 
       try {
@@ -1287,6 +1310,8 @@ exports.uploadImageToS3Team = async function(req, res) {
     });
   }
 
+ 
+
   console.log("team exists");
 
   const userIdObject = new mongoose.Types.ObjectId(user._id);
@@ -1339,6 +1364,22 @@ exports.uploadImageToS3Team = async function(req, res) {
       
     } catch (err){
       console.log(err);
+    }
+
+    const imagePreviousKey = teamExists.metadata.imageUrl
+
+    if (imagePreviousKey !== undefined && imagePreviousKey !== ""){
+      var paramsDelete = {
+        Bucket: "quitximages", 
+        Key: imagePreviousKey
+      };
+  
+      try {
+        const data = await s3.send(new DeleteObjectCommand(paramsDelete));
+        console.log("Success", data);
+      } catch (err) {
+        console.error("Error", err);
+      }
     }
 
     try {
