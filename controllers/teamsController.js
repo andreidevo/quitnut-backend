@@ -548,7 +548,13 @@ exports.getPublicTeams = async function(req, res) {
       { $project: { 
         _id: 1,
         title: '$metadata.title',
-        image: '$metadata.imageUrl',
+        image: {
+          $cond: {
+            if: { $eq: ['$metadata.imageUrl', ''] },
+            then: null,
+            else: '$metadata.imageUrl'
+          }
+        },
         priority: 1,
         membersCount: 1,
         dontAccept: 1
