@@ -1300,21 +1300,25 @@ exports.uploadImageToS3Team = async function(req, res) {
         { $set: { 'metadata.imageUrl': imageUrl } }
       );
 
+      console.log(result);
+      console.log("COUNT MODIFIER");
+      console.log(result.modifiedCount);
+
+
       if (result.modifiedCount === 1) {
           res.status(200).json({
             message: 'File uploaded successfully',
-            error: uploadError.message
           });
         } else {
           return res.status(500).json({
             message: 'Failed to upload file',
-            error: uploadError.message
+            error: "Failed to upload file"
           });
         }
     } catch (err) {
       return res.status(500).json({
         message: err,
-        error: uploadError.message
+        error: err
       });
       throw err; 
     }
