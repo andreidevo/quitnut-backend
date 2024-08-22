@@ -1136,9 +1136,27 @@ exports.uploadImageToS3User = async function(req, res) {
       }
 
       try {
-        await User.updateOne({ _id: user._id }, { $set: { imageUrl: imageUrl } });
+        
+        const result = await User.updateOne({ _id: user._id }, { $set: { imageUrl: imageUrl } });
+  
+        if (result.modifiedCount === 1) {
+            res.status(200).json({
+              message: 'File uploaded successfully',
+              error: uploadError.message
+            });
+          } else {
+            return res.status(500).json({
+              message: 'Failed to upload file',
+              error: uploadError.message
+            });
+          }
+
       } catch (err) {
         console.error("Failed to update user's image URL:", err);
+        return res.status(500).json({
+          message: err,
+          error: uploadError.message
+        });
         throw err; 
       }
 
@@ -1161,7 +1179,7 @@ exports.uploadImageToS3User = async function(req, res) {
 exports.uploadImageToS3Team = async function(req, res) {
   const user = req.user; 
 
-  const { bucket_name } = req.body; 
+  const { bucket_name, team_id } = req.body; 
 
   if (!user) {
     return res.status(401).json({
@@ -1170,11 +1188,10 @@ exports.uploadImageToS3Team = async function(req, res) {
     });
   }
   
-  console.log(req.body.name);
-  console.log(req.files);
-  console.log("Separation");
-  console.log(req.file);
+
   console.log(bucket_name);
+  console.log(team_id);
+
   if (bucket_name !== "quitximages"){
     return res.status(401).json({
       message: 'No bucket with this name',
@@ -1188,50 +1205,129 @@ exports.uploadImageToS3Team = async function(req, res) {
       info: {}
     });
   }
-  console.log("start 1");
 
-  // Use multer to handle the file upload
+  if (team_id === undefined){
+    return res.status(401).json({
+      message: 'Team id is undefined',
+      info: {}
+    });
+  }
+
+  console.log("start teams");
+
   const file = req.file;
-    if (!file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
 
-    const bucketName = bucket_name;
-    const fileName = Date.now() + '-' + user._id; // Generate a unique file name
+  const bucketName = bucket_name;
+  const fileName = Date.now() + '-' + team_id;
 
-    console.log(fileName);
+  const params = {
+    Bucket: bucketName,
+    Key: fileName,
+    Body: file.buffer,
+    ContentType: file.mimetype
+  };
+
+  console.log(params);
+
+  const teamIdObject = new mongoose.Types.ObjectId(team_id);
+  var teamExists = await Team.findOne({ _id: teamIdObject });
+
+  if (!teamExists){
+    return res.status(401).json({
+      message: 'Team is not exists',
+      info: {}
+    });
+  }
+
+  console.log("team exists");
+
+  const userIdObject = new mongoose.Types.ObjectId(user._id);
+
+  if (!teamExists.ownerID.equals(userIdObject)){
+    return res.status(500).json({ message: "No permissions" });
+  }
+  console.log("Permisiion hay");
 
 
-    // S3 upload parameters
-    const params = {
-      Bucket: bucketName,
-      Key: fileName,
-      Body: file.buffer,
-      ContentType: file.mimetype
+  try {
+    const data = await s3.send(new PutObjectCommand(params));
+    const imageUrl = data.Location
+
+    console.log(data);
+
+    // Ssend to a review 
+
+    const caption = `<b>Photo Team new. </b> \n\n<b>Team id:</b> ${team_id} \n\n<b>User id:</b> ${user._id}`;
+
+    const options = {
+      caption: caption,  // Update your caption as needed
+      parse_mode: 'HTML',
+      reply_markup: {
+          inline_keyboard: [
+              [{ text: 'Remove Photo', callback_data: 'remove_photo_team:' + team_id}],
+              // [{ text: 'Report User', callback_data: 'report_user:' + user._id}],
+              [{ text: 'Reports List', callback_data: 'reports_list_user:' + user._id}],
+              [{ text: 'Print ID', callback_data: 'printid_user:' + user._id}],
+              // [{ text: 'Block User', callback_data: 'block_user:' + user._id}],
+              // [{ text: 'Unblock User', callback_data: 'unblock_user:' + user._id}]
+          ]
+      }
     };
+    
+    try {
+      (async () => {
+          try {
+              const buffer = await fetchDataFromS3(bucketName, fileName);
 
-    console.log(params);
+              console.log(buffer);
 
+              bot.sendPhoto("1979434110", buffer, options);
+
+              console.log('Data fetched successfully:', buffer);
+          } catch (error) {
+              console.error('Failed to fetch data:', error);
+          }
+      })();
+      
+    } catch (err){
+      console.log(err);
+    }
 
     try {
-      // Upload the image to S3
-      // const data = await s3.upload(params).promise();
-      const data = await s3.send(new PutObjectCommand(params));
 
-      console.log(data);
+      const result = await Team.updateOne(
+        { _id: team_id }, 
+        { $set: { 'metadata.imageUrl': imageUrl } }
+      );
 
-      return res.status(200).json({
-        message: 'File uploaded successfully',
-        url: data.Location
-      });
-    } catch (uploadError) {
-      
-      console.error('Error uploading to S3:', uploadError);
+      if (result.modifiedCount === 1) {
+          res.status(200).json({
+            message: 'File uploaded successfully',
+            error: uploadError.message
+          });
+        } else {
+          return res.status(500).json({
+            message: 'Failed to upload file',
+            error: uploadError.message
+          });
+        }
+    } catch (err) {
       return res.status(500).json({
-        message: 'Failed to upload file',
+        message: err,
         error: uploadError.message
       });
+      throw err; 
     }
+
+    
+  } catch (uploadError) {
+    
+    console.error('Error uploading to S3:', uploadError);
+    return res.status(500).json({
+      message: 'Failed to upload file',
+      error: uploadError.message
+    });
+  }
 };
 
 

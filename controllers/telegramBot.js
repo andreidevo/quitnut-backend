@@ -175,6 +175,7 @@ const handleInlineButtons = async (callbackQuery) => {
             try {
               const data = await s3.send(new DeleteObjectCommand(params));
               console.log("Success", data);
+              bot.sendMessage("1979434110", `${id_user} removed photo`);
             } catch (err) {
               console.error("Error", err);
               bot.sendMessage("1979434110", `${err} can't delete photo from s3`);
@@ -191,7 +192,7 @@ const handleInlineButtons = async (callbackQuery) => {
             bot.sendMessage("1979434110", `${id_user} can't remove photo`);
           }
 
-          bot.sendMessage("1979434110", `${id_user} removed photo`);
+
           break;
       // case 'block_user':
 
