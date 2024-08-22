@@ -512,7 +512,7 @@ exports.getAllTeams = async function(req, res) {
         //   Expires: 60 * 60 // URL expires in 5 minutes
         // };
         // team.image = await s3.getSignedUrlPromise('getObject', params);
-        team.image = await getSignedUrl(s3Client, new GetObjectCommand({
+        team.image = await getSignedUrl(s3, new GetObjectCommand({
           Bucket: "quitximages",
           Key: team.image,
         }), { expiresIn: 60 * 60 });
