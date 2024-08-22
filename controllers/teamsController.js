@@ -1294,7 +1294,9 @@ exports.uploadImageToS3Team = async function(req, res) {
     }
 
     try {
-
+      
+      console.log(teamIdObject);
+      console.log(imageUrl);
       const result = await Team.updateOne(
         { _id: teamIdObject }, 
         { $set: { 'metadata.imageUrl': imageUrl } }
