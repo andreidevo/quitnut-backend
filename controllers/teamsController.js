@@ -429,6 +429,7 @@ exports.report_team = async function(req, res) {
           info: {}
       });
     }
+
     
     team.reportCounts.push({
       userId: userId,
@@ -436,6 +437,8 @@ exports.report_team = async function(req, res) {
     });
 
     bot.sendMessage("1979434110", "team report: " + team.publicname, { parse_mode: 'HTML' });
+    
+    const updatedTeam = await Team.findById(id);
 
     return res.status(200).json({
       message: "Successfully changed acceptance setting",
