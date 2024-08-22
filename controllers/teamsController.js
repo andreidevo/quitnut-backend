@@ -487,7 +487,13 @@ exports.getAllTeams = async function(req, res) {
         $project: { // Define which fields to include
           _id: 1, // Team _id
           title: '$metadata.title',
-          image: '$metadata.imageUrl',
+          image: {
+            $cond: {
+              if: { $eq: ['$metadata.imageUrl', ''] },
+              then: null,
+              else: '$metadata.imageUrl'
+            }
+          },
           priority: 1,
           membersCount: 1,
           typeTeam: 1,
