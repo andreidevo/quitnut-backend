@@ -1137,7 +1137,7 @@ exports.uploadImageToS3User = async function(req, res) {
 
       try {
         
-        const result = await User.updateOne({ _id: user._id }, { $set: { imageUrl: imageUrl } });
+        const result = await User.updateOne({ _id: user._id }, { $set: { imageUrl: fileName } });
   
         if (result.modifiedCount === 1) {
             res.status(200).json({
@@ -1299,7 +1299,7 @@ exports.uploadImageToS3Team = async function(req, res) {
       console.log(imageUrl);
       const result = await Team.updateOne(
         { _id: teamIdObject }, 
-        { $set: { 'metadata.imageUrl': imageUrl } }
+        { $set: { 'metadata.imageUrl': fileName } }
       );
 
       console.log(result);
