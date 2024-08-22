@@ -10,6 +10,8 @@ Team = mongoose.model('Team');
 
 const multer = require('multer');
 const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
 const mime = require('mime-types');
 
 const { bot } = require('./telegramBot');
@@ -504,12 +506,16 @@ exports.getAllTeams = async function(req, res) {
 
     const teamsWithSignedUrls = await Promise.all(teams.map(async team => {
       if (team.image) {
-        const params = {
-          Bucket: 'quitximages',
-          Key: team.image, // Assuming 'image' contains the key for the S3 object
-          Expires: 60 * 60 // URL expires in 5 minutes
-        };
-        team.image = await s3.getSignedUrlPromise('getObject', params);
+        // const params = {
+        //   Bucket: 'quitximages',
+        //   Key: team.image, // Assuming 'image' contains the key for the S3 object
+        //   Expires: 60 * 60 // URL expires in 5 minutes
+        // };
+        // team.image = await s3.getSignedUrlPromise('getObject', params);
+        team.image = await getSignedUrl(s3Client, new GetObjectCommand({
+          Bucket: "quitximages",
+          Key: team.image,
+        }), { expiresIn: 60 * 60 });
       }
       return team;
     }));
