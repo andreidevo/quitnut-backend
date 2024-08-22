@@ -502,9 +502,21 @@ exports.getAllTeams = async function(req, res) {
       }
     ]);
 
+    const teamsWithSignedUrls = await Promise.all(teams.map(async team => {
+      if (team.image) {
+        const params = {
+          Bucket: 'quitximages',
+          Key: team.image, // Assuming 'image' contains the key for the S3 object
+          Expires: 60 * 60 // URL expires in 5 minutes
+        };
+        team.image = await s3.getSignedUrlPromise('getObject', params);
+      }
+      return team;
+    }));
+
     return res.status(200).json({
       message: "ok",
-      teams: teams
+      teams: teamsWithSignedUrls
     });
   } catch (error) {
     console.error('Error retrieving teams:', error);
