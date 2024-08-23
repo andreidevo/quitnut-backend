@@ -988,8 +988,14 @@ async function verifyGoogle(idToken, platform) {
       idToken: idToken,
       audience: (platform === "android") ? process.env.GoogleID : process.env.IosID, 
   });
+
   const payload = ticket.getPayload();
+
+  console.log(payload);
+
   const userid = payload['sub'];
+  console.log(userid);
+
   return payload; // this includes user's information and can be used to check or create accounts
 }
 
