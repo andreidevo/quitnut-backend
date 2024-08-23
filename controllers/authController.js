@@ -980,7 +980,7 @@ exports.appleCallbackPost = async function(req, res) {
 
 async function verifyGoogle(idToken, platform) {
   console.log(googleClient);
-  consoel.log(platform);
+  console.log(platform);
   console.log(process.env.GoogleID);
   console.log(process.env.IosID);
 
