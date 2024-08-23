@@ -983,7 +983,7 @@ async function verifyGoogle(idToken, platform) {
   console.log(platform);
   console.log(process.env.GoogleID);
   console.log(process.env.IosID);
-
+  console.log(idToken);
 
   try {
     const ticket = await googleClient.verifyIdToken({
