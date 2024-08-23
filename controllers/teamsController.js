@@ -769,8 +769,6 @@ exports.joinToTeam = async function(req, res) {
   try {
     const userId = new mongoose.Types.ObjectId(user._id);
 
-
-    // check dontaccept
     
     console.log(id);
     const team = await Team.findById(id);

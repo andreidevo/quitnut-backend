@@ -979,36 +979,20 @@ exports.appleCallbackPost = async function(req, res) {
 
 
 async function verifyGoogle(idToken, platform) {
-  console.log(googleClient);
-  console.log(platform);
-  console.log(process.env.GoogleID);
-  console.log(process.env.IosID);
-  console.log(idToken);
+  // console.log(googleClient);
+  // console.log(platform);
+  // console.log(process.env.GoogleID);
+  // console.log(process.env.IosID);
+  // console.log(idToken);
 
-  try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: idToken,
-      audience: (platform === "android") ? process.env.GoogleID : process.env.IosID, 
-    });
+  const ticket = await googleClient.verifyIdToken({
+    idToken: idToken,
+    audience: (platform === "android") ? process.env.GoogleID : process.env.IosID, 
+  });
 
-    const payload = ticket.getPayload();
-    console.log(payload);
-    const userid = payload['sub'];
-    console.log(userid);
-    return payload;
-
-  } catch (error) {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: idToken,
-      audience: (platform !== "android") ? process.env.GoogleID : process.env.IosID, 
-    });
-
-    const payload = ticket.getPayload();
-    console.log(payload);
-    const userid = payload['sub'];
-    console.log(userid);
-    return payload;
-  }
+  const payload = ticket.getPayload();
+  const userid = payload['sub'];
+  return payload;
 
  // this includes user's information and can be used to check or create accounts
 }
