@@ -984,19 +984,33 @@ async function verifyGoogle(idToken, platform) {
   console.log(process.env.GoogleID);
   console.log(process.env.IosID);
 
-  const ticket = await googleClient.verifyIdToken({
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
       idToken: idToken,
       audience: (platform === "android") ? process.env.GoogleID : process.env.IosID, 
-  });
+    });
 
-  const payload = ticket.getPayload();
+    const payload = ticket.getPayload();
+    console.log(payload);
+    const userid = payload['sub'];
+    console.log(userid);
+    return payload;
 
-  console.log(payload);
+  } catch (error) {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: idToken,
+      audience: (platform !== "android") ? process.env.GoogleID : process.env.IosID, 
+    });
 
-  const userid = payload['sub'];
-  console.log(userid);
+    const payload = ticket.getPayload();
+    console.log(payload);
+    const userid = payload['sub'];
+    console.log(userid);
+    return payload;
+  }
 
-  return payload; // this includes user's information and can be used to check or create accounts
+ // this includes user's information and can be used to check or create accounts
 }
 
 exports.googleRegistration = async function(req, res) {
