@@ -979,7 +979,10 @@ exports.appleCallbackPost = async function(req, res) {
 
 
 async function verifyGoogle(idToken, platform) {
-  console.log(googleClient)
+  console.log(googleClient);
+  consoel.log(platform);
+  console.log(process.env.GoogleID);
+  console.log(process.env.IosID);
 
   const ticket = await googleClient.verifyIdToken({
       idToken: idToken,
