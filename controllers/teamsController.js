@@ -784,6 +784,15 @@ exports.joinToTeam = async function(req, res) {
         message: "This team is not accepting new members.",
       });
     }
+    
+    const isMember = team.members.some((member) => member.user.equals(userId));
+
+    if (isMember) {
+        return res.status(400).json({
+            message: "User is already a member of this team.",
+        });
+    }
+    
 
     const teamUpdate = await Team.findByIdAndUpdate(
       id,
