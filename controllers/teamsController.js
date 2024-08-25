@@ -541,6 +541,8 @@ exports.getPublicTeams = async function(req, res) {
   
   const { page = 1, pageSize = 15 } = req.body;
 
+  pageSize = 15;
+
   console.log("request");
   // console.log(page);
 
