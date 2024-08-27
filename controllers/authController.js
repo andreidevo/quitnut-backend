@@ -28,6 +28,8 @@ const googleClient = new OAuth2Client(process.env.GoogleID);
 exports.text = async function(req, res) {}
 
 exports.register = async function(req, res) {
+
+  console.log(req.body);
   try {
     var newUser = new User(req.body);
 
@@ -42,10 +44,7 @@ exports.register = async function(req, res) {
 
       return performLogin(existingUser, req, res);
     }
-
     
-    newUser.hash_password = bcrypt.hashSync(req.body.password, 10);
-
     const user = await newUser.save();
 
     const accessToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET || 'super-secret-tokenasd2223', { expiresIn: '30d' });
@@ -58,7 +57,6 @@ exports.register = async function(req, res) {
       console.error('Error updating refreshToken:', error);
     }
 
-    bot.sendMessage("1979434110", "new user + 1" , { parse_mode: 'HTML' });
 
 
     return res.status(200).json({

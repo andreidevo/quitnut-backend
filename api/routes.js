@@ -38,6 +38,7 @@ const { bot, handleInlineButtons } = require('../controllers/telegramBot');
 var authHandlers = require('../controllers/authController.js');
 var contentHandlers = require('../controllers/contentController.js');
 var communityHandlers = require('../controllers/teamsController.js');
+var postsHandlers = require('../controllers/postsController.js');
 var telegramBot = require('../controllers/telegramBot.js');
 
 module.exports = function(app) {
@@ -81,6 +82,34 @@ module.exports = function(app) {
   app.route('/api/teams/setStatuses/:teamId').post(validateChangeStatuses, verifyJWT, asyncHandler(communityHandlers.changeStatuses));
   app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, asyncHandler(communityHandlers.removeMember));
 
+
+
+  // POSTS
+  app.route('/api/posts/createPost').post(verifyJWT, asyncHandler(postsHandlers.createPost));
+
+  // app.route('/api/posts/editPost').post(validateReport, verifyJWT, asyncHandler(postsHandlers.createPost));
+  // app.route('/api/posts/closeComments').post(validateReport, verifyJWT, asyncHandler(postsHandlers.createPost));
+  // app.route('/api/posts/getPostObject').post(validateReport, verifyJWT, asyncHandler(postsHandlers.createPost));
+
+  app.route('/api/posts/removePost').post(verifyJWT, asyncHandler(postsHandlers.removePost)); 
+
+  app.route('/api/posts/addReactionPost').post(verifyJWT, asyncHandler(postsHandlers.addReactionToPost));
+  app.route('/api/posts/removeReactionPost').post(verifyJWT, asyncHandler(postsHandlers.removeReactionFromPost));
+  app.route('/api/posts/reportPost').post(verifyJWT, asyncHandler(postsHandlers.reportPost));
+
+  app.route('/api/posts/addCommentToPost').post(verifyJWT, asyncHandler(postsHandlers.addCommentToPost));
+  app.route('/api/posts/removeCommentPost').post(verifyJWT, asyncHandler(postsHandlers.removeCommentFromPost));
+  app.route('/api/posts/replyAdd').post(verifyJWT, asyncHandler(postsHandlers.addReplyToComment));
+
+  app.route('/api/posts/addReactionToComment').post(verifyJWT, asyncHandler(postsHandlers.addReactionToComment));
+  app.route('/api/posts/removeReactionFromComment').post(verifyJWT, asyncHandler(postsHandlers.removeReactionFromComment));
+
+  app.route('/api/posts/getCommentsWithReplies').post(verifyJWT, asyncHandler(postsHandlers.getCommentsWithReplies));
+
+  app.route('/api/posts/getPosts').post(verifyJWT, asyncHandler(postsHandlers.getPosts));
+
+  
+
   // app.route('/api/teams/uploadImg').post(verifyJWT, asyncHandler(communityHandlers.uploadImageToS3));
   const ALLOWED_IMAGE_TYPES = [
     'image/jpeg',   // JPEG
@@ -88,8 +117,6 @@ module.exports = function(app) {
     'image/png',    // PNG
     'image/webp',   // WebP
   ];
-
-  
 
   const upload = multer({
     limits: { fileSize: 2 * 1024 * 1024 }, // 5MB limit

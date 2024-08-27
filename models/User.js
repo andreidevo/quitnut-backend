@@ -44,6 +44,11 @@ var UserSchema = new Schema({
   // CONTESTS
   challenges: [{ type: Schema.Types.ObjectId, ref: 'Challenge' }],
 
+  posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+
+
   banned: {
     status: { type: Boolean, default: false },
     reason: { type: String, default: ""},

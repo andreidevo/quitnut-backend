@@ -7,6 +7,18 @@ const registerZodSchema = z.object({
     z.string(),
     z.number().transform((val) => val.toString()),
   ]),
+  username: z.union([
+    z.string(),
+    z.number().transform((val) => val.toString()),
+  ]),
+  authProvider: z.union([
+    z.string(),
+    z.number().transform((val) => val.toString()),
+  ]),
+  authId: z.union([
+    z.string(),
+    z.number().transform((val) => val.toString()),
+  ]),
 });
 
 const validateRegister = validate(registerZodSchema);
