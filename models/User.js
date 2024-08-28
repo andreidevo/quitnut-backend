@@ -48,6 +48,16 @@ var UserSchema = new Schema({
   
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 
+  saved: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+
+  globalrank: {
+    score: { type: Number, default: 0 },
+    history: [{
+      from: { type: String, required: true  },
+      score: { type: Number, required: true },
+      date: { type: Date, default: Date.now },
+    }]
+  },
 
   banned: {
     status: { type: Boolean, default: false },
