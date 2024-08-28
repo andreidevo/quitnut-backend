@@ -14,6 +14,8 @@ var PostSchema = new Schema({
   withoutstreak: { type: Boolean, default: false },
   nsfw: { type: Boolean, default: false },
 
+  locale: { type: String, default: "en" },
+
   metadata: {
     text: { type: String},
     imageUrl: { type: String},

@@ -615,6 +615,14 @@ exports.getCommentsWithReplies = async function(req, res) {
     const limit = 100; // Number of top-level comments per page
     const skip = (page - 1) * limit;
 
+    const user = req.user; 
+    if (!user) {
+      return res.status(401).json({
+        message: "No token found or user is not authenticated",
+        info: {}
+      });
+    }
+
     try {
         // Fetch only top-level comments (comments without a parentID)
         const topLevelComments = await Comment.find({ postID: postId, parentID: null })
@@ -655,6 +663,14 @@ exports.getPosts = async function(req, res) {
   const limit = parseInt(req.query.limit) || 10; // Default to 10 posts per page
   const skip = (page - 1) * limit;
 
+  const user = req.user; 
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
   try {
       const posts = await Post.find({})
         .sort({ created: 1 }) // Sort by created date, oldest first
@@ -663,6 +679,10 @@ exports.getPosts = async function(req, res) {
         .populate({
             path: 'ownerID',
             select: 'imageUrl username subscription.status' // Populate user details from ownerID
+        })
+        .populate({ // Assuming you need to populate user IDs from reactions to check against
+          path: 'reactionsList.users',
+          select: '_id'
         })
         .lean();
 
@@ -677,13 +697,20 @@ exports.getPosts = async function(req, res) {
             .select('-reportCounts') // Exclude reportCounts from the lastComment
             .lean();
 
+          const enhancedReactionsList = post.reactionsList.map(reaction => ({
+            reactionID: reaction.reactionID, // Only return the reactionID
+            count: reaction.count,  // Maintain the count of reactions
+            userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
+          }));
+
           return {
             ...post,
             lastComment: lastComment ? {
                 ...lastComment,
                 ownerUsername: lastComment.ownerID.username, // Extract username from populated ownerID
                 ownerImageUrl: lastComment.ownerID.imageUrl // Extract imageUrl from populated ownerID
-            } : null // Include the last comment with user details or null if none
+            } : null,
+            reactionsList: enhancedReactionsList // Include the last comment with user details or null if none
           };
       }));
 
