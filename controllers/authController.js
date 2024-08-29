@@ -314,7 +314,7 @@ exports.set_username = async function(req, res) {
     
     if (find.banned.status){
       return res.status(500).json({
-        message: "The user has been banned for the following reason: " + find.banned.reason,
+        message: find.banned.reason,
       });
     }
 
