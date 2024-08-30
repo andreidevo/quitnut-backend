@@ -663,13 +663,12 @@ exports.getCommentsWithReplies = async function(req, res) {
 
 exports.getPosts = async function(req, res) {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20; 
-
-
+  const limit = parseInt(req.query.limit) || 20;
+  const tags = req.query.tags ? req.query.tags.split(',') : []; // Split tags by comma if provided
+  const locale = req.query.locale || ''; // Locale can be directly taken as a string
 
   const skip = (page - 1) * limit;
-
-  const user = req.user; 
+  const user = req.user;
   if (!user) {
     return res.status(401).json({
       message: "No token found or user is not authenticated",
@@ -678,60 +677,68 @@ exports.getPosts = async function(req, res) {
   }
 
   try {
-      const posts = await Post.find({})
-        .sort({ created: 1 }) // Sort by created date, oldest first
-        .skip(skip)
-        .limit(limit)
-        .populate({
-            path: 'ownerID',
-            select: 'imageUrl username subscription.status' // Populate user details from ownerID
-        })
-        .populate({ // Assuming you need to populate user IDs from reactions to check against
-          path: 'reactionsList.users',
-          select: '_id'
-        })
-        .lean();
+    const query = { $and: [] };
+    if (tags.length > 0) {
+      query.$and.push({ 'tagsList.tagID': { $in: tags } }); // Adjusted to filter by tagID in tagsList
+    }
+    if (locale) {
+      query.$and.push({ locale: locale }); // Filter by locale if provided
+    }
+    if (query.$and.length === 0) delete query.$and; // If no filters, do not use $and condition
 
-      // Append lastComment to each post with user details and without reportCounts
-      const postsWithDetails = await Promise.all(posts.map(async (post) => {
-          const lastComment = await Comment.findOne({ postID: post._id })
-            .sort({ created: -1 })
-            .populate({
-                path: 'ownerID',
-                select: 'imageUrl username' // Assuming you need only imageUrl and username
-            })
-            .select('-reportCounts') // Exclude reportCounts from the lastComment
-            .lean();
+    const posts = await Post.find(query)
+      .sort({ created: 1 }) // Sort by created date, oldest first
+      .skip(skip)
+      .limit(limit)
+      .populate({
+          path: 'ownerID',
+          select: 'imageUrl username subscription.status' // Populate user details from ownerID
+      })
+      .populate({
+        path: 'reactionsList.users',
+        select: '_id'
+      })
+      .lean();
 
-          const enhancedReactionsList = post.reactionsList.map(reaction => ({
-            reactionID: reaction.reactionID, // Only return the reactionID
-            count: reaction.count,  // Maintain the count of reactions
-            userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
-          }));
+    const postsWithDetails = await Promise.all(posts.map(async (post) => {
+        const lastComment = await Comment.findOne({ postID: post._id })
+          .sort({ created: -1 })
+          .populate({
+              path: 'ownerID',
+              select: 'imageUrl username' // Assuming you need only imageUrl and username
+          })
+          .select('-reportCounts') // Exclude reportCounts from the lastComment
+          .lean();
 
-          return {
-            ...post,
-            lastComment: lastComment ? {
-                ...lastComment,
-                ownerUsername: lastComment.ownerID.username, // Extract username from populated ownerID
-                ownerImageUrl: lastComment.ownerID.imageUrl // Extract imageUrl from populated ownerID
-            } : null,
-            reactionsList: enhancedReactionsList // Include the last comment with user details or null if none
-          };
-      }));
+        const enhancedReactionsList = post.reactionsList.map(reaction => ({
+          reactionID: reaction.reactionID, // Only return the reactionID
+          count: reaction.count,  // Maintain the count of reactions
+          userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
+        }));
 
-      return res.status(200).json({
-        message: "Posts fetched successfully",
-        data: postsWithDetails,
-        currentPage: page,
-        perPage: limit,
-        totalPages: Math.ceil(await Post.countDocuments() / limit)
-      });
+        return {
+          ...post,
+          lastComment: lastComment ? {
+              ...lastComment,
+              ownerUsername: lastComment.ownerID.username, // Extract username from populated ownerID
+              ownerImageUrl: lastComment.ownerID.imageUrl // Extract imageUrl from populated ownerID
+          } : null,
+          reactionsList: enhancedReactionsList // Include the last comment with user details or null if none
+        };
+    }));
+
+    return res.status(200).json({
+      message: "Posts fetched successfully",
+      data: postsWithDetails,
+      currentPage: page,
+      perPage: limit,
+      totalPages: Math.ceil(await Post.countDocuments(query) / limit)
+    });
   } catch (error) {
-      console.error("Error fetching posts:", error);
-      return res.status(500).json({
-          message: "Failed to fetch posts",
-          error: error.toString()
-      });
+    console.error("Error fetching posts:", error);
+    return res.status(500).json({
+        message: "Failed to fetch posts",
+        error: error.toString()
+    });
   }
 };
