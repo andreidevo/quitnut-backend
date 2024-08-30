@@ -1039,6 +1039,8 @@ exports.googleRegistration = async function(req, res) {
           // create new account 
           var newUserName = await findUniqueUsername();
           var bannedUser = await Banned.findOne({ email: (data["email"] !== undefined) ? data["email"] : "faefae laeolaoefl lalala" });
+          console.log("bannedUser");
+          console.log(bannedUser);
           
           var newUser = new User({
             authProvider: "google",
