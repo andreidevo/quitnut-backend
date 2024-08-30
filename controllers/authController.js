@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 jwt = require('jsonwebtoken'),
 bcrypt = require('bcrypt'),
 User = mongoose.model('User'),
+Banned = mongoose.model('Banned'),
 Team = mongoose.model('Team');
 
 const dotenv = require('dotenv');
@@ -517,6 +518,9 @@ exports.googleFunction = async function(req, res) {
       
       if (payload["email"] === email){
         var existingUser = await User.findOne({ email: email });
+
+        var bannedUser = await Banned.findOne({ email: email });
+        
         
         if (!existingUser) {
           let newUser = new User({
@@ -525,6 +529,10 @@ exports.googleFunction = async function(req, res) {
             authProvider: "google",
             created: Date.now(),
             accountId: payload["sub"],
+            banned: {
+              status: (bannedUser !== undefined) ? true : false,
+              reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+            }
             // newsletter: checkBox
           });
 
@@ -670,12 +678,17 @@ exports.appleCallbackGet = async function(req, res) {
       if (!user){
         // create new account 
         var newUserName = await findUniqueUsername();
+        var bannedUser = await Banned.findOne({ email: email });
         
         var newUser = new User({
           authProvider: "apple",
           email: (data["email"] != null) ? data["email"] : null,
           authId: sub,
           username: newUserName,
+          banned: {
+            status: (bannedUser !== undefined) ? true : false,
+            reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+          }
         });
 
         const savedUser = await newUser.save();
@@ -883,12 +896,18 @@ exports.appleCallbackPost = async function(req, res) {
       if (!user){
         // create new account 
         var newUserName = await findUniqueUsername();
+        var bannedUser = await Banned.findOne({ email: email });
+
         
         var newUser = new User({
           authProvider: "apple",
           email: (data["email"] != null) ? data["email"] : null,
           authId: sub,
           username: newUserName,
+          banned: {
+            status: (bannedUser !== undefined) ? true : false,
+            reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+          }
         });
 
         const savedUser = await newUser.save();
@@ -1018,6 +1037,7 @@ exports.googleRegistration = async function(req, res) {
         if (!user){
           // create new account 
           var newUserName = await findUniqueUsername();
+          var bannedUser = await Banned.findOne({ email: email });
           
           var newUser = new User({
             authProvider: "google",
@@ -1026,6 +1046,10 @@ exports.googleRegistration = async function(req, res) {
             authId: sub,
             name: (data["name"] != null) ? data["name"] : null,
             username: newUserName,
+            banned: {
+              status: (bannedUser !== undefined) ? true : false,
+              reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+            }
           });
 
           const savedUser = await newUser.save();
