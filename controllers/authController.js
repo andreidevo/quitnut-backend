@@ -678,7 +678,7 @@ exports.appleCallbackGet = async function(req, res) {
       if (!user){
         // create new account 
         var newUserName = await findUniqueUsername();
-        var bannedUser = await Banned.findOne({ email: email });
+        var bannedUser = await Banned.findOne({ email: (data["email"] !== undefined) ? data["email"] : "faefae laeolaoefl lalala" });
         
         var newUser = new User({
           authProvider: "apple",
@@ -896,7 +896,8 @@ exports.appleCallbackPost = async function(req, res) {
       if (!user){
         // create new account 
         var newUserName = await findUniqueUsername();
-        var bannedUser = await Banned.findOne({ email: email });
+
+        var bannedUser = await Banned.findOne({ email: (data["email"] !== undefined) ? data["email"] : "faefae laeolaoefl lalala" });
 
         
         var newUser = new User({
@@ -1037,7 +1038,7 @@ exports.googleRegistration = async function(req, res) {
         if (!user){
           // create new account 
           var newUserName = await findUniqueUsername();
-          var bannedUser = await Banned.findOne({ email: email });
+          var bannedUser = await Banned.findOne({ email: (data["email"] !== undefined) ? data["email"] : "faefae laeolaoefl lalala" });
           
           var newUser = new User({
             authProvider: "google",
