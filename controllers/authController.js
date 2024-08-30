@@ -530,8 +530,8 @@ exports.googleFunction = async function(req, res) {
             created: Date.now(),
             accountId: payload["sub"],
             banned: {
-              status: (bannedUser !== undefined) ? true : false,
-              reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+              status: (bannedUser !== undefined && bannedUser != null) ? true : false,
+              reason: (bannedUser !== undefined && bannedUser != null) ? bannedUser.reason : ""
             }
             // newsletter: checkBox
           });
@@ -686,8 +686,8 @@ exports.appleCallbackGet = async function(req, res) {
           authId: sub,
           username: newUserName,
           banned: {
-            status: (bannedUser !== undefined) ? true : false,
-            reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+            status: (bannedUser !== undefined && bannedUser != null) ? true : false,
+            reason: (bannedUser !== undefined && bannedUser != null) ? bannedUser.reason : ""
           }
         });
 
@@ -906,8 +906,8 @@ exports.appleCallbackPost = async function(req, res) {
           authId: sub,
           username: newUserName,
           banned: {
-            status: (bannedUser !== undefined) ? true : false,
-            reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+            status: (bannedUser !== undefined && bannedUser != null) ? true : false,
+            reason: (bannedUser !== undefined && bannedUser != null) ? bannedUser.reason : ""
           }
         });
 
@@ -1050,8 +1050,8 @@ exports.googleRegistration = async function(req, res) {
             name: (data["name"] != null) ? data["name"] : null,
             username: newUserName,
             banned: {
-              status: (bannedUser !== undefined) ? true : false,
-              reason: (bannedUser !== undefined) ? bannedUser.reason : ""
+              status: (bannedUser !== undefined && bannedUser != null) ? true : false,
+              reason: (bannedUser !== undefined && bannedUser != null) ? bannedUser.reason : ""
             }
           });
 
