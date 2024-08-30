@@ -77,7 +77,10 @@ exports.createPost = async function(req, res) {
     created: { $gte: today, $lt: tomorrow }
   });
 
+  console.log(postCountToday);
+
   if (postCountToday >= dailyPostLimit) {
+    console.log("POST LIMIT REACHED");
     return res.status(500).json({
       message: `Post limit reached. You can only create ${dailyPostLimit} posts per day.`,
       info: {}
