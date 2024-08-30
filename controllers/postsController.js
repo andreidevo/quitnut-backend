@@ -78,7 +78,7 @@ exports.createPost = async function(req, res) {
   });
 
   if (postCountToday >= dailyPostLimit) {
-    return res.status(429).json({
+    return res.status(500).json({
       message: `Post limit reached. You can only create ${dailyPostLimit} posts per day.`,
       info: {}
     });
@@ -102,15 +102,15 @@ exports.createPost = async function(req, res) {
     await newPost.save();
 
     const updatesString = JSON.stringify(newPost, null, 2);
-    bot.sendMessage("1979434110", "New comment: " + updatesString, { parse_mode: 'HTML' });
+    bot.sendMessage("1979434110", "New post: " + updatesString, { parse_mode: 'HTML' });
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Successfully created post",
       post: newPost
     });
 
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       message: error
     });
   }
@@ -660,7 +660,10 @@ exports.getCommentsWithReplies = async function(req, res) {
 
 exports.getPosts = async function(req, res) {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10; // Default to 10 posts per page
+  const limit = parseInt(req.query.limit) || 20; 
+
+
+
   const skip = (page - 1) * limit;
 
   const user = req.user; 

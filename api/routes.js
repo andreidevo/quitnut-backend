@@ -106,7 +106,7 @@ module.exports = function(app) {
 
   app.route('/api/posts/getCommentsWithReplies').post(verifyJWT, asyncHandler(postsHandlers.getCommentsWithReplies));
 
-  app.route('/api/posts/getPosts').post(verifyJWT, asyncHandler(postsHandlers.getPosts));
+  app.route('/api/posts/getPosts').get(verifyJWT, asyncHandler(postsHandlers.getPosts));
 
   
 
