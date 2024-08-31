@@ -404,7 +404,7 @@ exports.addReactionToPost = async function(req, res) {
         }
       } else {
         // If reaction does not exist, create a new one
-        const newUserObj = mongoose.Types.ObjectId(user._id);
+        const newUserObj = new mongoose.Types.ObjectId(user._id);
         post.reactionsList.push({
           reactionID: reactionId,
           users: [newUserObj],
