@@ -624,52 +624,62 @@ exports.removeReactionFromComment = async function(req, res) {
 };
 
 exports.getCommentsWithReplies = async function(req, res) {
-    const { postId } = req.body;
-    const page = parseInt(req.query.page) || 1; // Default to the first page
-    const limit = 100; // Number of top-level comments per page
-    const skip = (page - 1) * limit;
+  const { postId } = req.body;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 20; 
+  const skip = (page - 1) * limit;
 
-    const user = req.user; 
-    if (!user) {
-      return res.status(401).json({
-        message: "No token found or user is not authenticated",
-        info: {}
+  const user = req.user; 
+  if (!user) {
+    return res.status(401).json({
+      message: "No token found or user is not authenticated",
+      info: {}
+    });
+  }
+
+  try {
+      // Fetch only top-level comments (comments without a parentID)
+      const topLevelComments = await Comment.find({ postID: postId, parentID: null })
+        .sort({ created: 1 }) // Sort by created date, newest first
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: 'ownerID',
+          select: 'username imageUrl subscription.status'
+        })
+        .lean();
+
+      const commentsWithReplies = await Promise.all(topLevelComments.map(async (comment) => {
+          const replies = await Comment.find({ parentID: comment._id })
+            .populate({
+              path: 'ownerID',
+              select: 'username imageUrl subscription.status' 
+            })
+            .lean();
+
+          return {
+            ...comment,
+            replies: replies.map(reply => ({
+              ...reply,
+              ownerImageUrl: reply.ownerID.imageUrl, // Include the image URL directly in the reply object
+            }))
+          };
+      }));
+
+      return res.status(200).json({
+        message: "Comments with replies fetched successfully",
+        comments: commentsWithReplies,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(await Comment.countDocuments({ postID: postId, parentID: null }) / limit)
       });
-    }
-
-    try {
-        // Fetch only top-level comments (comments without a parentID)
-        const topLevelComments = await Comment.find({ postID: postId, parentID: null })
-          .sort({ created: 1 }) // Sort by created date, newest first
-          .skip(skip)
-          .limit(limit)
-          .lean(); 
-
-          console.log(topLevelComments);
-
-        // For each top-level comment, find its replies
-        const commentsWithReplies = await Promise.all(topLevelComments.map(async (comment) => {
-            const replies = await Comment.find({ parentID: comment._id }).lean();
-            return {
-              ...comment,
-              replies
-            };
-        }));
-
-        return res.status(200).json({
-          message: "Comments with replies fetched successfully",
-          comments: commentsWithReplies,
-          currentPage: page,
-          perPage: limit,
-          totalPages: Math.ceil(await Comment.countDocuments({ postID: postId, parentID: null }) / limit)
-        });
-    } catch (error) {
-        console.error("Error fetching comments with replies:", error);
-        return res.status(500).json({
-            message: "Failed to fetch comments",
-            error: error.toString()
-        });
-    }
+  } catch (error) {
+      console.error("Error fetching comments with replies:", error);
+      return res.status(500).json({
+          message: "Failed to fetch comments",
+          error: error.toString()
+      });
+  }
 };
 
 exports.getPosts = async function(req, res) {
