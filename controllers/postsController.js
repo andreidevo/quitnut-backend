@@ -384,28 +384,32 @@ exports.addReactionToPost = async function(req, res) {
         });
       }
 
-      // Find the reaction by reactionID
+      // Check if the reaction exists in the post
       let reaction = post.reactionsList.find(r => r.reactionID === reactionId);
 
       if (reaction) {
-        // Since users can react multiple times with different reactions, just add the new one
-        if (!reaction.users.includes(user._id)) {
+        const userIndex = reaction.users.indexOf(user._id.toString());
+        if (userIndex === -1) {
+          // User has not reacted with this type before, add the reaction
           reaction.users.push(user._id);
-          reaction.count += 1;  // Only increment if it's a new reaction from this user
+          reaction.count += 1;
         } else {
-          return res.status(400).json({
-            message: "Already reacted",
-          });
+          // User has reacted before, remove the reaction
+          reaction.users.splice(userIndex, 1);
+          reaction.count -= 1;
+          // Remove the reaction object if no users left
+          if (reaction.count === 0) {
+            post.reactionsList = post.reactionsList.filter(r => r.reactionID !== reactionId);
+          }
         }
       } else {
-          // Create a new reaction record if this type hasn't been used yet
-        const userObj = new mongoose.Types.ObjectId(user._id);
-        reaction = {
+        // If reaction does not exist, create a new one
+        const newUserObj = mongoose.Types.ObjectId(user._id);
+        post.reactionsList.push({
           reactionID: reactionId,
-          users: [userObj],
+          users: [newUserObj],
           count: 1
-        };
-        post.reactionsList.push(reaction);
+        });
       }
 
       await post.save();
@@ -414,13 +418,13 @@ exports.addReactionToPost = async function(req, res) {
       delete responsePost.reportCounts;
 
       return res.status(200).json({
-        message: "Reaction added successfully",
+        message: "Reaction updated successfully",
         post: responsePost
       });
   } catch (error) {
-    console.error("Error adding reaction to post:", error);
+    console.error("Error updating reaction on post:", error);
     return res.status(500).json({
-      message: "Failed to add reaction",
+      message: "Failed to update reaction",
       error: error.toString()
     });
   }
