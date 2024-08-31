@@ -414,8 +414,15 @@ exports.addReactionToPost = async function(req, res) {
 
       await post.save();
 
+      const enhancedReactionsList = post.reactionsList.map(reaction => ({
+        reactionID: reaction.reactionID,
+        count: reaction.count,
+        userHasReacted: reaction.users.some(userReaction => userReaction.toString() === user._id.toString())
+      }));
+
       const responsePost = post.toObject(); // Convert the Mongoose document to a plain JavaScript object
       delete responsePost.reportCounts;
+      responsePost.reactionsList = enhancedReactionsList; // Update the reactions list in the response
 
       return res.status(200).json({
         message: "Reaction updated successfully",
