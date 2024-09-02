@@ -724,7 +724,7 @@ exports.getPosts = async function(req, res) {
     if (query.$and.length === 0) delete query.$and;
 
     const posts = await Post.find(query)
-      .sort({ created: 1 })
+      .sort({ created: -1 })
       .skip(skip)
       .limit(limit)
       .populate({
