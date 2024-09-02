@@ -20,6 +20,7 @@ const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
 
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { bot }  = require('./telegramBot');
 const { s3 } = require('./s3controller');
 
