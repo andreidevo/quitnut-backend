@@ -586,7 +586,7 @@ exports.getPublicTeams = async function(req, res) {
         },
         priority: 1,
         membersCount: 1,
-        dontAccept: 1
+        dontaccept: 1
       }}
     ]);
 
