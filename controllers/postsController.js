@@ -640,47 +640,61 @@ exports.getCommentsWithReplies = async function(req, res) {
   }
 
   try {
-      // Fetch only top-level comments (comments without a parentID)
-      const topLevelComments = await Comment.find({ postID: postId, parentID: null })
-        .sort({ created: 1 }) // Sort by created date, newest first
-        .skip(skip)
-        .limit(limit)
+    // Fetch only top-level comments (comments without a parentID)
+    const topLevelComments = await Comment.find({ postID: postId, parentID: null })
+      .sort({ created: 1 }) // Sort by created date, newest first
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'ownerID',
+        select: 'username imageUrl subscription.status'
+      })
+      .lean();
+
+    const commentsWithReplies = await Promise.all(topLevelComments.map(async (comment) => {
+      if (comment.ownerID && comment.ownerID.imageUrl) {
+        comment.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
+          Bucket: "your-bucket-name",
+          Key: comment.ownerID.imageUrl,
+        }), { expiresIn: 3600 });
+      }
+
+      const replies = await Comment.find({ parentID: comment._id })
         .populate({
           path: 'ownerID',
           select: 'username imageUrl subscription.status'
         })
         .lean();
 
-      const commentsWithReplies = await Promise.all(topLevelComments.map(async (comment) => {
-          const replies = await Comment.find({ parentID: comment._id })
-            .populate({
-              path: 'ownerID',
-              select: 'username imageUrl subscription.status' 
-            })
-            .lean();
-
-          return {
-            ...comment,
-            replies: replies.map(reply => ({
-              ...reply,
-              ownerImageUrl: reply.ownerID.imageUrl, // Include the image URL directly in the reply object
-            }))
-          };
+      const repliesWithSignedUrls = await Promise.all(replies.map(async (reply) => {
+        if (reply.ownerID && reply.ownerID.imageUrl) {
+          reply.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
+            Bucket: "your-bucket-name",
+            Key: reply.ownerID.imageUrl,
+          }), { expiresIn: 3600 });
+        }
+        return reply;
       }));
 
-      return res.status(200).json({
-        message: "Comments with replies fetched successfully",
-        comments: commentsWithReplies,
-        currentPage: page,
-        perPage: limit,
-        totalPages: Math.ceil(await Comment.countDocuments({ postID: postId, parentID: null }) / limit)
-      });
+      return {
+        ...comment,
+        replies: repliesWithSignedUrls
+      };
+    }));
+
+    return res.status(200).json({
+      message: "Comments with replies fetched successfully",
+      comments: commentsWithReplies,
+      currentPage: page,
+      perPage: limit,
+      totalPages: Math.ceil(await Comment.countDocuments({ postID: postId, parentID: null }) / limit)
+    });
   } catch (error) {
-      console.error("Error fetching comments with replies:", error);
-      return res.status(500).json({
-          message: "Failed to fetch comments",
-          error: error.toString()
-      });
+    console.error("Error fetching comments with replies:", error);
+    return res.status(500).json({
+        message: "Failed to fetch comments",
+        error: error.toString()
+    });
   }
 };
 
