@@ -654,7 +654,7 @@ exports.getCommentsWithReplies = async function(req, res) {
     const commentsWithReplies = await Promise.all(topLevelComments.map(async (comment) => {
       if (comment.ownerID && comment.ownerID.imageUrl) {
         comment.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
-          Bucket: "your-bucket-name",
+          Bucket: "quitximages",
           Key: comment.ownerID.imageUrl,
         }), { expiresIn: 3600 });
       }
@@ -669,7 +669,7 @@ exports.getCommentsWithReplies = async function(req, res) {
       const repliesWithSignedUrls = await Promise.all(replies.map(async (reply) => {
         if (reply.ownerID && reply.ownerID.imageUrl) {
           reply.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
-            Bucket: "your-bucket-name",
+            Bucket: "quitximages",
             Key: reply.ownerID.imageUrl,
           }), { expiresIn: 3600 });
         }
