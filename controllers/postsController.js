@@ -19,8 +19,9 @@ const request = require('request-promise-native');
 const jwkToPem = require('jwk-to-pem');
 const querystring = require('querystring');
 
-
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { bot }  = require('./telegramBot');
+const { s3 } = require('./s3controller');
 
 const filter = require('../utils/censorship/rejexBadwords');
 
@@ -685,8 +686,8 @@ exports.getCommentsWithReplies = async function(req, res) {
 exports.getPosts = async function(req, res) {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
-  const tags = req.query.tags ? req.query.tags.split(',') : []; // Split tags by comma if provided
-  const locale = req.query.locale || ''; // Locale can be directly taken as a string
+  const tags = req.query.tags ? req.query.tags.split(',') : [];
+  const locale = req.query.locale || '';
 
   const skip = (page - 1) * limit;
   const user = req.user;
@@ -700,20 +701,20 @@ exports.getPosts = async function(req, res) {
   try {
     const query = { $and: [] };
     if (tags.length > 0) {
-      query.$and.push({ 'tagsList.tagID': { $in: tags } }); // Adjusted to filter by tagID in tagsList
+      query.$and.push({ 'tagsList.tagID': { $in: tags } });
     }
     if (locale) {
-      query.$and.push({ locale: locale }); // Filter by locale if provided
+      query.$and.push({ locale: locale });
     }
-    if (query.$and.length === 0) delete query.$and; // If no filters, do not use $and condition
+    if (query.$and.length === 0) delete query.$and;
 
     const posts = await Post.find(query)
-      .sort({ created: 1 }) // Sort by created date, oldest first
+      .sort({ created: 1 })
       .skip(skip)
       .limit(limit)
       .populate({
           path: 'ownerID',
-          select: 'imageUrl username subscription.status' // Populate user details from ownerID
+          select: 'imageUrl username subscription.status'
       })
       .populate({
         path: 'reactionsList.users',
@@ -722,30 +723,44 @@ exports.getPosts = async function(req, res) {
       .lean();
 
     const postsWithDetails = await Promise.all(posts.map(async (post) => {
-        const lastComment = await Comment.findOne({ postID: post._id })
-          .sort({ created: -1 })
-          .populate({
-              path: 'ownerID',
-              select: 'imageUrl username' // Assuming you need only imageUrl and username
-          })
-          .select('-reportCounts') // Exclude reportCounts from the lastComment
-          .lean();
+      if (post.ownerID && post.ownerID.imageUrl) {
+        post.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
+          Bucket: "quitximages",
+          Key: post.ownerID.imageUrl,
+        }), { expiresIn: 3600 }); // URL expires in 1 hour
+      }
 
-        const enhancedReactionsList = post.reactionsList.map(reaction => ({
-          reactionID: reaction.reactionID, // Only return the reactionID
-          count: reaction.count,  // Maintain the count of reactions
-          userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
-        }));
+      const lastComment = await Comment.findOne({ postID: post._id })
+        .sort({ created: -1 })
+        .populate({
+            path: 'ownerID',
+            select: 'imageUrl username'
+        })
+        .select('-reportCounts')
+        .lean();
 
-        return {
-          ...post,
-          lastComment: lastComment ? {
-              ...lastComment,
-              ownerUsername: lastComment.ownerID.username, // Extract username from populated ownerID
-              ownerImageUrl: lastComment.ownerID.imageUrl // Extract imageUrl from populated ownerID
-          } : null,
-          reactionsList: enhancedReactionsList // Include the last comment with user details or null if none
-        };
+      if (lastComment && lastComment.ownerID && lastComment.ownerID.imageUrl) {
+        lastComment.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
+          Bucket: "quitximages",
+          Key: lastComment.ownerID.imageUrl,
+        }), { expiresIn: 3600 });
+      }
+
+      const enhancedReactionsList = post.reactionsList.map(reaction => ({
+        reactionID: reaction.reactionID,
+        count: reaction.count,
+        userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
+      }));
+
+      return {
+        ...post,
+        lastComment: lastComment ? {
+            ...lastComment,
+            ownerUsername: lastComment.ownerID.username,
+            ownerImageUrl: lastComment.ownerID.imageUrl
+        } : null,
+        reactionsList: enhancedReactionsList
+      };
     }));
 
     return res.status(200).json({
