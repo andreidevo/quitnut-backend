@@ -1172,18 +1172,27 @@ exports.refreshUserTokens = async function(userId) {
       }
 
       const refreshToken = user.refreshToken;
+      var jwtOk = false;
+      
       try {
-          const jwtClaims = jwt.verify(refreshToken, process.env.JWT_SECRET);
+        const jwtClaims = jwt.verify(refreshToken, process.env.JWT_SECRET);
+        jwtOk = true;
+      } catch (error) {
+        jwtOk = false;
+      }
 
-          if (jwtClaims){
+      try {
+          if (jwtOk){
+            print("JWT OKKKK");
             const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-
             const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
             if (daysUntilExpiry <= 60) {
                 // Token is about to expire, issue a new one
                 user.refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '180d' });
             }
           } else {
+            print("JWT NOT OKKKK");
+
             const decoded = jwt.verify(refreshToken, 'super-secret-tokenasd2223');
             const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
             if (daysUntilExpiry <= 60) {

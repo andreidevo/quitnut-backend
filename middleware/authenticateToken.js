@@ -42,7 +42,6 @@ async function verifyJWT(req, res, next) {
           req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
     
           console.log("DONE");
-          next();
       } else {
           res.status(result.status).json({ message: result.error });
       }
@@ -55,6 +54,7 @@ async function verifyJWT(req, res, next) {
       console.log(err.name);
 
       const result = await refreshUserTokens(req.user._id);
+      console.log(result);
       if (result.status === 200) {
           req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
           req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
@@ -62,9 +62,12 @@ async function verifyJWT(req, res, next) {
           console.log("DONE");
           next();
       } else {
+          console.log("NOPE");
+
           res.status(result.status).json({ message: result.error });
       }
     } else {
+        console.log("NOPE2");
         res.sendStatus(403);
     }
   }
