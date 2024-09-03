@@ -77,7 +77,7 @@ async function verifyJWT(req, res, next) {
 }
 
 function appendNewToken(req, res, next) {
-  if (req.newAccessToken) {
+  if (req.newAccessToken || req.user._id) {
       try {
         console.log("here");
         const originalJson = res.json;
@@ -90,6 +90,11 @@ function appendNewToken(req, res, next) {
           if (req.newAccessToken && typeof data === 'object' && data !== null) {
               data.newAccessToken = req.newAccessToken;  // Append new token
           }
+
+          if (req.user._id !== undefined){
+            data.userId = req.user._id;
+          }
+
           originalJson.call(this, data);
         };
       } catch (error) {
