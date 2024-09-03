@@ -1150,48 +1150,37 @@ exports.uploadImageToS3User = async function(req, res) {
 
     console.log(params);
 
-
-    const imagePreviousKey = teamExists.metadata.imageUrl
-
-
     try {
       const data = await s3.send(new PutObjectCommand(params));
       const imageUrl = data.Location
 
       console.log(data);
-
-      // Ssend to a review 
-
       const caption = `<b>Photo user new. </b> \n\n<b>User id:</b> ${user._id}`;
 
       const options = {
-        caption: caption,  // Update your caption as needed
+        caption: caption,  
         parse_mode: 'HTML',
         reply_markup: {
-            inline_keyboard: [
-                [{ text: 'Remove Photo', callback_data: 'remove_photo_user:' + user._id}],
-                // [{ text: 'Report User', callback_data: 'report_user:' + user._id}],
-                [{ text: 'Reports List', callback_data: 'reports_list_user:' + user._id}],
-                [{ text: 'Print ID', callback_data: 'printid_user:' + user._id}],
-                // [{ text: 'Block User', callback_data: 'block_user:' + user._id}],
-                // [{ text: 'Unblock User', callback_data: 'unblock_user:' + user._id}]
-            ]
+          inline_keyboard: [
+            [{ text: 'Remove Photo', callback_data: 'remove_photo_user:' + user._id}],
+            [{ text: 'Reports List', callback_data: 'reports_list_user:' + user._id}],
+            [{ text: 'Print ID', callback_data: 'printid_user:' + user._id}],
+          ]
         }
       };
       
       try {
         (async () => {
-            try {
-                const buffer = await fetchDataFromS3(bucketName, fileName);
+          try {
+            const buffer = await fetchDataFromS3(bucketName, fileName);
+            console.log(buffer);
 
-                console.log(buffer);
+            bot.sendPhoto("1979434110", buffer, options);
 
-                bot.sendPhoto("1979434110", buffer, options);
-
-                console.log('Data fetched successfully:', buffer);
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-            }
+            console.log('Data fetched successfully:', buffer);
+          } catch (error) {
+            console.error('Failed to fetch data:', error);
+          }
         })();
         
       } catch (err){
@@ -1242,8 +1231,6 @@ exports.uploadImageToS3User = async function(req, res) {
         });
         throw err; 
       }
-
-      // https://us-east-1.console.aws.amazon.com/s3/object/quitximages?region=us-east-1&bucketType=general&prefix=fileName
 
       return res.status(200).json({
         message: 'File uploaded successfully',
