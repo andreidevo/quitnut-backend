@@ -92,13 +92,15 @@ function appendNewToken(req, res, next) {
               data.newAccessToken = res.newAccessToken;  // Append new token
           }
           originalJson.call(this, data);
+
+          console.log(originalJson);
+
         };
       } catch (error) {
         console.log("error");
         console.log(error);
       }
-      
-      console.log(originalJson);
+
       
       // const originalSend = res.send;
       // res.send = function (body) {
