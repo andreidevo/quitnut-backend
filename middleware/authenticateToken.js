@@ -19,14 +19,15 @@ async function verifyJWT(req, res, next) {
 
   try {
     console.log("CHECK TOKEN");
-    const jtwOk = false;
+    var jtwOk = false;
+
     try {
-      const jwtOk = req.user = jwt.verify(token, process.env.JWT_SECRET);
+      jtwOk = req.user = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e){ }
 
-    console.log(jwtOk);
+    console.log(jtwOk);
 
-    if (jwtOk){
+    if (jtwOk){
       req.user = jwt.verify(token, process.env.JWT_SECRET);
     } else {
       const result = await refreshUserTokens(req.user._id);
