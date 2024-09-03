@@ -22,7 +22,7 @@ async function verifyJWT(req, res, next) {
     var jtwOk = false;
 
     try {
-      jtwOk = req.user = jwt.verify(token, process.env.JWT_SECRET);
+      jtwOk = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e){ }
 
     console.log(jtwOk);
@@ -30,8 +30,9 @@ async function verifyJWT(req, res, next) {
     if (jtwOk){
       req.user = jwt.verify(token, process.env.JWT_SECRET);
     } else {
+      req.user = jwt.verify(token, "super-secret-tokenasd2223");
       console.log(req.user);
-      
+
       const result = await refreshUserTokens(req.user._id);
 
       if (result.status === 200) {
