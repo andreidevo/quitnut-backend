@@ -1155,8 +1155,10 @@ exports.uploadImageToS3User = async function(req, res) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    
+    console.log(userExists.imageLastUploadDate);
 
-    const imageLastUploadDate = userExists.imageLastUploadDate ? new Date(userExists.lastUploadDate) : null;
+    const imageLastUploadDate = (userExists.imageLastUploadDate == null) ? new Date(userExists.lastUploadDate) : null;
 
     if (imageLastUploadDate) {
       imageLastUploadDate.setHours(0, 0, 0, 0);
@@ -1164,7 +1166,7 @@ exports.uploadImageToS3User = async function(req, res) {
   
     const updates = {};
     console.log(imageLastUploadDate == null);
-    console.log(mageLastUploadDate < today);
+    console.log(imageLastUploadDate < today);
 
     if (imageLastUploadDate == null || imageLastUploadDate < today) {
       updates.imageUploadCount = 1; // Reset count to 1 for new upload today
