@@ -749,7 +749,7 @@ exports.getPosts = async function(req, res) {
         .sort({ created: -1 })
         .populate({
             path: 'ownerID',
-            select: 'imageUrl username'
+            select: 'imageUrl username subscription.status'
         })
         .select('-reportCounts')
         .lean();
