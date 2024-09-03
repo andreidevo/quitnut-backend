@@ -45,7 +45,7 @@ const validateTagsList = (tagsList) => {
 exports.createPost = async function(req, res) {
 
   const { id } = req.body; // Assuming this is the Team ID
-  const { tagsList, withoutcomments, withoutstreak, nsfw, text } = req.body;
+  const { tagsList, withoutcomments, withoutstreak, nsfw, text, locale } = req.body;
 
   const user = req.user; 
   if (!user) {
@@ -95,10 +95,11 @@ exports.createPost = async function(req, res) {
     const newPost = new Post({
       ownerID: user._id,
       // priority,
-      withoutcomments,
-      withoutstreak,
+      locale: locale,
+      withoutcomments: withoutcomments,
+      withoutstreak: withoutstreak,
       tagsList: validateTagsList(tagsList),
-      nsfw: false,
+      nsfw: nsfw,
       metadata: {
         text: text
       }
