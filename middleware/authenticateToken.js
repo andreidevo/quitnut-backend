@@ -83,7 +83,10 @@ function appendNewToken(req, res, next) {
       // Modify the response to include the new token
 
       try {
+        console.log("here");
         const originalJson = res.json;
+        console.log(originalJson);
+
         res.json = function (data) {
           console.log(data);
           if (res.newAccessToken && typeof data === 'object' && data !== null) {
@@ -92,6 +95,7 @@ function appendNewToken(req, res, next) {
           originalJson.call(this, data);
         };
       } catch (error) {
+        console.log("error");
         console.log(error);
       }
 
