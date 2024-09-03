@@ -88,6 +88,7 @@ function appendNewToken(req, res, next) {
 
         res.json = function (data) {
           console.log("wtf");
+          console.log(typeof data);
           console.log(data);
           if (res.newAccessToken && typeof data === 'object' && data !== null) {
               data.newAccessToken = res.newAccessToken;  // Append new token
