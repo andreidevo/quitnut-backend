@@ -1163,17 +1163,19 @@ exports.uploadImageToS3User = async function(req, res) {
     }
   
     const updates = {};
+    console.log(imageLastUploadDate == null);
+    console.log(mageLastUploadDate < today);
 
-    if (!imageLastUploadDate || imageLastUploadDate < today) {
+    if (imageLastUploadDate == null || imageLastUploadDate < today) {
       updates.imageUploadCount = 1; // Reset count to 1 for new upload today
       updates.imageLastUploadDate = new Date(); // Set last upload date to now
     } else {
-        if (userExists.imageUploadCount >= 3) {
-            return res.status(500).json({
-                message: 'Upload limit reached for today',
-            });
-        }
-        updates.imageUploadCount = userExists.imageUploadCount + 1; // Increment upload count
+      if (userExists.imageUploadCount >= 3) {
+        return res.status(500).json({
+            message: 'Upload limit reached for today',
+        });
+      }
+      updates.imageUploadCount = userExists.imageUploadCount + 1; // Increment upload count
     }
 
     try {
