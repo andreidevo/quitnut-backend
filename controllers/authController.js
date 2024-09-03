@@ -1186,7 +1186,7 @@ exports.refreshUserTokens = async function(userId) {
 
       try {
           if (jwtOk){
-            print("JWT OKKKK");
+            console.log("JWT OKKKK");
             const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
             const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
             if (daysUntilExpiry <= 60) {
@@ -1194,7 +1194,7 @@ exports.refreshUserTokens = async function(userId) {
                 user.refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '180d' });
             }
           } else {
-            print("JWT NOT OKKKK");
+            console.log("JWT NOT OKKKK");
 
             const decoded = jwt.verify(refreshToken, 'super-secret-tokenasd2223');
             const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
