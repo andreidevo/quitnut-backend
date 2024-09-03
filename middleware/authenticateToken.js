@@ -43,6 +43,7 @@ async function verifyJWT(req, res, next) {
     
           console.log("DONE");
       } else {
+          console.log("MMM");
           res.status(result.status).json({ message: result.error });
       }
     }
@@ -50,6 +51,8 @@ async function verifyJWT(req, res, next) {
     next();
   } catch (err) {
     console.log(err);
+    console.log("MMM2");
+
     if (err.name === 'TokenExpiredError' && req.user && req.user._id) {
       console.log(err.name);
 

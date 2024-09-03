@@ -1174,12 +1174,15 @@ exports.refreshUserTokens = async function(userId) {
       const refreshToken = user.refreshToken;
       var jwtOk = false;
       
+      console.log("WHAT");
       try {
         const jwtClaims = jwt.verify(refreshToken, process.env.JWT_SECRET);
         jwtOk = true;
       } catch (error) {
         jwtOk = false;
       }
+      console.log("WHAT IDK");
+
 
       try {
           if (jwtOk){
