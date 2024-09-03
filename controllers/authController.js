@@ -1132,11 +1132,11 @@ exports.refreshUserTokens = async function(userId) {
 
       const refreshToken = user.refreshToken;
       try {
-          const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223');
+          const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
           const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
           if (daysUntilExpiry <= 60) {
               // Token is about to expire, issue a new one
-              user.refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '180d' });
+              user.refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '180d' });
           }
       } catch (err) {
           return { error: 'Invalid or expired refresh token', status: 403 };
