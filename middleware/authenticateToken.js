@@ -35,12 +35,12 @@ async function verifyJWT(req, res, next) {
 
       const result = await refreshUserTokens(req.user._id);
 
-      console.log(result);
+      // console.log(result);
 
       if (result.status === 200) {
           req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
           req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
-    
+          req.newAccessToken = newToken;
           console.log("DONE");
       } else {
           console.log("MMM");
@@ -76,7 +76,22 @@ async function verifyJWT(req, res, next) {
   }
 }
 
+function appendNewToken(req, res, next) {
+  if (req.newAccessToken) {
+      // Modify the response to include the new token
+      const originalSend = res.send;
+      res.send = function (body) {
+          if (typeof body === 'object') {
+              body.newAccessToken = req.newAccessToken; // Append new token to the response body
+          }
+          return originalSend.call(this, body);
+      }
+  }
+  next();
+}
+
 module.exports = {
   verifyJWT,
+  appendNewToken
 };
 

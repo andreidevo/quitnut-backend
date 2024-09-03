@@ -6,7 +6,7 @@ const mime = require('mime-types');
 
 const { loginValidation } = require ("../middleware/inputValidation.js")
 const { signUpLimiter, newsletterLimiter, tgLimiter } = require ("../middleware/rateLimiters.js")
-const { verifyJWT } = require ("../middleware/authenticateToken.js")
+const { verifyJWT, appendNewToken } = require ("../middleware/authenticateToken.js")
 const validateRegister = require('../dto/user/register.dto.js')
 const validateLogin = require('../dto/user/login.dto.js')
 const validateRefresh = require('../dto/user/refresh.dto.js')
@@ -45,10 +45,10 @@ module.exports = function(app) {
   // ------- Auth
   app.route('/api/auth/register').post(validateRegister, asyncHandler(authHandlers.register));
   app.route('/api/auth/login').post(validateLogin, asyncHandler(authHandlers.signIn));
-  app.route('/api/auth/refresh').post(validateRefresh, verifyJWT, asyncHandler(authHandlers.refresh));
-  app.route('/api/auth/username').post(validateUsername, verifyJWT, asyncHandler(authHandlers.username_check));
-  app.route('/api/auth/ss').post(validateSs, verifyJWT, asyncHandler(authHandlers.set_premium));
-  app.route('/api/auth/refreshToken').post(verifyJWT, asyncHandler(authHandlers.refreshToken));
+  app.route('/api/auth/refresh').post(validateRefresh, verifyJWT, appendNewToken, asyncHandler(authHandlers.refresh));
+  app.route('/api/auth/username').post(validateUsername, verifyJWT, appendNewToken, asyncHandler(authHandlers.username_check));
+  app.route('/api/auth/ss').post(validateSs, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_premium));
+  app.route('/api/auth/refreshToken').post(verifyJWT, appendNewToken, asyncHandler(authHandlers.refreshToken));
   
 
   app.route('/api/auth/google').post(validateGoogleRegisterZodSchema, asyncHandler(authHandlers.googleRegistration));
@@ -56,57 +56,57 @@ module.exports = function(app) {
   app.route('/api/callback/apple').post(validateApppleCallbackPost, signUpLimiter, asyncHandler(authHandlers.appleCallbackPost));
 
   // ------- User
-  app.route('/api/auth/set_username').post(validateSetUsername, verifyJWT, asyncHandler(authHandlers.set_username));
-  app.route('/api/auth/set_laststreak').post(validateSetLastStreak, verifyJWT, asyncHandler(authHandlers.set_lastStreak));
-  app.route('/api/auth/set_startdate').post(validateSetStartDateZodSchema, verifyJWT, asyncHandler(authHandlers.set_startDate));
+  app.route('/api/auth/set_username').post(validateSetUsername, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_username));
+  app.route('/api/auth/set_laststreak').post(validateSetLastStreak, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_lastStreak));
+  app.route('/api/auth/set_startdate').post(validateSetStartDateZodSchema, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_startDate));
   app.route('/api/urs').post(validateSendReportZodSchema, signUpLimiter, asyncHandler(contentHandlers.send_report));
-  app.route('/api/urstoken').post(validateSendReportZodSchema, verifyJWT, asyncHandler(contentHandlers.send_report_token));
-  app.route('/api/teams/delete').post(verifyJWT, asyncHandler(communityHandlers.deleteAccount));
+  app.route('/api/urstoken').post(validateSendReportZodSchema, verifyJWT, appendNewToken, asyncHandler(contentHandlers.send_report_token));
+  app.route('/api/teams/delete').post(verifyJWT, appendNewToken, asyncHandler(communityHandlers.deleteAccount));
 
 
   // ------- Teams
-  app.route('/api/teams/publicname_check').post(validatePublicnameCheck, verifyJWT, asyncHandler(communityHandlers.publicname_check));
-  app.route('/api/teams/generate_name').get(verifyJWT, asyncHandler(communityHandlers.generateName));
-  app.route('/api/teams/create').post(validateCreate, verifyJWT, asyncHandler(communityHandlers.create));
-  app.route('/api/teams/getMyTeams').get(verifyJWT, asyncHandler(communityHandlers.getAllTeams));
+  app.route('/api/teams/publicname_check').post(validatePublicnameCheck, verifyJWT, appendNewToken, asyncHandler(communityHandlers.publicname_check));
+  app.route('/api/teams/generate_name').get(verifyJWT, appendNewToken, asyncHandler(communityHandlers.generateName));
+  app.route('/api/teams/create').post(validateCreate, verifyJWT, appendNewToken, asyncHandler(communityHandlers.create));
+  app.route('/api/teams/getMyTeams').get(verifyJWT, appendNewToken, asyncHandler(communityHandlers.getAllTeams));
   app.route('/api/teams/getPublicTeams').post(verifyJWT, asyncHandler(communityHandlers.getPublicTeams));
-  app.route('/api/teams/getinfo').post(validateGetInfo, verifyJWT, asyncHandler(communityHandlers.getCommunityInfo));
-  app.route('/api/teams/getinfoByName').post(validateGetInfo, verifyJWT, asyncHandler(communityHandlers.getCommunityInfoTeamName));
-  app.route('/api/teams/join').post(validateJoin, verifyJWT, asyncHandler(communityHandlers.joinToTeam));
-  app.route('/api/teams/exit').post(validateExit, verifyJWT, asyncHandler(communityHandlers.exitTeam));
-  app.route('/api/teams/edit').post(validateEdit, verifyJWT, asyncHandler(communityHandlers.editTeam));
-  app.route('/api/teams/remove').post(validateRemove, verifyJWT, asyncHandler(communityHandlers.removeTeam));
-  app.route('/api/teams/accept_change').post(validateAcceptChange, verifyJWT, asyncHandler(communityHandlers.accept_change));
-  app.route('/api/teams/report_team').post(validateReport, verifyJWT, asyncHandler(communityHandlers.report_team));
-  app.route('/api/teams/getMembers').post(validateGetMembers, verifyJWT, asyncHandler(communityHandlers.getMembers));
-  app.route('/api/teams/setStatuses/:teamId').post(validateChangeStatuses, verifyJWT, asyncHandler(communityHandlers.changeStatuses));
-  app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, asyncHandler(communityHandlers.removeMember));
+  app.route('/api/teams/getinfo').post(validateGetInfo, verifyJWT, appendNewToken, asyncHandler(communityHandlers.getCommunityInfo));
+  app.route('/api/teams/getinfoByName').post(validateGetInfo, verifyJWT, appendNewToken, asyncHandler(communityHandlers.getCommunityInfoTeamName));
+  app.route('/api/teams/join').post(validateJoin, verifyJWT, appendNewToken, asyncHandler(communityHandlers.joinToTeam));
+  app.route('/api/teams/exit').post(validateExit, verifyJWT, appendNewToken, asyncHandler(communityHandlers.exitTeam));
+  app.route('/api/teams/edit').post(validateEdit, verifyJWT, appendNewToken, asyncHandler(communityHandlers.editTeam));
+  app.route('/api/teams/remove').post(validateRemove, verifyJWT, appendNewToken, asyncHandler(communityHandlers.removeTeam));
+  app.route('/api/teams/accept_change').post(validateAcceptChange, verifyJWT, appendNewToken, asyncHandler(communityHandlers.accept_change));
+  app.route('/api/teams/report_team').post(validateReport, verifyJWT, appendNewToken, asyncHandler(communityHandlers.report_team));
+  app.route('/api/teams/getMembers').post(validateGetMembers, verifyJWT, appendNewToken, asyncHandler(communityHandlers.getMembers));
+  app.route('/api/teams/setStatuses/:teamId').post(validateChangeStatuses, verifyJWT, appendNewToken, asyncHandler(communityHandlers.changeStatuses));
+  app.route('/api/teams/removeMember').post(validateRemoveMember, verifyJWT, appendNewToken, asyncHandler(communityHandlers.removeMember));
 
 
 
   // POSTS
-  app.route('/api/posts/createPost').post(verifyJWT, asyncHandler(postsHandlers.createPost));
+  app.route('/api/posts/createPost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.createPost));
 
   // app.route('/api/posts/editPost').post(validateReport, verifyJWT, asyncHandler(postsHandlers.createPost));
   // app.route('/api/posts/closeComments').post(validateReport, verifyJWT, asyncHandler(postsHandlers.createPost));
   // app.route('/api/posts/getPostObject').post(validateReport, verifyJWT, asyncHandler(postsHandlers.createPost));
 
-  app.route('/api/posts/removePost').post(verifyJWT, asyncHandler(postsHandlers.removePost)); 
+  app.route('/api/posts/removePost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.removePost)); 
 
-  app.route('/api/posts/addReactionPost').post(verifyJWT, asyncHandler(postsHandlers.addReactionToPost));
-  app.route('/api/posts/removeReactionPost').post(verifyJWT, asyncHandler(postsHandlers.removeReactionFromPost));
-  app.route('/api/posts/reportPost').post(verifyJWT, asyncHandler(postsHandlers.reportPost));
+  app.route('/api/posts/addReactionPost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.addReactionToPost));
+  app.route('/api/posts/removeReactionPost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.removeReactionFromPost));
+  app.route('/api/posts/reportPost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.reportPost));
 
-  app.route('/api/posts/addCommentToPost').post(verifyJWT, asyncHandler(postsHandlers.addCommentToPost));
-  app.route('/api/posts/removeCommentPost').post(verifyJWT, asyncHandler(postsHandlers.removeCommentFromPost));
-  app.route('/api/posts/replyAdd').post(verifyJWT, asyncHandler(postsHandlers.addReplyToComment));
+  app.route('/api/posts/addCommentToPost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.addCommentToPost));
+  app.route('/api/posts/removeCommentPost').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.removeCommentFromPost));
+  app.route('/api/posts/replyAdd').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.addReplyToComment));
 
-  app.route('/api/posts/addReactionToComment').post(verifyJWT, asyncHandler(postsHandlers.addReactionToComment));
-  app.route('/api/posts/removeReactionFromComment').post(verifyJWT, asyncHandler(postsHandlers.removeReactionFromComment));
+  app.route('/api/posts/addReactionToComment').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.addReactionToComment));
+  app.route('/api/posts/removeReactionFromComment').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.removeReactionFromComment));
 
-  app.route('/api/posts/getCommentsWithReplies').post(verifyJWT, asyncHandler(postsHandlers.getCommentsWithReplies));
+  app.route('/api/posts/getCommentsWithReplies').post(verifyJWT, appendNewToken, asyncHandler(postsHandlers.getCommentsWithReplies));
 
-  app.route('/api/posts/getPosts').get(verifyJWT, asyncHandler(postsHandlers.getPosts));
+  app.route('/api/posts/getPosts').get(verifyJWT, appendNewToken, asyncHandler(postsHandlers.getPosts));
 
   
 
@@ -130,9 +130,9 @@ module.exports = function(app) {
     }
   });
 
-  app.route('/api/teams/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3Team));
+  app.route('/api/teams/uploadImg').post(verifyJWT, appendNewToken, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3Team));
 
-  app.route('/api/user/uploadImg').post(verifyJWT, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3User));
+  app.route('/api/user/uploadImg').post(verifyJWT, appendNewToken, upload.single('file'), asyncHandler(communityHandlers.uploadImageToS3User));
 
   app.route('/webhook').post(asyncHandler(telegramBot.handleCommands));
 

@@ -257,7 +257,13 @@ exports.refreshToken = async function(req, res) {
       }
 
       const currentRefreshToken = savedUser.refreshToken; 
-      const jwtClaims = jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET);
+      const jwtClaims = false;
+
+      try {
+        jwtClaims = jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET)
+      } catch (error) {
+        
+      }
 
       if (jwtClaims){
         jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
@@ -1174,14 +1180,12 @@ exports.refreshUserTokens = async function(userId) {
       const refreshToken = user.refreshToken;
       var jwtOk = false;
       
-      console.log("WHAT");
       try {
         const jwtClaims = jwt.verify(refreshToken, process.env.JWT_SECRET);
         jwtOk = true;
       } catch (error) {
         jwtOk = false;
       }
-      console.log("WHAT IDK");
 
 
       try {
