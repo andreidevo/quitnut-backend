@@ -1214,12 +1214,11 @@ exports.uploadImageToS3User = async function(req, res) {
         if (result.modifiedCount === 1) {
             res.status(200).json({
               message: 'File uploaded successfully',
-              error: uploadError.message
             });
           } else {
             return res.status(500).json({
               message: 'Failed to upload file',
-              error: uploadError.message
+              error: "Failed to upload file"
             });
           }
 
@@ -1227,7 +1226,7 @@ exports.uploadImageToS3User = async function(req, res) {
         console.error("Failed to update user's image URL:", err);
         return res.status(500).json({
           message: err,
-          error: uploadError.message
+          error: err
         });
         throw err; 
       }
