@@ -56,7 +56,7 @@ module.exports = function(app) {
   app.route('/api/callback/apple').post(validateApppleCallbackPost, signUpLimiter, asyncHandler(authHandlers.appleCallbackPost));
 
   // ------- User
-  app.route('/api/auth/set_username').post(validateSetUsername, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_username));
+  app.route('/api/auth/set_username').post(validateSetUsername, verifyJWT, appendNewToken, checkUserBan, asyncHandler(authHandlers.set_username));
   app.route('/api/auth/set_laststreak').post(validateSetLastStreak, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_lastStreak));
   app.route('/api/auth/set_startdate').post(validateSetStartDateZodSchema, verifyJWT, appendNewToken, asyncHandler(authHandlers.set_startDate));
   app.route('/api/urs').post(validateSendReportZodSchema, signUpLimiter, asyncHandler(contentHandlers.send_report));
