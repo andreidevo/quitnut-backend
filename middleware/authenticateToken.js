@@ -40,7 +40,7 @@ async function verifyJWT(req, res, next) {
       if (result.status === 200) {
           req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
           req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
-          req.newAccessToken = newToken;
+          req.newAccessToken = result.accessToken;
           console.log("DONE");
       } else {
           console.log("MMM");
