@@ -24,7 +24,7 @@ var UserSchema = new Schema({
 
   imageUrl: { type: String }, // IMAGE
   imageUploadCount: { type: Number, default: 0 },
-  imageLastUploadDate: { type: Date }
+  imageLastUploadDate: { type: Date },
 
 
   // TEAMS
