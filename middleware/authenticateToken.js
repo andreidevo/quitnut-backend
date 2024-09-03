@@ -3,46 +3,42 @@ var mongoose = require('mongoose'),
 User = mongoose.model('User');
 
 const jwt = require('jsonwebtoken');
+const { refreshUserTokens } = require('../controllers/authController');
 
 
-const verifyJWT = (req, res, next) => {
-
-
+async function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.sendStatus(401);
+      return res.sendStatus(401);
   }
-
-  // console.log("AUTH ");
-  // console.log(authHeader);
 
   const token = authHeader.split(' ')[1];
-  
   if (!token) {
-    console.log("not ok token");
-    return res.sendStatus(401);
+      return res.sendStatus(401);
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'super-secret-tokenasd2223', async  (err, decoded) => {
-    if (err) {
-      console.log("not ok token: " + err);
-      return res.sendStatus(403); 
-    }
-    req.user = decoded;
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch (err) {
+    console.log(err);
+    if (err.name === 'TokenExpiredError' && req.user && req.user._id) {
+      console.log(err.name);
 
-    if (req.user && req.user._id) {  // Assuming `req.user` is populated from authentication middleware
-        try {
-          await User.findByIdAndUpdate(req.user._id, { lastActive: new Date() });
-          next();  // Continue to the next middleware or request handler
-        } catch (error) {
-          console.error('Failed to update last active time:', error);
-          next();  // Continue processing even if the update fails
-        }
+      const result = await refreshUserTokens(req.user._id);
+      if (result.status === 200) {
+          req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
+          req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
+          console.log("DONE");
+          next();
+      } else {
+          res.status(result.status).json({ message: result.error });
+      }
     } else {
-      next();  // If no user is found in request, just continue
+        res.sendStatus(403);
     }
-  });
-};
+  }
+}
 
 module.exports = {
   verifyJWT,

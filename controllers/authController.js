@@ -259,6 +259,7 @@ exports.refreshToken = async function(req, res) {
       // Optional: Verify the existing refreshToken if it is provided in the request and is still valid
       const currentRefreshToken = savedUser.refreshToken; // Assuming refreshToken is stored in the User model
       jwt.verify(currentRefreshToken, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223', async (err, decoded) => {
+        
         if (err) {
           return res.status(403).json({
             message: "Invalid or expired refresh token",
@@ -1120,4 +1121,41 @@ exports.googleRegistration = async function(req, res) {
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 
+};
+
+exports.refreshUserTokens = async function(userId) {
+  try {
+      const user = await User.findById(userId);
+      if (!user) {
+          return { error: 'User not found', status: 404 };
+      }
+
+      const refreshToken = user.refreshToken;
+      try {
+          const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'super-secret-tokenasd2223');
+          const daysUntilExpiry = (decoded.exp * 1000 - Date.now()) / (24 * 3600 * 1000);
+          if (daysUntilExpiry <= 60) {
+              // Token is about to expire, issue a new one
+              user.refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '180d' });
+          }
+      } catch (err) {
+          return { error: 'Invalid or expired refresh token', status: 403 };
+      }
+
+      // Generate new access token
+      console.log("REFRESHING");
+      const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+      await user.save();
+
+      return {
+          accessToken: accessToken,
+          refreshToken: user.refreshToken,
+          status: 200
+      };
+
+  } catch (error) {
+      console.error('Error in refreshUserTokens:', error);
+      return { error: 'Failed to refresh token', status: 500 };
+  }
 };
