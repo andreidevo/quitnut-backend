@@ -152,7 +152,7 @@ async function checkUserBan(req, res, next) {
       console.log(find);
 
       // Check if the user is banned
-      if (find.banned) {
+      if (find.banned !== undefined && find.banned.status === true) {
         return res.status(500).json({
           message: find.banned.reason,
           info: 'Access restricted'
