@@ -1144,7 +1144,7 @@ exports.uploadImageToS3User = async function(req, res) {
       ContentType: file.mimetype
     };
 
-    var userExists = User.findOne({ _id: user._id });
+    var userExists = await User.findOne({ _id: user._id });
 
     if (!userExists){
       return res.status(401).json({
