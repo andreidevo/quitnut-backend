@@ -81,14 +81,29 @@ function appendNewToken(req, res, next) {
       console.log("ADD TOKEN");
       console.log(req.newAccessToken)
       // Modify the response to include the new token
-      const originalSend = res.send;
-      res.send = function (body) {
-          console.log(typeof body);
-          if (typeof body === 'object') {
-              body.newAccessToken = req.newAccessToken; // Append new token to the response body
+
+      try {
+        const originalJson = res.json;
+        res.json = function (data) {
+          console.log(data);
+          if (res.newAccessToken && typeof data === 'object' && data !== null) {
+              data.newAccessToken = res.newAccessToken;  // Append new token
           }
-          return originalSend.call(this, body);
+          originalJson.call(this, data);
+        };
+      } catch (error) {
+        console.log(error);
       }
+
+      // const originalSend = res.send;
+      // res.send = function (body) {
+      //     console.log(typeof body);
+      //     console.log(body);
+      //     if (typeof body === 'object') {
+      //         body.newAccessToken = req.newAccessToken; // Append new token to the response body
+      //     }
+      //     return originalSend.call(this, body);
+      // }
   }
   next();
 }
