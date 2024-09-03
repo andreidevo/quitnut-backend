@@ -1157,8 +1157,9 @@ exports.uploadImageToS3User = async function(req, res) {
     today.setHours(0, 0, 0, 0);
 
     console.log(userExists.imageLastUploadDate);
+    console.log(userExists.imageLastUploadDate == null);
 
-    const imageLastUploadDate = (userExists.imageLastUploadDate == null) ? new Date(userExists.lastUploadDate) : null;
+    const imageLastUploadDate = userExists.imageLastUploadDate ? new Date(userExists.imageLastUploadDate) : null;
 
     if (imageLastUploadDate) {
       imageLastUploadDate.setHours(0, 0, 0, 0);
