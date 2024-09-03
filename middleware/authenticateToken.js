@@ -78,8 +78,11 @@ async function verifyJWT(req, res, next) {
 
 function appendNewToken(req, res, next) {
   if (req.newAccessToken) {
+      console.log("ADD TOKEN");
+      console.log(req.newAccessToken)
       // Modify the response to include the new token
       const originalSend = res.send;
+      console.log(typeof body);
       res.send = function (body) {
           if (typeof body === 'object') {
               body.newAccessToken = req.newAccessToken; // Append new token to the response body
