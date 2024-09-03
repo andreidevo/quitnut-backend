@@ -1256,7 +1256,6 @@ exports.uploadImageToS3Team = async function(req, res) {
       info: {}
     });
   }
-  
 
   console.log(bucket_name);
   console.log(team_id);

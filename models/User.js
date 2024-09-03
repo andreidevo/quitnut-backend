@@ -21,7 +21,11 @@ var UserSchema = new Schema({
     status: { type: String, default: "null"}, // null, sub, lifetime
     history: { type: String, default: ""}, // just adding json here like: "lifetime: Date, sub: Date"
   },
+
   imageUrl: { type: String }, // IMAGE
+  imageUploadCount: { type: Number, default: 0 },
+  imageLastUploadDate: { type: Date }
+
 
   // TEAMS
   communities: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
@@ -66,7 +70,19 @@ var UserSchema = new Schema({
 
   lastActive: { type: Date, default: Date.now },
 
-  test: { type: String, default: ""}
+  test: { type: String, default: ""},
+
+  notification: [{
+    date: { type: Date, default: Date.now  },
+    title: { type: String },
+    description: { type: String }, 
+    link: { type: String, default: null },
+    button_text: { type: String, default: null },
+    is_read: { type: Boolean, default: false },
+    type: { type: String, default: 'info' },
+    priority: {  type: Number, default: 3 },
+  }]
+
 
 });
 
