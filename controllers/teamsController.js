@@ -1155,7 +1155,7 @@ exports.uploadImageToS3User = async function(req, res) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     console.log(userExists.imageLastUploadDate);
 
     const imageLastUploadDate = (userExists.imageLastUploadDate == null) ? new Date(userExists.lastUploadDate) : null;
@@ -1236,6 +1236,8 @@ exports.uploadImageToS3User = async function(req, res) {
       try {
 
         updates.imageUrl = fileName;
+
+        console.log(updates);
         
         const result = await User.updateOne(
           { _id: user._id }, 
