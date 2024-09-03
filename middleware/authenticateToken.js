@@ -91,11 +91,14 @@ function appendNewToken(req, res, next) {
           console.log(typeof data);
           console.log(data);
           if (res.newAccessToken && typeof data === 'object' && data !== null) {
+            console.log("wtf2222awfaefaef2");
               data.newAccessToken = res.newAccessToken;  // Append new token
+              console.log("wtf22222");
+              console.log("Modified data with newAccessToken:", data);
+
           }
           originalJson.call(this, data);
 
-          console.log(originalJson);
 
         };
       } catch (error) {
