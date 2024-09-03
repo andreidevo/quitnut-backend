@@ -53,8 +53,8 @@ async function verifyJWT(req, res, next) {
     console.log(err);
     console.log("MMM2");
 
-    print(req.user);
-    print(req.user._id);
+    console.log(req.user);
+    console.log(req.user._id);
 
     if (err.name === 'TokenExpiredError' && req.user && req.user._id) {
       console.log(err.name);
