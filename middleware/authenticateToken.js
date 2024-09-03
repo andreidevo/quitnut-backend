@@ -57,7 +57,7 @@ async function verifyJWT(req, res, next) {
 
       const decoded = jwt.decode(token);
       console.log(decoded);
-      
+
       if (decoded && decoded._id) {
           // Now attempt to refresh the token using the user's ID
           const result = await refreshUserTokens(decoded._id);
@@ -135,8 +135,38 @@ function appendNewToken(req, res, next) {
   next();
 }
 
+async function checkUserBan(req, res, next) {
+  if (!req.user || !req.user._id) {
+    return res.status(401).send('User not authenticated');
+  }
+
+  try {
+      // Assuming a function or method to find the user by ID
+      const userId = req.user._id;
+      const find = await User.findById(userId); // Replace UserModel with your actual user model
+
+      if (!find) {
+        return res.status(404).send('User not found');
+      }
+
+      // Check if the user is banned
+      if (find.banned ) {
+        return res.status(500).json({
+          message: find.banned.reason,
+          info: 'Access restricted'
+        });
+      }
+
+      next();
+  } catch (error) {
+      console.error('Error checking user ban status:', error);
+      return res.status(500).send('Internal server error');
+  }
+}
+
 module.exports = {
   verifyJWT,
-  appendNewToken
+  appendNewToken,
+  checkUserBan
 };
 
