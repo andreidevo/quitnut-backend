@@ -78,48 +78,24 @@ async function verifyJWT(req, res, next) {
 
 function appendNewToken(req, res, next) {
   if (req.newAccessToken) {
-      console.log("ADD TOKEN");
-      console.log(req.newAccessToken)
-      // Modify the response to include the new token
-
       try {
         console.log("here");
         const originalJson = res.json;
 
         res.json = function (data) {
-          console.log("wtf");
+          console.log("check data");
           console.log(typeof data);
           console.log(data);
-
-          console.log("1");
-          console.log(req.newAccessToken);
           
           if (req.newAccessToken && typeof data === 'object' && data !== null) {
-            console.log("wtf2222awfaefaef2");
-              data.newAccessToken = res.newAccessToken;  // Append new token
-              console.log("wtf22222");
-              console.log("Modified data with newAccessToken:", data);
-
+              data.newAccessToken = req.newAccessToken;  // Append new token
           }
           originalJson.call(this, data);
-
-
         };
       } catch (error) {
         console.log("error");
         console.log(error);
       }
-
-      
-      // const originalSend = res.send;
-      // res.send = function (body) {
-      //     console.log(typeof body);
-      //     console.log(body);
-      //     if (typeof body === 'object') {
-      //         body.newAccessToken = req.newAccessToken; // Append new token to the response body
-      //     }
-      //     return originalSend.call(this, body);
-      // }
   }
   next();
 }
