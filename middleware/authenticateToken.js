@@ -82,8 +82,8 @@ function appendNewToken(req, res, next) {
       console.log(req.newAccessToken)
       // Modify the response to include the new token
       const originalSend = res.send;
-      console.log(typeof body);
       res.send = function (body) {
+          console.log(typeof body);
           if (typeof body === 'object') {
               body.newAccessToken = req.newAccessToken; // Append new token to the response body
           }
