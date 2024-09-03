@@ -30,6 +30,8 @@ async function verifyJWT(req, res, next) {
     if (jtwOk){
       req.user = jwt.verify(token, process.env.JWT_SECRET);
     } else {
+      console.log(req.user);
+      
       const result = await refreshUserTokens(req.user._id);
 
       if (result.status === 200) {
