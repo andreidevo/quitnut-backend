@@ -18,7 +18,7 @@ async function verifyJWT(req, res, next) {
   }
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = jwt.verify(token, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
     next();
   } catch (err) {
     console.log(err);
@@ -28,7 +28,7 @@ async function verifyJWT(req, res, next) {
       const result = await refreshUserTokens(req.user._id);
       if (result.status === 200) {
           req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
-          req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
+          req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET || 'super-secret-tokenasd2223');
           console.log("DONE");
           next();
       } else {
