@@ -88,7 +88,6 @@ function appendNewToken(req, res, next) {
         console.log(originalJson);
 
         res.json = function (data) {
-          console.log(data);
           if (res.newAccessToken && typeof data === 'object' && data !== null) {
               data.newAccessToken = res.newAccessToken;  // Append new token
           }
@@ -98,7 +97,9 @@ function appendNewToken(req, res, next) {
         console.log("error");
         console.log(error);
       }
-
+      
+      console.log(originalJson);
+      
       // const originalSend = res.send;
       // res.send = function (body) {
       //     console.log(typeof body);
