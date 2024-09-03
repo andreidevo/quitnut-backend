@@ -1114,10 +1114,7 @@ exports.uploadImageToS3User = async function(req, res) {
       info: {}
     });
   }
-  
-  console.log("Separation");
-  console.log(req.file);
-  console.log(bucket_name);
+
   if (bucket_name !== "quitximages"){
     return res.status(401).json({
       message: 'No bucket with this name',
@@ -1131,7 +1128,6 @@ exports.uploadImageToS3User = async function(req, res) {
       info: {}
     });
   }
-  console.log("start 1");
 
   const file = req.file;
     if (!file) {
@@ -1148,7 +1144,37 @@ exports.uploadImageToS3User = async function(req, res) {
       ContentType: file.mimetype
     };
 
-    console.log(params);
+    var userExists = User.findOne({ _id: user._id });
+
+    if (!userExists){
+      return res.status(401).json({
+        message: 'No user exists',
+        info: {}
+      });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const imageLastUploadDate = userExists.imageLastUploadDate ? new Date(userExists.lastUploadDate) : null;
+
+    if (imageLastUploadDate) {
+      imageLastUploadDate.setHours(0, 0, 0, 0);
+    }
+  
+    const updates = {};
+    
+    if (!imageLastUploadDate || imageLastUploadDate < today) {
+      updates.imageUploadCount = 1; // Reset count to 1 for new upload today
+      updates.imageLastUploadDate = new Date(); // Set last upload date to now
+    } else {
+        if (userExists.imageUploadCount >= 3) {
+            return res.status(500).json({
+                message: 'Upload limit reached for today',
+            });
+        }
+        updates.imageUploadCount = userExists.imageUploadCount + 1; // Increment upload count
+    }
 
     try {
       const data = await s3.send(new PutObjectCommand(params));
@@ -1187,10 +1213,6 @@ exports.uploadImageToS3User = async function(req, res) {
         console.log(err);
       }
 
-      var userExists = User.findOne({ _id: user._id });
-      console.log("USER EXISTS");
-      console.log(userExists);
-
       const imagePreviousKey = userExists.imageUrl;
 
       if (imagePreviousKey !== undefined && imagePreviousKey !== ""){
@@ -1208,8 +1230,14 @@ exports.uploadImageToS3User = async function(req, res) {
       }
 
       try {
+
+        updates.imageUrl = fileName;
         
-        const result = await User.updateOne({ _id: user._id }, { $set: { imageUrl: fileName } });
+        const result = await User.updateOne(
+          { _id: user._id }, 
+          { $set: updates 
+            // { imageUrl: fileName } 
+          });
   
         if (result.modifiedCount === 1) {
             res.status(200).json({
