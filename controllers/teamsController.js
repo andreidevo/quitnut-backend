@@ -1163,7 +1163,7 @@ exports.uploadImageToS3User = async function(req, res) {
     }
   
     const updates = {};
-    
+
     if (!imageLastUploadDate || imageLastUploadDate < today) {
       updates.imageUploadCount = 1; // Reset count to 1 for new upload today
       updates.imageLastUploadDate = new Date(); // Set last upload date to now
@@ -1222,8 +1222,8 @@ exports.uploadImageToS3User = async function(req, res) {
         };
 
         try {
-          const data = await s3.send(new DeleteObjectCommand(paramsDelete));
-          console.log("Success", data);
+          const data2 = await s3.send(new DeleteObjectCommand(paramsDelete));
+          console.log("Success", data2);
         } catch (err) {
           console.error("Error", err);
         }
@@ -1240,8 +1240,9 @@ exports.uploadImageToS3User = async function(req, res) {
           });
   
         if (result.modifiedCount === 1) {
-            res.status(200).json({
+            return res.status(200).json({
               message: 'File uploaded successfully',
+              url: data.Location
             });
           } else {
             return res.status(500).json({
