@@ -1065,7 +1065,7 @@ const ALLOWED_IMAGE_TYPES = [
 
 
 const upload = multer({
-  limits: { fileSize: 4 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 3 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
     const mimeType = mime.lookup(file.originalname);
     if (ALLOWED_IMAGE_TYPES.includes(mimeType)) {
