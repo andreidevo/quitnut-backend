@@ -730,12 +730,13 @@ exports.getPosts = async function(req, res) {
     console.log("NSFW FILTER");
     console.log(req.query.nsfw);
     console.log(nsfwFilter);
-    console.log(nsfwFilter === true)
+    console.log(nsfwFilter === "true")
+    console.log(typeof nsfwFilter); 
 
-    if (nsfwFilter === true){
+    if (nsfwFilter === "true"){
       query.$and.push({ nsfw: false });
     }
-    
+
     console.log('Query after condition:', JSON.stringify(query));
 
     if (query.$and.length === 0) delete query.$and;
