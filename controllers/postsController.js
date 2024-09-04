@@ -705,7 +705,7 @@ exports.getCommentsWithReplies = async function(req, res) {
 exports.getPosts = async function(req, res) {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
-  const nsfwFilter = parseInt(req.query.nsfw) || true;
+  const nsfwFilter = req.query.nsfw || true;
   const tags = req.query.tags ? req.query.tags.split(',') : [];
   const locale = req.query.locale || '';
 
@@ -728,7 +728,9 @@ exports.getPosts = async function(req, res) {
     }
     
     console.log("NSFW FILTER");
+    console.log(req.query.nsfw);
     console.log(nsfwFilter);
+    
     if (nsfwFilter){
       query.$and.push({ nsfw: false });
     }
