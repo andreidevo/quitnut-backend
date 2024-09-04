@@ -82,8 +82,6 @@ var UserSchema = new Schema({
     type: { type: String, default: 'info' },
     priority: {  type: Number, default: 3 },
   }]
-
-
 });
 
 UserSchema.methods.comparePassword = function(password) {

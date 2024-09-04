@@ -84,7 +84,7 @@ const handleCommands = async (req, res) => {
                 userId: user_reported,
                 reason: reason
               },
-              notifications: {
+              notification: {
                 date: new Date(), 
                 title: "Report",
                 description: reason,
@@ -119,7 +119,7 @@ const handleCommands = async (req, res) => {
                 'banned.reason': reason2
               },
               $push: {
-                notifications: {
+                notification: {
                   date: new Date(), 
                   title: "Report",
                   description: reason,
