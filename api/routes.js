@@ -136,4 +136,6 @@ module.exports = function(app) {
 
   app.route('/webhook').post(asyncHandler(telegramBot.handleCommands));
 
+  app.route('/api/posts/getNotifications').get(verifyJWT, appendNewToken, asyncHandler(postsHandlers.getNotifications));
+
 };
