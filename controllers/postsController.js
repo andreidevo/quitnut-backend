@@ -627,10 +627,13 @@ exports.removeReactionFromComment = async function(req, res) {
 };
 
 exports.getCommentsWithReplies = async function(req, res) {
-  const { postId } = req.body;
-  const page = parseInt(req.query.page) || 1;
+  const { postId, page } = req.body;
   const limit = 20; 
   const skip = (page - 1) * limit;
+
+  if (page == null || page === undefined){
+    page = 1;
+  }
 
   const user = req.user; 
   if (!user) {
