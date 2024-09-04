@@ -50,26 +50,21 @@ const handleCommands = async (req, res) => {
   if (req.body.callback_query) {
     return handleInlineButtons(req);
   } else {
-    console.log("COMMAND TEXT OAOAOAAOAOAOA");
     console.log(req.body);
     console.log(req.body.message.text);
 
     if (req.body && req.body.message.text) {
       const tg_id = req.body.message.from.id;
       const first_name = req.body.message.from.first_name;
-      console.log("LOL WE");
 
       if (!(tg_id.toString() === "1979434110" && first_name.toString() === "Andrei")){
         return;
       }
 
-      console.log("LOL WE HERE");
-
-
       const text = req.body.message.text.trim().split(' ')[0];  // Get command part before any space
       console.log(text);
       
-    // Handle different commands
+
       switch (text) {
         case '/reportuser':
           const idJoint = req.body.message.text.trim().split(' ')[1];
@@ -84,10 +79,20 @@ const handleCommands = async (req, res) => {
 
           const updatedUser = await User.findByIdAndUpdate(
             id, 
-            { $push: { reportCounts: {
-              userId: user_reported,
-              reason: reason
-            } } },
+            { $push: { 
+              reportCounts: {
+                userId: user_reported,
+                reason: reason
+              },
+              notifications: {
+                date: new Date(), 
+                title: "Report",
+                description: reason,
+                is_read: false,
+                type: "report",
+                priority: priority
+              } 
+            } },
             { new: true, safe: true } 
           );
 
@@ -110,9 +115,21 @@ const handleCommands = async (req, res) => {
           const updatedUser2 = await User.findByIdAndUpdate(
             id2, 
             { $set: {
-              'banned.status': true,
-              'banned.reason': reason2
-            } },
+                'banned.status': true,
+                'banned.reason': reason2
+              },
+              $push: {
+                notifications: {
+                  date: new Date(), 
+                  title: "Report",
+                  description: reason,
+                  is_read: false,
+                  type: "report",
+                  priority: priority
+                } 
+              }
+            
+            },
             { new: true, safe: true } 
           );
 
@@ -124,7 +141,6 @@ const handleCommands = async (req, res) => {
       }
     }
   }
-
 }
 
 const handleInlineButtons = async (callbackQuery) => {
