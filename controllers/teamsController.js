@@ -1166,12 +1166,6 @@ exports.uploadImageToS3User = async function(req, res) {
     }
   
     const updates = {};
-    console.log(imageLastUploadDate == null);
-    console.log(imageLastUploadDate < today);
-    console.log("COUNT");
-    console.log(userExists.imageUploadCount);
-    console.log(userExists.imageLastUploadDate);
-
 
     if (imageLastUploadDate == null || imageLastUploadDate < today) {
       updates.imageUploadCount = 1; // Reset count to 1 for new upload today

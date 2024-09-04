@@ -33,6 +33,9 @@ var TeamSchema = new Schema({
     title: { type: String},
   },
 
+  imageUploadCount: { type: Number, default: 0 },
+  imageLastUploadDate: { type: Date },
+
   members: [teamMemberSchema],
   membersCount: { type: Number,  default: 0},
 
