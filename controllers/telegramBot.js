@@ -90,7 +90,7 @@ const handleCommands = async (req, res) => {
                 description: reason,
                 is_read: false,
                 type: "report",
-                priority: priority
+                priority: 2
               } 
             } },
             { new: true, safe: true } 
@@ -125,7 +125,7 @@ const handleCommands = async (req, res) => {
                   description: reason,
                   is_read: false,
                   type: "report",
-                  priority: priority
+                  priority: 2
                 } 
               }
             
