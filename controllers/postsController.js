@@ -824,7 +824,7 @@ exports.getNotifications = async function(req, res) {
 
     return res.status(200).json({
       message: "Notifications fetched successfully",
-      notifications: userWithNotifications.notifications  // Return the notifications array
+      notifications: userWithNotifications.notification  // Return the notifications array
     });
   } catch (error) {
     console.error("Error fetching notifications:", error);
