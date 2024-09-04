@@ -730,8 +730,8 @@ exports.getPosts = async function(req, res) {
     console.log("NSFW FILTER");
     console.log(req.query.nsfw);
     console.log(nsfwFilter);
-    
-    if (nsfwFilter){
+
+    if (nsfwFilter === true){
       query.$and.push({ nsfw: false });
     }
 
