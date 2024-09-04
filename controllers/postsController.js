@@ -812,7 +812,7 @@ exports.getNotifications = async function(req, res) {
   try {
     
     const userWithNotifications = await User.findById(user._id)
-                                            .select('notifications')  // Only fetch the notifications field
+                                            .select('notification')  // Only fetch the notifications field
                                             .exec();  // Execute the query
 
     if (!userWithNotifications) {
