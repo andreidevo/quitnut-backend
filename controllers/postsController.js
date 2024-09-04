@@ -705,6 +705,7 @@ exports.getCommentsWithReplies = async function(req, res) {
 exports.getPosts = async function(req, res) {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
+  const nsfwFilter = parseInt(req.query.nsfw) || true;
   const tags = req.query.tags ? req.query.tags.split(',') : [];
   const locale = req.query.locale || '';
 
@@ -725,6 +726,12 @@ exports.getPosts = async function(req, res) {
     if (locale) {
       query.$and.push({ locale: locale });
     }
+
+    if (nsfwFilter){
+      query.$and.push({ nsfw: nsfwFilter });
+    }
+
+
     if (query.$and.length === 0) delete query.$and;
 
     const posts = await Post.find(query)
