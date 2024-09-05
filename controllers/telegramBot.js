@@ -204,14 +204,27 @@ const handleCommands = async (req, res) => {
           { new: true, safe: true } 
         );
 
+
+
         const deletedComment = await Comments.findByIdAndDelete(idComment);
+        
+
 
         if (!deletedComment) {
+
           bot.sendMessage("1979434110", "Comment not found");
         } else if (!updatedUser){
           bot.sendMessage("1979434110", "User not found");
         } else {
           bot.sendMessage("1979434110", "Post deleted");
+
+          const postUpdated = await Post.findByIdAndUpdate(
+            deletedComment.postID,
+            { $pull: { comments: idComment } }, 
+            { new: true, safe: true } 
+          );
+
+          bot.sendMessage("1979434110", "Comment pop from post");
         }
       } else if (text.toString() === '/banuser') {
         const idJoint = req.body.message.text.trim().split(' ')[1];
