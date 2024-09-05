@@ -64,18 +64,13 @@ const handleCommands = async (req, res) => {
       const text = req.body.message.text.trim().split(' ')[0];  // Get command part before any space
       console.log(text);
       
-
-      switch (text) {
-        case '/reportuser':
+      
+      if (text.toString() === '/reportuser'){
           const idJoint = req.body.message.text.trim().split(' ')[1];
           const id = idJoint.split(':')[0];
 
-          console.log(id);
-
           const reason = req.body.message.text.trim().split(':')[1]; 
           const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
-
-          console.log(user_reported);
 
           const updatedUser = await User.findByIdAndUpdate(
             id, 
@@ -97,47 +92,160 @@ const handleCommands = async (req, res) => {
           );
 
           bot.sendMessage("1979434110", `${id} reported: ${reason}`);
-          break;
-        case '/reportteam':
-          bot.sendMessage("1979434110", "How can I help you? You can use /start to get started.");
-          break;
-        case '/banuser':
-          const idJoint2 = req.body.message.text.trim().split(' ')[1];
-          const id2 = idJoint2.split(':')[0];
+      } else if (text.toString() === '/delteam'){
+        const metadata = req.body.message.text.trim().split(' ')[1]; 
 
-          console.log(id2);
+        const idTeam = metadata.split(':')[0];
+        const idUser = metadata.split(':')[1];
+        const reason = metadata.split(':')[2];
 
-          const reason2 = req.body.message.text.trim().split(':')[1]; 
-          const user_reported2 = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+        const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
 
-          console.log(user_reported2);
-
-          const updatedUser2 = await User.findByIdAndUpdate(
-            id2, 
-            { $set: {
-                'banned.status': true,
-                'banned.reason': reason2
-              },
-              $push: {
-                notification: {
-                  date: new Date(), 
-                  title: "Report",
-                  description: reason,
-                  is_read: false,
-                  type: "report",
-                  priority: 2
-                } 
-              }
-            
+        const updatedUser = await Team.findByIdAndUpdate(
+          idUser, 
+          { $push: { 
+            reportCounts: {
+              userId: user_reported1,
+              reason: reason
             },
-            { new: true, safe: true } 
-          );
+            notification: {
+              date: new Date(), 
+              title: "Report",
+              description: reason,
+              is_read: false,
+              type: "report",
+              priority: 2
+            } 
+          } },
+          { new: true, safe: true } 
+        );
 
-          bot.sendMessage("1979434110", `${id2} banned: ${reason2}`);
-          break;
-        default:
-          bot.sendMessage("1979434110", "Sorry, I didn't understand that command.");
-          break;
+        const deletedTeam = await Team.findByIdAndDelete(idTeam);
+
+        if (!deletedTeam) {
+          bot.sendMessage("1979434110", "Team not found");
+
+        } else if (!updatedUser){
+          bot.sendMessage("1979434110", "User not found");
+        } else {
+          bot.sendMessage("1979434110", "Team deleted");
+        }
+
+      } else if (text.toString() === '/delpost'){
+        const metadata = req.body.message.text.trim().split(' ')[1]; 
+
+        const idPost = metadata.split(':')[0];
+        const idUser = metadata.split(':')[1];
+        const reason = metadata.split(':')[2];
+
+        const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+
+        const updatedUser = await User.findByIdAndUpdate(
+          idUser, 
+          { $push: { 
+            reportCounts: {
+              userId: user_reported,
+              reason: reason
+            },
+            notification: {
+              date: new Date(), 
+              title: "Report",
+              description: reason,
+              is_read: false,
+              type: "report",
+              priority: 2
+            } 
+          } },
+          { new: true, safe: true } 
+        );
+
+        const deletedPost = await Post.findByIdAndDelete(idPost);
+
+        if (!deletedPost) {
+          bot.sendMessage("1979434110", "Post not found");
+        } else if (!updatedUser){
+          bot.sendMessage("1979434110", "User not found");
+        } else {
+          bot.sendMessage("1979434110", "Post deleted");
+        }
+
+      } else if (text.toString() === '/delcom') {
+        const metadata = req.body.message.text.trim().split(' ')[1]; 
+
+        const idComment = metadata.split(':')[0];
+        const idUser = metadata.split(':')[1];
+        const reason = metadata.split(':')[2];
+
+        const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
+
+
+        const updatedUser = await User.findByIdAndUpdate(
+          idUser, 
+          { $push: { 
+            reportCounts: {
+              userId: user_reported,
+              reason: reason
+            },
+            notification: {
+              date: new Date(), 
+              title: "Report",
+              description: reason,
+              is_read: false,
+              type: "report",
+              priority: 2
+            } 
+          } },
+          { new: true, safe: true } 
+        );
+
+        const deletedComment = await Comments.findByIdAndDelete(idComment);
+
+        if (!deletedComment) {
+          bot.sendMessage("1979434110", "Post not found");
+        } else if (!updatedUser){
+          bot.sendMessage("1979434110", "User not found");
+        } else {
+          bot.sendMessage("1979434110", "Post deleted");
+        }
+      } else if (text.toString() === '/banuser') {
+        const idJoint = req.body.message.text.trim().split(' ')[1];
+        const id = idJoint.split(':')[0];
+
+        const reason = req.body.message.text.trim().split(':')[1]; 
+
+        const updatedUse = await User.findByIdAndUpdate(
+          id, 
+          { $set: {
+              'banned.status': true,
+              'banned.reason': reason
+            },
+            $push: {
+              notification: {
+                date: new Date(), 
+                title: "Report",
+                description: reason,
+                is_read: false,
+                type: "report",
+                priority: 2
+              } 
+            }
+          
+          },
+          { new: true, safe: true } 
+        );
+
+        bot.sendMessage("1979434110", `${id} banned: ${reason}`);
+      } else if (text.toString() === '/help'){
+        let messageText = '<b>Commands:</b>\n\n';
+        messageText += `/reportuser id:reason\n`;
+        messageText += `/banuser id:reason\n\n`;
+        messageText += `/delteam id\n`;
+        messageText += `/delpost idPost:idUser:reason\n`;
+        messageText += `/delcom idPost:idUser:reason\n`;
+
+        bot.sendMessage("1979434110", messageText);
+      } else {
+        bot.sendMessage("1979434110", "Sorry, I didn't understand that command.");
       }
     }
   }
