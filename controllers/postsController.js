@@ -107,7 +107,15 @@ exports.createPost = async function(req, res) {
   
     await newPost.save();
 
-    const updatesString = JSON.stringify(newPost, null, 2);
+    const filteredPost = {
+      ownerID: newPost.ownerID,
+      metadata: newPost.metadata.text,
+      _id: newPost._id,
+      nsfw: newPost.nsfw
+    };
+    
+
+    const updatesString = JSON.stringify(filteredPost, null, 2);
     bot.sendMessage("1979434110", "New post: " + updatesString, { parse_mode: 'HTML' });
 
     return res.status(200).json({
@@ -248,8 +256,15 @@ exports.addCommentToPost = async function(req, res) {
         info: {}
       });
     }
+
+    const filteredComment = {
+      ownerID: newComment.ownerID,
+      metadata: newComment.metadata.text,
+      _id: newComment._id,
+      nsfw: newComment.nsfw
+    };
     
-    const updatesString = JSON.stringify(newComment, null, 2);
+    const updatesString = JSON.stringify(filteredComment, null, 2);
     bot.sendMessage("1979434110", "New comment: " + updatesString, { parse_mode: 'HTML' });
 
     // Return the updated post

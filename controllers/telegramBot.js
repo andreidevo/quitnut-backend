@@ -3,6 +3,8 @@ const token = process.env.TGKEY;
 const bot = new TelegramBot(token, { polling: false });
 var mongoose = require('mongoose'),
 User = mongoose.model('User'),
+Post = mongoose.model('Post'),
+Comments = mongoose.model('Comment');
 Team = mongoose.model('Team');
 
 const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
@@ -241,7 +243,7 @@ const handleCommands = async (req, res) => {
         messageText += `/banuser id:reason\n\n`;
         messageText += `/delteam id\n`;
         messageText += `/delpost idPost:idUser:reason\n`;
-        messageText += `/delcom idPost:idUser:reason\n`;
+        messageText += `/delcom idComment:idUser:reason\n`;
 
         bot.sendMessage("1979434110", messageText);
       } else {
