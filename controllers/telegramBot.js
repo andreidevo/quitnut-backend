@@ -178,6 +178,10 @@ const handleCommands = async (req, res) => {
         const idUser = metadata.split(':')[1];
         const reason = metadata.split(':')[2];
 
+        console.log(idComment);
+        console.log(idUser);
+        console.log(reason);
+
         const user_reported = new mongoose.Types.ObjectId("66a2031c66d2046ac00fd3ef")
 
 
@@ -203,7 +207,7 @@ const handleCommands = async (req, res) => {
         const deletedComment = await Comments.findByIdAndDelete(idComment);
 
         if (!deletedComment) {
-          bot.sendMessage("1979434110", "Post not found");
+          bot.sendMessage("1979434110", "Comment not found");
         } else if (!updatedUser){
           bot.sendMessage("1979434110", "User not found");
         } else {
