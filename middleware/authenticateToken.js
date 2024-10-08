@@ -20,12 +20,18 @@ async function verifyJWT(req, res, next) {
   try {
     console.log("CHECK TOKEN");
     var jtwOk = false;
+    var jtwOk2 = false;
 
     try {
       jtwOk = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e){ }
 
+    try {
+      jtwOk2 = jwt.verify(token, "super-secret-tokenasd2223");
+    } catch (e){ }
+
     console.log(jtwOk);
+    console.log(jtwOk2);
 
     console.log(token);
     console.log(process.env.JWT_SECRET);
