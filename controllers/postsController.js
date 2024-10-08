@@ -812,13 +812,15 @@ exports.getPosts = async function(req, res) {
 
       console.log("enhancedReactionsList");      
 
+      console.log(lastComment);
+      console.log(lastComment.ownerID);
 
       return {
         ...post,
         lastComment: lastComment ? {
             ...lastComment,
             ownerUsername: (lastComment.ownerID.username !== null) ? lastComment.ownerID.username : "[deleted]",
-            ownerImageUrl: (lastComment.ownerID.imageUrl !== null) ? null : lastComment.ownerID.imageUrl
+            ownerImageUrl: (lastComment.ownerID.imageUrl !== null) ? lastComment.ownerID.imageUrl : null
         } : null,
         reactionsList: enhancedReactionsList
       };
