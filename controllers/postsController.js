@@ -815,7 +815,7 @@ exports.getPosts = async function(req, res) {
       console.log("enhancedReactionsList");      
 
       // console.log(lastComment);
-      console.log(lastComment.ownerID);
+      // console.log(lastComment.ownerID);
 
       return {
         ...post,
