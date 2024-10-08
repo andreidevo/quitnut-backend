@@ -773,7 +773,9 @@ exports.getPosts = async function(req, res) {
       
     console.log("posts ok");
 
-    const postsWithDetails = await Promise.all(posts.map(async (post) => {
+    const filteredPosts = posts.filter(post => post.ownerID);
+
+    const postsWithDetails = await Promise.all(filteredPosts.map(async (post) => {
       if (post.ownerID && post.ownerID.imageUrl) {
         post.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
           Bucket: "quitximages",
