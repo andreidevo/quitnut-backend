@@ -770,6 +770,8 @@ exports.getPosts = async function(req, res) {
         select: '_id'
       })
       .lean();
+      
+    console.log("posts ok");
 
     const postsWithDetails = await Promise.all(posts.map(async (post) => {
       if (post.ownerID && post.ownerID.imageUrl) {
@@ -778,6 +780,8 @@ exports.getPosts = async function(req, res) {
           Key: post.ownerID.imageUrl,
         }), { expiresIn: 3600 }); // URL expires in 1 hour
       }
+
+      console.log("image url");
 
       const lastComment = await Comment.findOne({ postID: post._id })
         .sort({ created: -1 })
@@ -788,6 +792,8 @@ exports.getPosts = async function(req, res) {
         .select('-reportCounts')
         .lean();
 
+      console.log("last comment");      
+
       if (lastComment && lastComment.ownerID && lastComment.ownerID.imageUrl) {
         lastComment.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
           Bucket: "quitximages",
@@ -795,11 +801,17 @@ exports.getPosts = async function(req, res) {
         }), { expiresIn: 3600 });
       }
 
+      console.log("imageUrl ok");      
+
+
       const enhancedReactionsList = post.reactionsList.map(reaction => ({
         reactionID: reaction.reactionID,
         count: reaction.count,
         userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
       }));
+
+      console.log("enhancedReactionsList");      
+
 
       return {
         ...post,
