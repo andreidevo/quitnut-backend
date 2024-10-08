@@ -27,6 +27,10 @@ async function verifyJWT(req, res, next) {
 
     console.log(jtwOk);
 
+    console.log(token);
+    console.log(process.env.JWT_SECRET);
+
+
     if (jtwOk){
       req.user = jwt.verify(token, process.env.JWT_SECRET);
     } else {
@@ -35,7 +39,8 @@ async function verifyJWT(req, res, next) {
 
       const result = await refreshUserTokens(req.user._id);
 
-      // console.log(result);
+      console.log("result ok");
+      console.log(result.status);
 
       if (result.status === 200) {
           req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
@@ -51,7 +56,7 @@ async function verifyJWT(req, res, next) {
     next();
   } catch (err) {
     console.log("MMM2");
-
+    console.log(err.name);
     if (err.name === 'TokenExpiredError') {
       console.log("MMM3");
 
