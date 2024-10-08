@@ -817,7 +817,7 @@ exports.getPosts = async function(req, res) {
         ...post,
         lastComment: lastComment ? {
             ...lastComment,
-            ownerUsername: lastComment.ownerID.username,
+            ownerUsername: (lastComment.ownerID.username !== null) ? lastComment.ownerID.username : "[deleted]",
             ownerImageUrl: lastComment.ownerID.imageUrl
         } : null,
         reactionsList: enhancedReactionsList
