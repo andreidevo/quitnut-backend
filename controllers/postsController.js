@@ -771,7 +771,6 @@ exports.getPosts = async function(req, res) {
       })
       .lean();
       
-    console.log("posts ok");
 
     const filteredPosts = posts.filter(post => post.ownerID);
 
@@ -783,7 +782,6 @@ exports.getPosts = async function(req, res) {
         }), { expiresIn: 3600 }); // URL expires in 1 hour
       }
 
-      console.log("image url");
 
       const lastComment = await Comment.findOne({ postID: post._id })
         .sort({ created: -1 })
@@ -794,7 +792,6 @@ exports.getPosts = async function(req, res) {
         .select('-reportCounts')
         .lean();
 
-      console.log("last comment");      
 
       if (lastComment && lastComment.ownerID && lastComment.ownerID.imageUrl) {
         lastComment.ownerID.imageUrl = await getSignedUrl(s3, new GetObjectCommand({
@@ -803,7 +800,6 @@ exports.getPosts = async function(req, res) {
         }), { expiresIn: 3600 });
       }
 
-      console.log("imageUrl ok");      
 
 
       const enhancedReactionsList = post.reactionsList.map(reaction => ({
@@ -812,7 +808,6 @@ exports.getPosts = async function(req, res) {
         userHasReacted: reaction.users.some(userReaction => userReaction._id.toString() === user._id.toString())
       }));
 
-      console.log("enhancedReactionsList");      
 
       // console.log(lastComment);
       // console.log(lastComment.ownerID);
