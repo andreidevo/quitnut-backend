@@ -94,7 +94,7 @@ exports.send_report = async function(req, res) {
 
 
   bot.sendMessage("1979434110", messageText, { parse_mode: 'HTML' });
-  bot.sendMessage("1401236082", messageText, { parse_mode: 'HTML' });
+  // bot.sendMessage("1401236082", messageText, { parse_mode: 'HTML' });
 
   return res.status(200).send('ok');
 };
