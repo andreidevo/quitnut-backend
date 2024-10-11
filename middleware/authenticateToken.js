@@ -25,13 +25,13 @@ async function verifyJWT(req, res, next) {
     try {
       jtwOk = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e){
-      console.error("Error verifying JWT with hardcoded secret:", e);
+      // console.error("Error verifying JWT with hardcoded secret:", e);
      }
 
     try {
       jtwOk2 = jwt.verify(token, "super-secret-tokenasd2223");
     } catch (e){
-      console.error("Error verifying JWT 2 with hardcoded secret:", e);
+      // console.error("Error verifying JWT 2 with hardcoded secret:", e);
      }
 
     console.log(jtwOk);
@@ -99,6 +99,22 @@ async function verifyJWT(req, res, next) {
       try{
         const decoded = jwt.decode(token);
         console.log(decoded);
+
+        if (decoded && decoded._id) {
+          // Now attempt to refresh the token using the user's ID
+          const result = await refreshUserTokens(decoded._id);
+          if (result.status === 200) {
+              // Set the new token in the request header and user object
+              req.headers.authorization = `Bearer ${result.accessToken}`;
+              req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
+              req.newAccessToken = result.accessToken; // Optionally pass new token back in response
+              next();
+          } else {
+              res.status(result.status).json({ message: result.error });
+          }
+        } else {
+            res.status(403).send('Invalid token, unable to refresh');
+        }
       } catch (e){
         console.log("Catch lol");
         console.log(e);
