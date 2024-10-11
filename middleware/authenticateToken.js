@@ -93,8 +93,16 @@ async function verifyJWT(req, res, next) {
       res.status(403).send('Invalid token');
     }
 
-    if (err.name === 'TokenExpiredError') {
+    if (err.name === 'JsonWebTokenError') {
+      console.log("staring decoding");
 
+      try{
+        const decoded = jwt.decode(token);
+        console.log(decoded);
+      } catch (e){
+        console.log("Catch lol");
+        console.log(e);
+      }
     }
 
     console.log(err);
