@@ -24,11 +24,15 @@ async function verifyJWT(req, res, next) {
 
     try {
       jtwOk = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (e){ }
+    } catch (e){
+      console.error("Error verifying JWT with hardcoded secret:", e);
+     }
 
     try {
       jtwOk2 = jwt.verify(token, "super-secret-tokenasd2223");
-    } catch (e){ }
+    } catch (e){
+      console.error("Error verifying JWT 2 with hardcoded secret:", e);
+     }
 
     console.log(jtwOk);
     console.log(jtwOk2);
@@ -88,32 +92,15 @@ async function verifyJWT(req, res, next) {
       // For other errors, send a generic 403 response
       res.status(403).send('Invalid token');
     }
+
+    if (err.name === 'TokenExpiredError') {
+
+    }
+
     console.log(err);
     console.log("MMM2");
 
-    // console.log(req.user);
-    // console.log(req.user._id);
 
-    // if (err.name === 'TokenExpiredError' && req.user && req.user._id) {
-    //   console.log(err.name);
-
-    //   const result = await refreshUserTokens(req.user._id);
-    //   console.log(result);
-    //   if (result.status === 200) {
-    //       req.headers.authorization = `Bearer ${result.accessToken}`;  // Optionally set new access token in headers
-    //       req.user = jwt.verify(result.accessToken, process.env.JWT_SECRET);
-    
-    //       console.log("DONE");
-    //       next();
-    //   } else {
-    //       console.log("NOPE");
-
-    //       res.status(result.status).json({ message: result.error });
-    //   }
-    // } else {
-    //     console.log("NOPE2");
-    //     res.sendStatus(403);
-    // }
   }
 }
 
