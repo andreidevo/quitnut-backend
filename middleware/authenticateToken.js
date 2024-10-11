@@ -90,7 +90,7 @@ async function verifyJWT(req, res, next) {
       }
     } else {
       // For other errors, send a generic 403 response
-      res.status(403).send('Invalid token');
+      // res.status(403).send('Invalid token');
     }
 
     if (err.name === 'JsonWebTokenError') {
