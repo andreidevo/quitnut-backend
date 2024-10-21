@@ -184,6 +184,8 @@ exports.create = async function(req, res) {
 
       bot.sendMessage("1979434110", "New team created: " + publicname + " title: " + title, { parse_mode: 'HTML' });
 
+      bot.sendMessage("383572073", "New team created: " + publicname + " title: " + title, { parse_mode: 'HTML' });
+
       return res.status(200).json({
         message: "ok"
       });
@@ -252,6 +254,7 @@ exports.editTeam = async function(req, res) {
 
         const updatesString = JSON.stringify(updates, null, 2);
         bot.sendMessage("1979434110", "team update: " + updatesString, { parse_mode: 'HTML' });
+        bot.sendMessage("383572073", "team update: " + updatesString, { parse_mode: 'HTML' });
 
         return res.status(200).json({
           message: "Team updated successfully",
@@ -437,6 +440,8 @@ exports.report_team = async function(req, res) {
     });
 
     bot.sendMessage("1979434110", "team report: " + team.publicname, { parse_mode: 'HTML' });
+
+    
     
     const updatedTeam = await Team.findById(id);
 
@@ -1507,6 +1512,9 @@ exports.deleteAccount = async function(req, res) {
     console.log(userId);
     
     bot.sendMessage("1979434110", "Delete account: " + userId, { parse_mode: 'HTML' });
+
+    bot.sendMessage("383572073", "Delete account: " + userId, { parse_mode: 'HTML' });
+
 
     return res.status(200).json({
       message: "User account deleted successfully"

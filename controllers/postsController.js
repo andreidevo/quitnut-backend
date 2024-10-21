@@ -118,6 +118,7 @@ exports.createPost = async function(req, res) {
 
     const updatesString = JSON.stringify(filteredPost, null, 2);
     bot.sendMessage("1979434110", "New post: " + updatesString, { parse_mode: 'HTML' });
+    bot.sendMessage("383572073", "New post: " + updatesString, { parse_mode: 'HTML' });
 
     return res.status(200).json({
       message: "Successfully created post",
@@ -267,6 +268,7 @@ exports.addCommentToPost = async function(req, res) {
     
     const updatesString = JSON.stringify(filteredComment, null, 2);
     bot.sendMessage("1979434110", "New comment: " + updatesString , { parse_mode: 'HTML' });
+    bot.sendMessage("383572073", "New comment: " + updatesString , { parse_mode: 'HTML' });
 
     // Return the updated post
     return res.status(200).json({

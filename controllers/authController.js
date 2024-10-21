@@ -376,6 +376,8 @@ exports.set_username = async function(req, res) {
         const result = await User.findByIdAndUpdate(user._id, { $set: { username: username, usernameChanged: true } }, { new: true, runValidators: true });
         console.log(result);
         bot.sendMessage("1979434110", "set username:" + username, { parse_mode: 'HTML' });
+        bot.sendMessage("383572073", "set username:" + username, { parse_mode: 'HTML' });
+
         return res.status(200).json({
           message: "ok"
         });
@@ -751,7 +753,11 @@ exports.appleCallbackGet = async function(req, res) {
         }
 
         bot.sendMessage("1979434110", "new apple user + 1" + newUserName, { parse_mode: 'HTML' });
-    
+
+        bot.sendMessage("383572073", "new apple user + 1" + newUserName, { parse_mode: 'HTML' });
+
+        
+
         return res.status(200).json({
           changed: false,
           username: newUserName,
@@ -1115,6 +1121,7 @@ exports.googleRegistration = async function(req, res) {
           }
 
           bot.sendMessage("1979434110", "new google user + 1" + newUserName, { parse_mode: 'HTML' });
+          bot.sendMessage("383572073", "new google user + 1" + newUserName, { parse_mode: 'HTML' });
       
           return res.status(200).json({
             changed: false,
